@@ -13,5 +13,6 @@ public interface UserGroupInterface {
     public int countMembersInGroup(Long groupId);
     public List<UserGroup> findByGroupId(Long groupId);
     public UserGroup findByUserAndGroup(Long userId, Long groupId);
+    void update(UserGroup userGroup);
 
 }

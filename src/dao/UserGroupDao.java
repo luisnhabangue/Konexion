@@ -33,6 +33,30 @@ public class UserGroupDao implements UserGroupInterface {
             em.close();
         }
     }
+
+
+
+
+    @Override
+    public void update(UserGroup userGroup) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+
+            em.merge(userGroup);
+
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw new RuntimeException("Erro ao atualizar dados do membro no grupo.", e);
+        } finally {
+            em.close();
+        }
+    }
+
     @Override
     public UserGroup findByUserAndGroup(Long userId, Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
