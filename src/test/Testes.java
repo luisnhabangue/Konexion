@@ -1,10 +1,6 @@
 package test;
 
-import dao.UserDao;
-import model.User;
 import service.AuthService;
-import utils.JPAUtil;
-import utils.PasswordUtil;
 
 public class Testes {
 

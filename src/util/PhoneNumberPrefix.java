@@ -1,4 +1,4 @@
-package utils;
+package util;
 
 public class PhoneNumberPrefix {
     public static String phoneNumberPrefix(){

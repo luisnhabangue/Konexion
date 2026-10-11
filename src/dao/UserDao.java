@@ -90,13 +90,12 @@ public class UserDao implements UserDaoInterface {
             return em.createQuery(
                     "SELECT u FROM User u WHERE u.phoneNumber = :phone",
                     User.class
-            ).setParameter("email", phone).getSingleResult();
+            ).setParameter("phone", phone).getSingleResult();
 
         } finally {
             em.close();
         }
     }
-
     @Override
     public void updateUser(User user) {
         EntityManager em = entityManagerFactory.createEntityManager();
@@ -155,7 +154,7 @@ public class UserDao implements UserDaoInterface {
 
         try {
             et.begin();
-            User user = em.find(User.class, id);
+            User user = findById(id);
             if (user == null) throw new UserNotFoundException("Usuário não encontrado!");
             user.setActive(false);
             et.commit();

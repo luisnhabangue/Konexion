@@ -2,10 +2,6 @@ package model;
 
 import jakarta.persistence.*;
 import model.enums.Gender;
-import org.hibernate.dialect.function.StringFunction;
-
-import java.sql.Date;
-
 
 @MappedSuperclass
 public abstract class Person {
@@ -13,83 +9,37 @@ public abstract class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firstname;
-    private String  lastname;
 
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-    private Date birthdate;
+    @Column(nullable = false, unique = false, name = "firstName")
+    private String firstName;
+
+    @Column(nullable = false, unique = false, name = "lastName")
+    private String lastName;
+
+    @Column(nullable = false, unique = true, name = "documentId")
     private String documentId;
+
+    @Column(nullable = false, name = "gender")
+    private Gender gender;
 
     public Person() {
     }
-
-    public Person(String firstname, String lastname, Gender gender, Date birthdate) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.gender = gender;
-        this.birthdate = birthdate;
-    }
-
-    public Person(Long id, String firstname, String lastname, Gender gender, Date birthdate, String documentId) {
+    public Person(Long id, String firstName, String lastName, String documentId, Gender gender) {
         this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.gender = gender;
-        this.birthdate = birthdate;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.documentId = documentId;
-    }
-
-
-    public Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(Gender gender) {
         this.gender = gender;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirstname() {
-        return firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
-    }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public Date getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = birthdate;
-    }
-
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
-    }
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
+    public String getFirstName() {return firstName;}
+    public void setFirstName(String firstName) {this.firstName = firstName;}
+    public String getLastName() {return lastName;}
+    public void setLastName(String lastName) {this.lastName = lastName;}
+    public String getDocumentId() {return documentId;}
+    public void setDocumentId(String documentId) {this.documentId = documentId;}
+    public Gender getGender() {return gender;}
+    public void setGender(Gender gender) {this.gender = gender;}
 }
-
-
-
-

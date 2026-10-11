@@ -10,24 +10,25 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AuthController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-border-radius: 10%;" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AuthController">
    <children>
       <HBox layoutX="-7.0" layoutY="-6.0" prefHeight="412.0" prefWidth="609.0">
          <children>
             <Pane prefHeight="412.0" prefWidth="255.0">
                <children>
-                  <VBox alignment="CENTER" layoutX="4.0" layoutY="6.0" prefHeight="406.0" prefWidth="226.0">
+                  <VBox alignment="CENTER" layoutX="4.0" layoutY="6.0" prefHeight="406.0" prefWidth="226.0" style="-fx-background-color: #28795F;">
                      <children>
-                        <Label text="iXitique">
+                        <Label text="iXitique" textFill="WHITE">
                            <font>
-                              <Font size="26.0" />
+                              <Font name="Plus Jakarta Sans SemiBold" size="26.0" />
                            </font>
                         </Label>
+                        <Label text="Sair" />
                      </children>
                   </VBox>
                </children>
             </Pane>
-            <Pane prefHeight="412.0" prefWidth="411.0">
+            <Pane prefHeight="412.0" prefWidth="411.0" style="-fx-background-color: f7f9f8;">
                <children>
                   <VBox alignment="CENTER_LEFT" layoutX="43.0" layoutY="44.0" prefHeight="333.0" prefWidth="294.0">
                      <children>
@@ -43,7 +44,7 @@
                         <TextField id="tfUsername" fx:id="tfUsername" prefHeight="26.0" prefWidth="128.0" />
                         <Label id="lbPassword" alignment="BOTTOM_LEFT" text="Senha" />
                         <TextField id="tfUsername" fx:id="pfPassword" />
-                        <Button mnemonicParsing="false" onAction="#btnEntrar" prefHeight="30.0" prefWidth="267.0" text="Entrar">
+                        <Button mnemonicParsing="false" onAction="#btnEntrar" prefHeight="30.0" prefWidth="267.0" style="-fx-border-radius: 50px;" text="Entrar">
                            <VBox.margin>
                               <Insets top="20.0" />
                            </VBox.margin>

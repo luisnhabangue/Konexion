@@ -20,7 +20,7 @@ public class RegisterController {
 
         try {
 
-            Parent personal = FXMLLoader.load(getClass().getResource("/view/fxml/PersonalData.fxml"));
+            Parent personal = FXMLLoader.load(getClass().getResource("/view/fxml/AccountData.fxml"));
             Parent contact = FXMLLoader.load(getClass().getResource("/view/fxml/ContactData.fxml"));
             Parent account = FXMLLoader.load(getClass().getResource("/view/fxml/AccountData.fxml"));
 
@@ -29,9 +29,9 @@ public class RegisterController {
             MFXFontIcon confirmationIcon = new MFXFontIcon("fas-check");
 
 
-           MFXStepperToggle personalStep = new MFXStepperToggle("Dados pessoais", userIcon, personal);
-            MFXStepperToggle contactStep = new MFXStepperToggle("Contacto",accessIcon, contact);
-            MFXStepperToggle accountStep = new MFXStepperToggle("Dados de acesso",confirmationIcon,account);
+           MFXStepperToggle personalStep = new MFXStepperToggle("", userIcon, personal);
+            MFXStepperToggle contactStep = new MFXStepperToggle("",accessIcon, contact);
+            MFXStepperToggle accountStep = new MFXStepperToggle("",confirmationIcon,account);
 
            mfxStepper.getStepperToggles().addAll(
                     personalStep, contactStep, accountStep);
