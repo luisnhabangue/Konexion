@@ -39,13 +39,13 @@ public class User extends Person {
     }
 
     public User(Long id, String firstName, String lastName, String documentId, Gender gender,
-                String username, String password, String email, UserRole userRole, String phoneNumber) {
+                String username, String password, String email,  String phoneNumber) {
         super(id, firstName, lastName, documentId, gender);
         this.active = true;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.userRole = userRole;
+        this.userRole = UserRole.base;
         this.phoneNumber = phoneNumber;
     }
 
