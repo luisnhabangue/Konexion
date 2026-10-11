@@ -20,6 +20,7 @@ module iXitique {
 
 
     // JavaFX / FXML
+
     opens view;
     opens controller;
 
@@ -28,5 +29,6 @@ module iXitique {
 
     // Testes, se realmente necessário
     opens test;
+    opens model.enums;
 }
 

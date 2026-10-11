@@ -1,83 +1,168 @@
 package service;
-import exceptions.*;
-import model.User;
+
 import dao.UserDao;
-
+import exceptions.InvalidUsernameException;
+import exceptions.UserAlreadyExistsException;
+import exceptions.UserNotFoundException;
+import model.User;
 import org.mindrot.jbcrypt.BCrypt;
-
-
-import utils.JPAUtil;
-import utils.PasswordUtil;
-import utils.PhoneNumberPrefix;
-
+import util.EntityManagerFactoryUtil;
+import util.PasswordUtil;
+import validation.UserValidator;
 
 public class AuthService {
 
-
-    private User user;
-    private UserDao userDao;
+    private final UserDao userDao;
 
     public AuthService() {
-        userDao = new UserDao(JPAUtil.getEntityManagerFactory());
+        this.userDao = new UserDao(
+                EntityManagerFactoryUtil.getEntityManagerFactory()
+        );
     }
 
-    public void register(String username,String email, String password,String phoneNumber, String firstname, String lastname){
+    public void register(User user, String confirmPassword) {
 
-
-        if (thisUsernameExists(username)) throw new UserAlreadyExistsException("Nome de usuário inválido");
-
-        if (thisEmailExists(email)) throw new UserAlreadyExistsException("Email inválido");
-
-        if (thisPhoneNumberExists(phoneNumber)) throw new UserAlreadyExistsException("Numero inválido");
-
-
-        if (!username.matches("[0-9a-z_.-]{3,20}")) throw new InvalidUsernameException("O nome de usuário deve ter entre 3 e 20 caracteres e conter apenas letras minúsculas, números, '.', '-' ou '_'");
-        if (!email.isEmpty()) {
-            if (!email.matches("[a-z0-9_.-]+@[a-z0-9.-]+\\.[a-z]{2,}"))
-                throw new InvalidEmailException("E-mail inválido. Use apenas letras minúsculas, números e caracteres permitidos.");
+        if (user == null) {
+            throw new IllegalArgumentException(
+                    "Os dados do utilizador são obrigatórios."
+            );
         }
-        if (!phoneNumber.isEmpty()) {
-            phoneNumber = phoneNumber.replaceAll("\\s+", "");
+        UserValidator.validateRequiredFields(
+                user.getUsername(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getPassword()
+        );
 
-            if (!phoneNumber.matches("^(\\+258)?(82|83|84|85|86|87)[0-9]{7}$")) throw new InvalidPhoneNumberException("Numero de telefone invalido");
 
+        UserValidator.validateUsername(user.getUsername());
+
+        UserValidator.validateEmail(user.getEmail());
+
+        UserValidator.validatePhoneNumber(user.getPhoneNumber());
+
+        UserValidator.validatePassword(user.getPassword());
+
+        UserValidator.validatePasswordConfirmation(
+                user.getPassword(),
+                confirmPassword
+        );
+
+
+        String username = user.getUsername().trim();
+        String email = user.getEmail().trim();
+        String phoneNumber = normalizePhoneNumber(
+                user.getPhoneNumber()
+        );
+
+
+        if (userDao.findByUsername(username) != null) {
+            throw new UserAlreadyExistsException(
+                    "Este nome de utilizador já está registado."
+            );
         }
 
-        String hashPassword = PasswordUtil.createHashPassword(password);
+        if (userDao.findByEmail(email) != null) {
+            throw new UserAlreadyExistsException(
+                    "Este e-mail já está registado."
+            );
+        }
 
-       // userDao.createUser(user);
+        if (userDao.findByPhone(phoneNumber) != null) {
+            throw new UserAlreadyExistsException(
+                    "Este número de telefone já está registado."
+            );
+        }
 
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+
+        String hashPassword = PasswordUtil.createHashPassword(
+                user.getPassword()
+        );
+
+        user.setPassword(hashPassword);
+
+
+        userDao.createUser(user);
     }
-    public User login(String identifier, String password){
-        user = userDao.findByUsername(identifier);
-        user = userDao.findByPhone(identifier);
-        user = userDao.findByEmail(identifier);
 
-        if (!BCrypt.checkpw(password, user.getPassword())){
-            throw new UserNotFoundException("Usuário ou senha inválidos!");
 
+    public User login(String identifier, String password) {
+
+        UserValidator.validateRequiredFields(identifier, password);
+
+        String normalizedIdentifier = identifier.trim();
+
+        User user;
+
+
+        if (normalizedIdentifier.contains("@")) {
+
+            user = userDao.findByEmail(
+                    normalizedIdentifier
+            );
+
+        } else if (normalizedIdentifier.matches(
+                "^(?:\\+258)?(?:82|83|84|85|86|87)[0-9]{7}$")) {
+
+            user = userDao.findByPhone(
+                    normalizePhoneNumber(normalizedIdentifier)
+            );
+
+        } else {
+
+            try {
+                UserValidator.validateUsername(normalizedIdentifier);
+            } catch (InvalidUsernameException e) {
+                throw new UserNotFoundException(
+                        "Utilizador ou password inválidos!"
+                );
+            }
+
+            user = userDao.findByUsername(
+                    normalizedIdentifier
+            );
         }
+
+
+        if (user == null) {
+            throw new UserNotFoundException(
+                    "Utilizador ou password inválidos!"
+            );
+        }
+
+
+        if (!BCrypt.checkpw(password, user.getPassword())) {
+            throw new UserNotFoundException(
+                    "Utilizador ou password inválidos!"
+            );
+        }
+
         return user;
     }
 
-    public boolean thisUsernameExists(String username){
-        this.user = userDao.findByUsername(username);
-        if (this.user!=null) return true;
 
-        return false;
-    }
-    public boolean thisEmailExists(String email){
-        this.user = userDao.findByEmail(email);
-        if (this.user != null) return true;
+    private String normalizePhoneNumber(String phoneNumber) {
 
-        return false;
-    }
-    public boolean thisPhoneNumberExists(String number){
-        this.user = userDao.findByPhone(number);
-        if (this.user != null) return true;
-
-        return false;
+        return phoneNumber.replaceAll("\\s+", "");
     }
 
+    public boolean thisUsernameExists(String username) {
 
+        return userDao.findByUsername(username) != null;
+    }
+
+    public boolean thisEmailExists(String email) {
+
+        return userDao.findByEmail(email) != null;
+    }
+
+    public boolean thisPhoneNumberExists(String phoneNumber) {
+
+        return userDao.findByPhone(
+                normalizePhoneNumber(phoneNumber)
+        ) != null;
+    }
 }

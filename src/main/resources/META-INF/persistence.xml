@@ -13,20 +13,12 @@
 
 
 
-        <!-- Entidades -->
-      <!--  <class>model.Cycle</class>
-        <class>model.Member</class>
-        <class>model.GroupParticipation</class>
-        <class>model.Contribuition</class>
         <class>model.Group</class>
+        <class>model.Cycle</class>
+        <class>model.Contribution</class>
         <class>model.User</class>
-        <class>model.Person</class> -->
-
-        <class>model1.Group</class>
-        <class>model1.HistoryGroup</class>
-        <class>model1.User</class>
-        <class>model1.Person</class>
-        <class>model1.UserGroup</class>
+        <class>model.Person</class>
+        <class>model.UserGroup</class>
 
         <properties>
 

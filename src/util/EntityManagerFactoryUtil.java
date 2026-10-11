@@ -1,9 +1,9 @@
-package utils;
+package util;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
-public class JPAUtil {
+public class EntityManagerFactoryUtil {
     private static final EntityManagerFactory emf =
             Persistence.createEntityManagerFactory("iXitique");
 

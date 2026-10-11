@@ -1,4 +1,4 @@
-package utils;
+package util;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,13 +7,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class Navigation {
+public class NavigationUtil {
 
     public static void goTo(Stage stage, String fxml) throws IOException {
 
         FXMLLoader loader =
                 new FXMLLoader(
-                        Navigation.class.getResource("view/fxml" + fxml)
+                        NavigationUtil.class.getResource("view/fxml" + fxml)
                 );
 
         Parent root = loader.load();

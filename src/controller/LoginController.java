@@ -32,6 +32,20 @@ public class LoginController {
     public void createAccount(ActionEvent actionEvent) {
 
     }
+//    txtUsername.textProperty().addListener(
+//        (observable, valorAntigo, valorNovo) -> {
+//
+//        boolean valido =
+//                valorNovo != null
+//                        && valorNovo.matches("[a-zA-Z0-9_]{4,20}");
+//
+//        txtUsername.setStyle(
+//                valido
+//                        ? ""
+//                        : "-fx-border-color: red;"
+//        );
+//    }
+//)
 
     public void Logar(ActionEvent actionEvent) {
 

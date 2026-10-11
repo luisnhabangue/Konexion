@@ -14,10 +14,10 @@
    <children>
       <BorderPane prefHeight="516.0" prefWidth="710.0" style="-fx-background-color: blue;">
          <left>
-            <VBox prefHeight="516.0" prefWidth="284.0" style="-fx-background-color: #048523;" BorderPane.alignment="CENTER" />
+            <VBox prefHeight="527.0" prefWidth="284.0" style="-fx-background-color: #28795F;" BorderPane.alignment="CENTER" />
          </left>
          <center>
-            <AnchorPane prefHeight="516.0" prefWidth="427.0" style="-fx-background-color: #9c9c9c;" BorderPane.alignment="CENTER">
+            <AnchorPane prefHeight="516.0" prefWidth="485.0" style="-fx-background-color: #9c9c9c;" BorderPane.alignment="CENTER">
                <children>
                   <Label layoutX="54.0" layoutY="91.0" prefHeight="31.0" prefWidth="213.0" text="Entre na sua conta">
                      <font>
@@ -32,7 +32,7 @@
                   <Label layoutX="119.0" layoutY="434.0" text="Não tem uma conta?" />
                   <MFXPasswordField fx:id="pfPassword" floatMode="DISABLED" layoutX="56.0" layoutY="265.0" prefHeight="36.0" prefWidth="327.0" />
                   <MFXTextField fx:id="tfUser" borderGap="0.0" floatMode="DISABLED" layoutX="57.0" layoutY="202.0" prefHeight="30.0" prefWidth="325.0" />
-                  <MFXButton fx:id="btEntrar" layoutX="55.0" layoutY="352.0" onAction="#Logar" prefHeight="35.0" prefWidth="327.0" style="-fx-background-color: cyan;" text="Entrar" />
+                  <MFXButton fx:id="btEntrar" layoutX="55.0" layoutY="352.0" prefHeight="35.0" prefWidth="327.0" style="-fx-background-color: #28795F;" text="Entrar" />
                   <Label layoutX="57.0" layoutY="178.0" text="Nome de utilizador, e-mail ou n.º de telefone" />
                   <Label layoutX="57.0" layoutY="240.0" text="Palavra-passe" />
                   <Hyperlink fx:id="lbCreateAccount" layoutX="246.0" layoutY="431.0" onAction="#createAccount" text="Criar conta" />
