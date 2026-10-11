@@ -1,5 +1,7 @@
 package test;
 
+import model.User;
+import model.enums.Gender;
 import service.AuthService;
 
 public class Testes {
@@ -12,15 +14,9 @@ public class Testes {
 
         AuthService as = new AuthService();
 
+        User user = new User(null,"Luis","Nhabangue","21214214142", Gender.M,"nhabangue","12345678","luisnhabangue@gmail.com","+258 870252417");
+        as.register(user, "12345678");
 
-        //UserDao ud = new UserDao(JPAUtil.getEntityManagerFactory());
-      //  User user = new User(null,"teste33","teste@email.com212","1234","luis","nhabangue");
-
-        //ud.createUser(user);
-       //as.register("q","teste@email.com21q2","1234","luis","nhabangue");
-        //f (as.login("q","12334")) System.out.println("DONE");;
-
-       // System.out.println(PasswordUtil.createHashPassword("12345678"));
 
 
 

@@ -5,6 +5,7 @@ import exceptions.UserNotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 import model.User;
 
 import java.nio.file.LinkOption;
@@ -44,7 +45,12 @@ public class UserDao implements UserDaoInterface {
 
         try {
             return em.find(User.class, id);
-        } finally {
+        }catch (NoResultException e) {
+            return null;
+            //  throw new NoResultException("User not found");
+
+        }
+        finally {
             em.close();
         }
 
@@ -61,9 +67,16 @@ public class UserDao implements UserDaoInterface {
                     User.class
             ).setParameter("username", username).getSingleResult();
 
-        } finally {
+        } catch (NoResultException e) {
+            return null;
+          //  throw new NoResultException("User not found");
+
+        }
+
+        finally {
             em.close();
         }
+
     }
 
     @Override
@@ -77,7 +90,12 @@ public class UserDao implements UserDaoInterface {
                     User.class
             ).setParameter("phoneNumber", email).getSingleResult();
 
-        } finally {
+        }catch (NoResultException e) {
+            return null;
+            //  throw new NoResultException("User not found");
+
+        }
+        finally {
             em.close();
         }
     }
@@ -92,7 +110,12 @@ public class UserDao implements UserDaoInterface {
                     User.class
             ).setParameter("phone", phone).getSingleResult();
 
-        } finally {
+        }catch (NoResultException e) {
+            return null;
+            //  throw new NoResultException("User not found");
+
+        }
+        finally {
             em.close();
         }
     }
