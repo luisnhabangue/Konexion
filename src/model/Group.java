@@ -60,6 +60,15 @@ public class Group {
         this.frequency = frequency;
     }
 
+    public void addCycle(Cycle cycle) {
+        this.cycles.add(cycle);
+        cycle.setGroup(this);
+    }
+
+    public void removeCycle(Cycle cycle) {
+        this.cycles.remove(cycle);
+        cycle.setGroup(null);
+    }
 
     public void addMember(UserGroup userGroup) {
         this.members.add(userGroup);
