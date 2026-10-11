@@ -16,6 +16,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Serviço responsável pelas regras de negócio ligadas à gestão de Grupos, Membros,
+ * Ciclos de Poupança e Pagamentos de Contribuições (Xitique).
+ *
+ * @author Sistema iXitique
+ * @version 1.0
+ */
 public class GroupService {
 
     private final GroupDao groupDao = new GroupDao(EntityManagerFactoryUtil.getEntityManagerFactory());
@@ -24,6 +31,13 @@ public class GroupService {
     private final CycleDao cycleDao = new CycleDao(EntityManagerFactoryUtil.getEntityManagerFactory());
     private final ContributionDao contributionDao = new ContributionDao(EntityManagerFactoryUtil.getEntityManagerFactory());
 
+    /**
+     * Cria um novo grupo de Xitique aplicando validações de atributos e associando o criador como 1º membro.
+     *
+     * @param group Objeto {@link Group} a criar
+     * @throws IllegalArgumentException Se o grupo for nulo ou dados inválidos
+     * @throws IllegalStateException Se o criador estiver inativo
+     */
     public void createNewGroup(Group group) {
         if (group == null) {
             throw new IllegalArgumentException("Grupo não pode ser nulo.");
@@ -56,6 +70,14 @@ public class GroupService {
         groupDao.createGroup(group);
     }
 
+    /**
+     * Adiciona um novo utilizador como membro de um grupo.
+     *
+     * @param groupId ID do grupo
+     * @param userId ID do utilizador a adicionar
+     * @throws IllegalArgumentException Se IDs forem nulos ou entidades não existirem
+     * @throws IllegalStateException Se o utilizador já pertencer ao grupo
+     */
     public void addMemberToGroup(Long groupId, Long userId) {
         if (groupId == null || userId == null) {
             throw new IllegalArgumentException("IDs do grupo e do usuário são obrigatórios.");
@@ -85,11 +107,16 @@ public class GroupService {
         userGroup.setReceived(false);
         userGroup.setUserReceivingOrder(nextOrder);
 
-        //group.addMember(userGroup);
         userGroupDao.save(userGroup);
-       // groupDao.updateGroup(group);
     }
 
+    /**
+     * Remove a associação de um utilizador a um grupo.
+     *
+     * @param groupId ID do grupo
+     * @param userId ID do utilizador a remover
+     * @throws IllegalArgumentException Se o grupo ou o vínculo não forem encontrados
+     */
     public void removeMemberFromGroup(Long groupId, Long userId) {
         Group group = findById(groupId);
         if (group == null) {
@@ -101,17 +128,19 @@ public class GroupService {
             throw new IllegalArgumentException("Usuário não faz parte deste grupo.");
         }
 
-       // group.removeMember(userGroup);
-        //groupDao.updateGroup(group);
         userGroupDao.update(userGroup);
-
     }
 
     /**
-     * Adiciona um novo Ciclo/Rodada ao Grupo
+     * Cria e inicia uma nova rodada/ciclo de pagamentos no grupo.
+     *
+     * @param groupId ID do grupo
+     * @param userIdBeneficiary ID do membro selecionado para receber o montante acumulado
+     * @throws IllegalArgumentException Se os parâmetros forem inválidos
+     * @throws IllegalStateException Se já houver um ciclo ativo ou o beneficiário já tiver recebido na rotação
      */
     public void addNewCycleToGroup(Long groupId, Long userIdBeneficiary) {
-        if (groupId == null  || userIdBeneficiary == null) {
+        if (groupId == null || userIdBeneficiary == null) {
             throw new IllegalArgumentException("Parâmetros do grupo e beneficiário são obrigatórios.");
         }
 
@@ -120,24 +149,21 @@ public class GroupService {
             throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
         }
 
-        //Não permitir criar novo ciclo se já houver um em andamento
         Cycle activeCycle = cycleDao.findActiveCycleByGroup(groupId);
         if (activeCycle != null) {
             throw new IllegalStateException("Já existe um ciclo em andamento (Ciclo nº " + activeCycle.getNumero() + ") para este grupo.");
         }
 
-        // Buscar o membro beneficiário
         UserGroup beneficiary = userGroupDao.findByUserAndGroup(userIdBeneficiary, groupId);
         if (beneficiary == null) {
             throw new IllegalArgumentException("O usuário selecionado para receber o prêmio não faz parte deste grupo.");
         }
 
-        // Verificar se o beneficiário já recebeu neste giro
         if (beneficiary.isReceived()) {
             throw new IllegalStateException("Este membro já recebeu o valor do Xitique na rodada atual.");
         }
 
-        Cycle cycle = new Cycle(null,group,null,LocalDate.now(),beneficiary);
+        Cycle cycle = new Cycle(null, group, null, LocalDate.now(), beneficiary);
         cycle.setGroup(group);
         cycle.setBeneficiary(beneficiary);
         cycle.setNumero(cycleDao.findLastCycleNumberByGroup(groupId) + 1);
@@ -151,16 +177,19 @@ public class GroupService {
         cycle.setEndDate(calculatedCycleEndDate);
 
         cycleDao.save(cycle);
-       // group.addCycle(cycle);
-       // groupDao.updateGroup(group);
     }
 
     /**
-     * Registra o Pagamento da Contribuição de um Membro no Ciclo Activo
+     * Regista a contribuição financeira de um membro no ciclo em andamento.
+     *
+     * @param groupId ID do grupo
+     * @param userId ID do membro pagador
+     * @param amount Valor pago
+     * @param paymentMethod Método de pagamento empregue
+     * @throws IllegalArgumentException Se faltarem dados obrigatórios ou o valor for menor que a quota
+     * @throws IllegalStateException Se não houver ciclo ativo ou se o membro já tiver pago
      */
     public void addContributionToCycle(Long groupId, Long userId, BigDecimal amount, PaymentMethod paymentMethod) {
-
-
         if (groupId == null || userId == null || amount == null || paymentMethod == null) {
             throw new IllegalArgumentException("Todos os dados do pagamento são obrigatórios.");
         }
@@ -170,84 +199,75 @@ public class GroupService {
             throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
         }
 
-        //Buscar o ciclo ativo
         Cycle cycle = cycleDao.findActiveCycleByGroup(groupId);
         if (cycle == null) {
             throw new IllegalStateException("Não existe nenhum ciclo em andamento para este grupo.");
         }
 
-        // Buscar o membro
         UserGroup userGroup = userGroupDao.findByUserAndGroup(userId, groupId);
         if (userGroup == null) {
             throw new IllegalArgumentException("O usuário não faz parte deste grupo.");
         }
 
-        // Impedir pagamento duplo no mesmo ciclo
         Contribution existingContribution = contributionDao.findByUserGroupAndCycle(userGroup.getId(), cycle.getId());
-
         if (existingContribution != null && existingContribution.getStatus() == ContributionStatus.PAID) {
             throw new IllegalStateException("O membro '" + userGroup.getUser().getFirstName() + "' já pagou a cota do ciclo atual.");
         }
 
-        // Validar se o valor pago bate com o que ele deve pagar
         if (amount.compareTo(group.getAmountPerUser()) < 0) {
             throw new IllegalArgumentException("O valor informado (" + amount + ") é inferior à quota estipulada no grupo (" + group.getAmountPerUser() + ").");
         }
 
-        // Criar a contribuição
         LocalDate paymentDayDate = LocalDate.now();
         Contribution contribution = new Contribution(null, userGroup, cycle, amount, paymentDayDate, paymentMethod, ContributionStatus.PAID);
 
-        // Persistir no banco de dados via ContributionDao
         contributionDao.save(contribution);
 
-        // Atualizar o saldo acumulado do membro no grupo
         BigDecimal newBalance = (userGroup.getBalance() != null ? userGroup.getBalance() : BigDecimal.ZERO).add(amount);
-
         userGroup.setBalance(newBalance);
 
         checkAndFinalizeCycleIfComplete(group, cycle);
-
         userGroupDao.update(userGroup);
-
-        // Verificar se todos pagaram para encerrar a rodada
         checkAndFinalizeCycleIfComplete(group, cycle);
     }
 
     /**
-     * Verifica se todas as contribuições do ciclo foram pagas.
-
-     * Se sim, encerra o ciclo e marca a flag 'received' do beneficiário.
+     * Verifica internamente se todas as contribuições do ciclo foram concluídas e, em caso afirmativo,
+     * encerra a rodada e marca o beneficiário como contemplado.
+     *
+     * @param group Grupo afetado
+     * @param cycle Ciclo a verificar
      */
     private void checkAndFinalizeCycleIfComplete(Group group, Cycle cycle) {
         int totalMembers = userGroupDao.countMembersInGroup(group.getGroupId());
-
 
         List<Contribution> paidContributions = contributionDao.findByCycleId(cycle.getId())
                 .stream()
                 .filter(c -> c.getStatus() == ContributionStatus.PAID)
                 .toList();
 
-        System.out.println("Membros Totais: " + totalMembers + " | Pagamentos Confirmados: " + paidContributions.size());
+       // System.out.println("Membros Totais: " + totalMembers + " | Pagamentos Confirmados: " + paidContributions.size());
 
         if (paidContributions.size() >= totalMembers) {
-
             cycle.setStatus(CycleStatus.CONCLUDED);
             cycleDao.update(cycle);
-
 
             Long beneficiaryUserId = cycle.getBeneficiary().getUser().getId();
             UserGroup beneficiaryGroup = userGroupDao.findByUserAndGroup(beneficiaryUserId, group.getGroupId());
 
             if (beneficiaryGroup != null) {
-                beneficiaryGroup.setReceived(true); // Altera o valor
-                userGroupDao.update(beneficiaryGroup); // Salva no MySQL via em.merge()
+                beneficiaryGroup.setReceived(true);
+                userGroupDao.update(beneficiaryGroup);
             }
         }
     }
 
     /**
-     * Regra de Negócio: Define um membro específico como o 1º a receber (troca com o 1º atual).
+     * Define um membro como o primeiro na fila de receção, ajustando a posição do atual primeiro lugar.
+     *
+     * @param groupId ID do grupo
+     * @param userGroupIdTarget ID do vínculo do membro a colocar em primeiro
+     * @throws IllegalArgumentException Se o grupo ou o membro não forem encontrados
      */
     public void setFirstReceiver(Long groupId, Long userGroupIdTarget) {
         Group group = findById(groupId);
@@ -255,28 +275,31 @@ public class GroupService {
             throw new IllegalArgumentException("Grupo não encontrado.");
         }
 
-        UserGroup newFirstMember = userGroupDao.findByUserAndGroup(userGroupIdTarget,groupId);
+        UserGroup newFirstMember = userGroupDao.findByUserAndGroup(userGroupIdTarget, groupId);
         if (newFirstMember == null || !newFirstMember.getGroup().getGroupId().equals(groupId)) {
             throw new IllegalArgumentException("O membro especificado não pertence a este grupo.");
         }
 
-        // Localiza quem é o atual 1º lugar
         UserGroup currentFirstMember = group.getMembers().stream()
                 .filter(m -> m.getUserReceivingOrder() != null && m.getUserReceivingOrder() == 1)
                 .findFirst()
                 .orElse(null);
 
         if (currentFirstMember != null && !currentFirstMember.getId().equals(userGroupIdTarget)) {
-            // Troca as posições: o atual 1º assume a posição que o novo 1º ocupava
             currentFirstMember.setUserReceivingOrder(newFirstMember.getUserReceivingOrder());
             userGroupDao.update(currentFirstMember);
         }
 
-        // Coloca o escolhido na posição 1
         newFirstMember.setUserReceivingOrder(1);
         userGroupDao.update(newFirstMember);
     }
 
+    /**
+     * Procura um grupo pelo seu ID.
+     * @param id ID do grupo
+     * @return Objeto {@link Group}
+     * @throws IllegalArgumentException Se o ID for inválido
+     */
     public Group findById(Long id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("ID inválido.");
@@ -284,6 +307,10 @@ public class GroupService {
         return groupDao.findById(id);
     }
 
+    /**
+     * Retorna a lista completa de todos os grupos registados.
+     * @return Lista de grupos
+     */
     public List<Group> findAll() {
         return groupDao.findAll();
     }

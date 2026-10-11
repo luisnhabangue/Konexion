@@ -12,6 +12,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementação JPA para operações de persistência relativas a {@link Contribution}.
+ *
+ * @author Sistema iXitique
+ * @version 1.0
+ */
 public class ContributionDao implements ContributionDaoInterface {
 
     private final EntityManagerFactory entityManagerFactory;
@@ -46,10 +52,6 @@ public class ContributionDao implements ContributionDaoInterface {
         }
     }
 
-    /**
-     * Busca a contribuição/pagamento de um determinado membro num ciclo específico.
-     *
-     */
     @Override
     public Contribution findByUserGroupAndCycle(Long userGroupId, Integer cycleId) {
         EntityManager em = entityManagerFactory.createEntityManager();
@@ -62,15 +64,12 @@ public class ContributionDao implements ContributionDaoInterface {
                     .setParameter("cycleId", cycleId)
                     .getSingleResult();
         } catch (NoResultException e) {
-            return null; // Membro ainda não possui registro de pagamento neste ciclo
+            return null;
         } finally {
             em.close();
         }
     }
 
-    /**
-     * Retorna todas as contribuições efetuadas em um ciclo específico.
-     */
     @Override
     public List<Contribution> findByCycleId(Integer cycleId) {
         EntityManager em = entityManagerFactory.createEntityManager();
@@ -88,9 +87,6 @@ public class ContributionDao implements ContributionDaoInterface {
         }
     }
 
-    /**
-     * Retorna o histórico de todas as contribuições de um determinado membro.
-     */
     @Override
     public List<Contribution> findByUserGroupId(Long userGroupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
@@ -108,10 +104,6 @@ public class ContributionDao implements ContributionDaoInterface {
         }
     }
 
-    /**
-     * Soma o valor total já arrecadado/pago pelos membros no ciclo atual.
-     * Útil para saber se já é possível pagar o dinherio do Xitique ao beneficiário!
-     */
     @Override
     public BigDecimal sumTotalPaidByCycle(Integer cycleId) {
         EntityManager em = entityManagerFactory.createEntityManager();

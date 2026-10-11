@@ -11,6 +11,12 @@ import model.enums.CycleStatus;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementação JPA para persistência de ciclos de rodadas ({@link Cycle}).
+ *
+ * @author Sistema iXitique
+ * @version 1.0
+ */
 public class CycleDao implements CycleDaoInterface {
 
     private final EntityManagerFactory entityManagerFactory;
@@ -36,7 +42,6 @@ public class CycleDao implements CycleDaoInterface {
     }
 
     @Override
-
     public Cycle findById(Integer id) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
@@ -53,14 +58,10 @@ public class CycleDao implements CycleDaoInterface {
         }
     }
 
-    /**
-     * Busca o ciclo atualmente ABERTO de um determinado grupo.
-     */
     @Override
     public Cycle findActiveCycleByGroup(Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
-            // O JOIN FETCH obriga o Hibernate a carregar o UserGroup (beneficiário) e o User na mesma consulta
             return em.createQuery(
                             "SELECT c FROM Cycle c " +
                                     "JOIN FETCH c.beneficiary b " +
@@ -78,10 +79,6 @@ public class CycleDao implements CycleDaoInterface {
         }
     }
 
-
-    /**
-     * Lista todos os ciclos de um grupo ordenados pelo número do ciclo (1, 2, 3...).
-     */
     @Override
     public List<Cycle> findByGroupId(Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
@@ -99,9 +96,6 @@ public class CycleDao implements CycleDaoInterface {
         }
     }
 
-    /**
-     * Obtém o número da última rodada do grupo (para saber qual será a próxima: ex: rodada 3 proxima 4).
-     */
     @Override
     public Integer findLastCycleNumberByGroup(Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();

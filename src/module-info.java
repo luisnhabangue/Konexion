@@ -29,6 +29,7 @@ module iXitique {
 
     // Testes, se realmente necessário
     opens test;
+
     opens model.enums;
 }
 

@@ -1,6 +1,19 @@
 package model.enums;
 
+/**
+ * Enumeração que define as opções de género para uma pessoa ou utilizador.
+ *
+ * @author Sistema iXitique
+ * @version 1.0
+ */
 public enum Gender {
 
-    M,F,NOT_SPECIFIED
+    /** Género masculino. */
+    M,
+
+    /** Género feminino. */
+    F,
+
+    /** Género não especificado ou não informado. */
+    NOT_SPECIFIED
 }

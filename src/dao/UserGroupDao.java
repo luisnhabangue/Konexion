@@ -10,6 +10,12 @@ import model.UserGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementação DAO para a gestão de vínculos entre utilizadores e grupos ({@link UserGroup}).
+ *
+ * @author Sistema iXitique
+ * @version 1.0
+ */
 public class UserGroupDao implements UserGroupInterface {
 
     private final EntityManagerFactory entityManagerFactory;
@@ -34,18 +40,13 @@ public class UserGroupDao implements UserGroupInterface {
         }
     }
 
-
-
-
     @Override
     public void update(UserGroup userGroup) {
         EntityManager em = entityManagerFactory.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-
             em.merge(userGroup);
-
             tx.commit();
         } catch (Exception e) {
             if (tx.isActive()) {
@@ -61,7 +62,6 @@ public class UserGroupDao implements UserGroupInterface {
     public UserGroup findByUserAndGroup(Long userId, Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
-            // Adicionamos 'JOIN FETCH ug.user' para carregar o Usuário na mesma consulta!
             return em.createQuery(
                             "SELECT ug FROM UserGroup ug JOIN FETCH ug.user WHERE ug.user.id = :userId AND ug.group.groupId = :groupId",
                             UserGroup.class
@@ -70,7 +70,7 @@ public class UserGroupDao implements UserGroupInterface {
                     .setParameter("groupId", groupId)
                     .getSingleResult();
         } catch (NoResultException e) {
-            return null; // Membro não encontrado
+            return null;
         } finally {
             em.close();
         }
@@ -92,6 +92,7 @@ public class UserGroupDao implements UserGroupInterface {
             em.close();
         }
     }
+
     @Override
     public boolean isUserInGroup(Long userId, Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
