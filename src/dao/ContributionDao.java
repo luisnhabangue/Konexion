@@ -48,6 +48,7 @@ public class ContributionDao implements ContributionDaoInterface {
 
     /**
      * Busca a contribuição/pagamento de um determinado membro num ciclo específico.
+     *
      */
     @Override
     public Contribution findByUserGroupAndCycle(Long userGroupId, Integer cycleId) {
@@ -109,7 +110,7 @@ public class ContributionDao implements ContributionDaoInterface {
 
     /**
      * Soma o valor total já arrecadado/pago pelos membros no ciclo atual.
-     * Útil para saber se já é possível pagar o bolo do Xitique ao beneficiário!
+     * Útil para saber se já é possível pagar o dinherio do Xitique ao beneficiário!
      */
     @Override
     public BigDecimal sumTotalPaidByCycle(Integer cycleId) {
