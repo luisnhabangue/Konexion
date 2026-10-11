@@ -87,7 +87,7 @@ public class CycleDao implements CycleDaoInterface {
     }
 
     /**
-     * Obtém o número da última rodada do grupo (para saber qual será a próxima: ex: rodada 3 -> 4).
+     * Obtém o número da última rodada do grupo (para saber qual será a próxima: ex: rodada 3 proxima 4).
      */
     @Override
     public Integer findLastCycleNumberByGroup(Long groupId) {

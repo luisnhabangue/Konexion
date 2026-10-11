@@ -30,10 +30,11 @@ public class Cycle {
     private Integer numero; // Número da rodada (Ex: Ciclo 1, Ciclo 2...)
 
     private LocalDate startDate;
+
     private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
-    private CycleStatus status; // ABERTO, FECHADO, CONCLUIDO
+    private CycleStatus status;
 
     // Membro do grupo que é o beneficiário (quem recebe o dinheiro) neste ciclo
     @ManyToOne(fetch = FetchType.LAZY)
