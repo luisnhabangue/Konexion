@@ -143,6 +143,9 @@ public class AuthService {
         return user;
     }
 
+    public User findById(Long id) {
+      return userDao.findById(id);
+    }
 
     private String normalizePhoneNumber(String phoneNumber) {
 

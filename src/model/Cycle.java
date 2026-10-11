@@ -44,6 +44,17 @@ public class Cycle {
     @OneToMany(mappedBy = "cycle", cascade = CascadeType.ALL)
     private List<Contribution> contributions = new ArrayList<>();
 
+    public Cycle(Integer id, Group group, Integer numero, LocalDate startDate, UserGroup beneficiary) {
+        this.id = id;
+        this.group = group;
+        this.numero = numero;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
+        this.beneficiary = beneficiary;
+
+    }
+
     public Cycle() {
     }
 

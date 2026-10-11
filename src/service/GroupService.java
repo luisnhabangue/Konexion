@@ -85,8 +85,9 @@ public class GroupService {
         userGroup.setReceived(false);
         userGroup.setUserReceivingOrder(nextOrder);
 
-        group.addMember(userGroup);
-        groupDao.updateGroup(group);
+        //group.addMember(userGroup);
+        userGroupDao.save(userGroup);
+       // groupDao.updateGroup(group);
     }
 
     public void removeMemberFromGroup(Long groupId, Long userId) {
@@ -100,16 +101,18 @@ public class GroupService {
             throw new IllegalArgumentException("Usuário não faz parte deste grupo.");
         }
 
-        group.removeMember(userGroup);
-        groupDao.updateGroup(group);
+       // group.removeMember(userGroup);
+        //groupDao.updateGroup(group);
+        userGroupDao.update(userGroup);
+
     }
 
     /**
      * Adiciona um novo Ciclo/Rodada ao Grupo
      */
-    public void addNewCycleToGroup(Long groupId, Cycle cycle, Long userIdBeneficiary) {
-        if (groupId == null || cycle == null || userIdBeneficiary == null) {
-            throw new IllegalArgumentException("Parâmetros do grupo, ciclo e beneficiário são obrigatórios.");
+    public void addNewCycleToGroup(Long groupId, Long userIdBeneficiary) {
+        if (groupId == null  || userIdBeneficiary == null) {
+            throw new IllegalArgumentException("Parâmetros do grupo e beneficiário são obrigatórios.");
         }
 
         Group group = findById(groupId);
@@ -134,6 +137,7 @@ public class GroupService {
             throw new IllegalStateException("Este membro já recebeu o valor do Xitique na rodada atual.");
         }
 
+        Cycle cycle = new Cycle(null,group,null,LocalDate.now(),beneficiary);
         cycle.setGroup(group);
         cycle.setBeneficiary(beneficiary);
         cycle.setNumero(cycleDao.findLastCycleNumberByGroup(groupId) + 1);
@@ -146,14 +150,17 @@ public class GroupService {
         cycle.setStatus(CycleStatus.IN_PROGRESS);
         cycle.setEndDate(calculatedCycleEndDate);
 
-        group.addCycle(cycle);
-        groupDao.updateGroup(group);
+        cycleDao.save(cycle);
+       // group.addCycle(cycle);
+       // groupDao.updateGroup(group);
     }
 
     /**
      * Registra o Pagamento da Contribuição de um Membro no Ciclo Activo
      */
     public void addContributionToCycle(Long groupId, Long userId, BigDecimal amount, PaymentMethod paymentMethod) {
+
+
         if (groupId == null || userId == null || amount == null || paymentMethod == null) {
             throw new IllegalArgumentException("Todos os dados do pagamento são obrigatórios.");
         }
@@ -177,6 +184,7 @@ public class GroupService {
 
         // Impedir pagamento duplo no mesmo ciclo
         Contribution existingContribution = contributionDao.findByUserGroupAndCycle(userGroup.getId(), cycle.getId());
+
         if (existingContribution != null && existingContribution.getStatus() == ContributionStatus.PAID) {
             throw new IllegalStateException("O membro '" + userGroup.getUser().getFirstName() + "' já pagou a cota do ciclo atual.");
         }
@@ -195,7 +203,10 @@ public class GroupService {
 
         // Atualizar o saldo acumulado do membro no grupo
         BigDecimal newBalance = (userGroup.getBalance() != null ? userGroup.getBalance() : BigDecimal.ZERO).add(amount);
+
         userGroup.setBalance(newBalance);
+
+        checkAndFinalizeCycleIfComplete(group, cycle);
 
         userGroupDao.update(userGroup);
 
@@ -209,24 +220,31 @@ public class GroupService {
      * Se sim, encerra o ciclo e marca a flag 'received' do beneficiário.
      */
     private void checkAndFinalizeCycleIfComplete(Group group, Cycle cycle) {
-
         int totalMembers = userGroupDao.countMembersInGroup(group.getGroupId());
-        List<Contribution> paidContributions = contributionDao.findByCycleId(cycle.getId());
+
+
+        List<Contribution> paidContributions = contributionDao.findByCycleId(cycle.getId())
+                .stream()
+                .filter(c -> c.getStatus() == ContributionStatus.PAID)
+                .toList();
+
+        System.out.println("Membros Totais: " + totalMembers + " | Pagamentos Confirmados: " + paidContributions.size());
 
         if (paidContributions.size() >= totalMembers) {
 
             cycle.setStatus(CycleStatus.CONCLUDED);
             cycleDao.update(cycle);
 
-            UserGroup beneficiary = cycle.getBeneficiary();
 
-            beneficiary.setReceived(true);
-            userGroupDao.update(beneficiary);
+            Long beneficiaryUserId = cycle.getBeneficiary().getUser().getId();
+            UserGroup beneficiaryGroup = userGroupDao.findByUserAndGroup(beneficiaryUserId, group.getGroupId());
 
+            if (beneficiaryGroup != null) {
+                beneficiaryGroup.setReceived(true); // Altera o valor
+                userGroupDao.update(beneficiaryGroup); // Salva no MySQL via em.merge()
+            }
         }
     }
-
-
 
     /**
      * Regra de Negócio: Define um membro específico como o 1º a receber (troca com o 1º atual).
@@ -258,8 +276,6 @@ public class GroupService {
         newFirstMember.setUserReceivingOrder(1);
         userGroupDao.update(newFirstMember);
     }
-
-
 
     public Group findById(Long id) {
         if (id == null || id <= 0) {

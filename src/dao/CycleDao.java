@@ -36,10 +36,18 @@ public class CycleDao implements CycleDaoInterface {
     }
 
     @Override
+
     public Cycle findById(Integer id) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
-            return em.find(Cycle.class, id);
+            return em.createQuery(
+                            "SELECT c FROM Cycle c JOIN FETCH c.beneficiary b JOIN FETCH b.user WHERE c.id = :id",
+                            Cycle.class
+                    )
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } finally {
             em.close();
         }
@@ -52,8 +60,12 @@ public class CycleDao implements CycleDaoInterface {
     public Cycle findActiveCycleByGroup(Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
+            // O JOIN FETCH obriga o Hibernate a carregar o UserGroup (beneficiário) e o User na mesma consulta
             return em.createQuery(
-                            "SELECT c FROM Cycle c WHERE c.group.groupId = :groupId AND c.status = :status",
+                            "SELECT c FROM Cycle c " +
+                                    "JOIN FETCH c.beneficiary b " +
+                                    "JOIN FETCH b.user " +
+                                    "WHERE c.group.groupId = :groupId AND c.status = :status",
                             Cycle.class
                     )
                     .setParameter("groupId", groupId)
@@ -65,6 +77,7 @@ public class CycleDao implements CycleDaoInterface {
             em.close();
         }
     }
+
 
     /**
      * Lista todos os ciclos de um grupo ordenados pelo número do ciclo (1, 2, 3...).

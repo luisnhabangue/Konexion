@@ -61,15 +61,16 @@ public class UserGroupDao implements UserGroupInterface {
     public UserGroup findByUserAndGroup(Long userId, Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
+            // Adicionamos 'JOIN FETCH ug.user' para carregar o Usuário na mesma consulta!
             return em.createQuery(
-                            "SELECT ug FROM UserGroup ug WHERE ug.user.id = :userId AND ug.group.groupId = :groupId",
+                            "SELECT ug FROM UserGroup ug JOIN FETCH ug.user WHERE ug.user.id = :userId AND ug.group.groupId = :groupId",
                             UserGroup.class
                     )
                     .setParameter("userId", userId)
                     .setParameter("groupId", groupId)
                     .getSingleResult();
         } catch (NoResultException e) {
-            return null;
+            return null; // Membro não encontrado
         } finally {
             em.close();
         }
@@ -80,7 +81,7 @@ public class UserGroupDao implements UserGroupInterface {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT ug FROM UserGroup ug WHERE ug.group.groupId = :groupId ORDER BY ug.userReceivingOrder ASC",
+                            "SELECT ug FROM UserGroup ug JOIN FETCH ug.user WHERE ug.group.groupId = :groupId ORDER BY ug.userReceivingOrder ASC",
                             UserGroup.class
                     )
                     .setParameter("groupId", groupId)
@@ -91,7 +92,6 @@ public class UserGroupDao implements UserGroupInterface {
             em.close();
         }
     }
-
     @Override
     public boolean isUserInGroup(Long userId, Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
