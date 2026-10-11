@@ -1,11 +1,14 @@
 package service;
 
+import dao.CycleDao;
 import dao.GroupDao;
 import dao.UserDao;
 import dao.UserGroupDao;
+import model.Cycle;
 import model.Group;
 import model.User;
 import model.UserGroup;
+import model.enums.CycleStatus;
 import util.EntityManagerFactoryUtil;
 import validation.GroupValidator;
 
@@ -14,10 +17,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class GroupService {
+
     private final GroupDao  groupDao = new GroupDao(EntityManagerFactoryUtil.getEntityManagerFactory());
     private final UserDao userDao = new UserDao(EntityManagerFactoryUtil.getEntityManagerFactory());
     private final UserGroupDao userGroupDao = new UserGroupDao(EntityManagerFactoryUtil.getEntityManagerFactory());
-
+    private final CycleDao cycleDao =  new CycleDao(EntityManagerFactoryUtil.getEntityManagerFactory());
 
     public void createNewGroup(Group group) {
         if (group == null) {
@@ -32,6 +36,16 @@ public class GroupService {
         if (!group.getCreatedBy().isActive()) {
             throw new IllegalStateException("Usuários inativos não podem criar grupos.");
         }
+        User user = group.getCreatedBy();
+        UserGroup userGroup = new UserGroup();
+        userGroup.setGroup(group);
+        userGroup.setUser(user);
+        userGroup.setBalance(BigDecimal.ZERO);
+        userGroup.setReceived(false);
+        userGroup.setUserReceivingOrder(0);
+        group.addMember(userGroup);
+
+
         if (group.getCreatedAt() == null) {
             group.setCreatedAt(LocalDate.now());
         }
@@ -82,7 +96,7 @@ public class GroupService {
 
 
         group.addMember(userGroup);
-
+        //userGroupDao.save(userGroup);
         groupDao.updateGroup(group);
     }
 
@@ -104,17 +118,45 @@ public class GroupService {
     }
 
 
-    public void addNewCycleToGroup(Long groupId, Long cycleId) {
+
+    public void addNewCycleToGroup(Long groupId, Cycle cycle, Long userGroupBeneficiaryId) {
         Group group = findById(groupId);
         if (group == null) {
             throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
+        }
+        UserGroup userGroup = userGroupDao.findByUserAndGroup(userGroupBeneficiaryId,groupId);
+        if (userGroup == null) {
+            throw new IllegalArgumentException("O usuário "+ userGroup.getUser().getFirstName() + " nao faz parte do grupo " + group.getGroupName());
+
+        }
+        cycle.setBeneficiary(userGroup);
+
+        cycle.setNumero(cycleDao.findLastCycleNumberByGroup(groupId)+1);
+
+        //Essa variável vai calcular em dias a estimativa do termino do ciclo, adicionando os dias da frequência estabelecidos na criacao do grupo
+        LocalDate calculatedCycleEndDate = cycle.getStartDate().plusDays(group.getFrequency());
+        cycle.setStatus(CycleStatus.IN_PROGRESS);
+        cycle.setEndDate(calculatedCycleEndDate);
+
+        group.addCycle(cycle);
+        //cycleDao.save(cycle);
+        groupDao.updateGroup(group);
+
+
+
+    }
+
+    public void addContributionToCycle(Long groupId, Long userGroupId) {
+        Cycle cycle = cycleDao.findActiveCycleByGroup(groupId);
+        if (cycle == null) {
+            throw new IllegalArgumentException("Ciclo não Encontrado com o ID: " + groupId);
         }
 
 
 
 
-
     }
+
 
     public Group findById(Long id) {
         if (id == null || id <= 0) {
