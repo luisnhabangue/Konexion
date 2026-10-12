@@ -73,6 +73,7 @@ public class Group {
      * @param createdBy Criador do grupo
      * @param frequency Frequência do ciclo em dias
      */
+
     public Group(Long groupId, String groupName, String groupDescription, BigDecimal amountPerUser,
                  Integer payday, LocalDate createdAt, User createdBy, int frequency) {
         this.groupId = groupId;

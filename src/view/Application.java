@@ -6,6 +6,7 @@ import io.github.palexdev.materialfx.theming.UserAgentBuilder;
 import javafx.fxml.FXMLLoader;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 
@@ -24,10 +25,11 @@ public class Application extends javafx.application.Application {
                 .setResolveAssets(true)
                 .build()
                 .setGlobal();
-
-
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/RegisterStepper.fxml"));
+        Font.loadFont(getClass().getResourceAsStream("fonts/Inter_18pt-Medium.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-Regular.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-SemiBold.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-Bold.ttf"), 14);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/RegisterView.fxml"));
       //  Parent root = FXMLLoader.load();
 
         Scene scene = new Scene(fxmlLoader.load());

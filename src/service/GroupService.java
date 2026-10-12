@@ -59,7 +59,6 @@ public class GroupService {
         userGroup.setBalance(BigDecimal.ZERO);
         userGroup.setReceived(false);
         userGroup.setUserReceivingOrder(1);
-
         group.addMember(userGroup);
 
         if (group.getCreatedAt() == null) {
@@ -239,6 +238,7 @@ public class GroupService {
      * @param cycle Ciclo a verificar
      */
     private void checkAndFinalizeCycleIfComplete(Group group, Cycle cycle) {
+
         int totalMembers = userGroupDao.countMembersInGroup(group.getGroupId());
 
         List<Contribution> paidContributions = contributionDao.findByCycleId(cycle.getId())

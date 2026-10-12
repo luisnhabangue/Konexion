@@ -1,0 +1,93 @@
+.root {
+    /* Define 'Inter' como fonte padrão para todos os componentes do sistema */
+    -fx-font-family: "Inter", sans-serif;
+    -fx-font-size: 13px;
+    /* Exemplo de uso de pesos específicos com CSS JavaFX */
+
+    /* --- PALETA PRINCIPAL / BRAND --- */
+    -fx-primary: #0F5257;             /* Verde Esmeralda Principal */
+    -fx-primary-hover: #0B4448;       /* Hover do Botão Principal */
+    -fx-primary-soft: #E6F2F1;        /* Fundo Suave / Seleções */
+    -fx-mint: #16A7A1;                /* Acente Menta */
+
+    /* --- CORES DE SUPORTE E DESTAQUE --- */
+    -fx-blue: #00A7CB;                /* Azul FinTech */
+    -fx-blue-soft: #E5F8FC;           /* Fundo Azul Suave */
+    -fx-amber: #F6A800;               /* Amarelo / Ouro */
+    -fx-amber-soft: #FFF5D9;          /* Fundo Amarelo Suave */
+
+    /* --- STATUS E ALERTAS --- */
+    -fx-success: #25855A;             /* Verde Sucesso / PAGO */
+    -fx-success-soft: #E8F7EF;        /* Fundo Sucesso */
+    -fx-danger: #C83A4B;              /* Vermelho Erro / ATRASADO */
+    -fx-danger-soft: #FFF0F1;         /* Fundo Erro */
+    -fx-danger-border: #F0CFD3;       /* Borda do Botão Perigo */
+
+    /* --- TIPOGRAFIA (CORES DAS FONTES) --- */
+    -fx-text-ink: #182426;            /* Títulos e Textos Principais */
+    -fx-text-muted: #69787B;          /* Subtítulos e Rótulos */
+    -fx-text-muted-2: #899598;        /* Placeholders e Dicas */
+    -fx-text-white-sub: rgba(255, 255, 255, 0.70); /* Texto Suave em Banners Escuros */
+
+    /* --- ESTRUTURA, TELAS E PAINÉIS --- */
+    -fx-canvas: #F5F7F7;              /* Fundo Geral da Aplicação */
+    -fx-surface: #FFFFFF;             /* Fundo de Cards, Modais e Sidebar */
+    -fx-input-bg: #FBFCFC;            /* Fundo de Campos de Texto */
+    -fx-line: #DFE6E7;                /* Bordas de Cards e Inputs */
+    -fx-line-soft: #ECF0F0;           /* Divisores de Tabelas */
+    -fx-modal-overlay: rgba(10, 29, 31, 0.52); /* Escurecimento de Fundo do Modal */
+
+    /* --- MOEDA DOURADA & BADGES ESPECIAIS --- */
+    -fx-gold-text: #6F4E00;           /* Texto da Moeda Dourada */
+    -fx-gold-border: #FFC842;         /* Borda da Moeda Dourada */
+    -fx-badge-warning-text: #9A6B00;  /* Texto do Alerta PENDENTE */
+    -fx-badge-info-text: #087D9A;     /* Texto de Informação Azul */
+}
+
+.title {
+    -fx-font-family: "Inter";
+    -fx-font-weight: bold; /* O JavaFX mapeará automaticamente para o Inter-Bold.ttf */
+    -fx-font-size: 24px;
+}
+
+.button-primary {
+    -fx-font-family: "Inter";
+    -fx-font-weight: bold;
+}
+
+/* Painel Lateral Esquerdo (Gradiente + Clip) */
+.auth-visual {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #083f44 0%, #0f5b5f 65%, #0c4b50 100%);
+}
+.border-pane{
+-fx-background-radius : 10px;
+-fx-border-radius: 16;
+
+}
+
+/* Placa Frontal (Efeito Card) */
+.visual-card-front {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.22), 30, 0, 0, 10);
+}
+
+/* Placa Traseira (Efeito Vidro / Glassmorphism) */
+.visual-card-back {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-rotate: 6;
+}
+
+/* Moeda Flutuante (Badges Douradas) */
+.coin-badge {
+    -fx-background-color: #FFB703;
+    -fx-border-color: #FFC842;
+    -fx-border-width: 3;
+    -fx-background-radius: 50;
+    -fx-border-radius: 50;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 15, 0, 0, 5);
+}
