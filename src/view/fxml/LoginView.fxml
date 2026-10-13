@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXCheckbox?>
 <?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import javafx.geometry.Insets?>
@@ -15,12 +16,11 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
-<?import javafx.scene.text.Font?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
-      <BorderPane prefHeight="768.0" prefWidth="1171.0" stylesheets="@../css/style.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane prefHeight="768.0" prefWidth="1171.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
             <StackPane prefHeight="700.0" prefWidth="500.0" styleClass="auth-visual" BorderPane.alignment="CENTER">
                <children>
@@ -33,19 +33,22 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10">
                            <children>
-                              <StackPane prefHeight="36" prefWidth="43.0" style="-fx-background-color: white; -fx-background-radius: 10;">
+                              <StackPane prefHeight="36" prefWidth="43.0" styleClass="icon">
                                  <children>
                                     <Label style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 16;" text="K" />
                                  </children>
                               </StackPane>
-                              <Label style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold;" text="Konexion" />
+                              <Label style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold;" styleClass="title" text="Konexion" />
                            </children>
                         </HBox>
-                        <VBox alignment="CENTER_LEFT" spacing="15" VBox.vgrow="ALWAYS">
+                        <VBox alignment="CENTER_LEFT" spacing="15.0" VBox.vgrow="ALWAYS">
                            <children>
                               <Label style="-fx-background-color: rgba(111,221,165,0.15); -fx-text-fill: #B9EED2; -fx-padding: 4 10; -fx-background-radius: 12; -fx-font-size: 10; -fx-font-weight: bold;" text="POUPAR JUNTOS, CRESCER JUNTOS" />
-                              <Label style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold; -fx-line-spacing: 2;" text="A sua comunidade.&#10;Os seus objetivos.&#10;Um futuro melhor." />
-                              <Label maxWidth="380" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true" />
+                              <Label style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold; -fx-line-spacing: 2; -fx-font-family: &quot;Inter&quot;;" text="A sua comunidade.&#10;Os seus objetivos.&#10;Um futuro melhor." />
+                              <Label maxWidth="423.0" prefHeight="36.0" prefWidth="423.0" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin></Label>
                               <Pane prefHeight="180" prefWidth="350">
                                  <children>
                                     <VBox layoutX="190" layoutY="50" prefHeight="80" prefWidth="140" styleClass="visual-card-back">
@@ -85,59 +88,76 @@
             </StackPane>
          </left>
          <center>
-            <AnchorPane prefHeight="768.0" prefWidth="800.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+
+            <StackPane prefHeight="768.0" prefWidth="800.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
                <children>
-                  <VBox alignment="CENTER_LEFT" prefHeight="768.0" prefWidth="400.0" style="-fx-background-color: white;" AnchorPane.leftAnchor="222.0" AnchorPane.rightAnchor="222.0">
+                  <VBox alignment="CENTER_LEFT" maxWidth="400.0" spacing="10.0">
+                     <padding>
+                        <Insets left="20.0" right="20.0" />
+                     </padding>
                      <children>
-                        <Label text="Bem-vindo de volta">
-                           <font>
-                              <Font name="System Bold" size="26.0" />
-                           </font>
-                        </Label>
-                        <Label text="Entre na sua conta para continuar" textFill="#838383" />
-                        <Label text="Nome de usuário, e-mail ou n.º de telefone">
-                           <VBox.margin>
-                              <Insets bottom="5.0" top="20.0" />
-                           </VBox.margin>
-                        </Label>
-                        <MFXTextField floatMode="DISABLED" prefHeight="36.0" prefWidth="400.0" promptText="nome@exemplo.com">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </MFXTextField>
-                        <Label text="Palavra-passe">
-                           <VBox.margin>
-                              <Insets bottom="5.0" top="10.0" />
-                           </VBox.margin>
-                        </Label>
-                        <MFXPasswordField floatMode="DISABLED" prefHeight="36.0" prefWidth="400.0" promptText="Introduza a sua senha" />
-                        <Hyperlink alignment="CENTER_RIGHT" prefHeight="24.0" prefWidth="400.0" text="Esqueceu a senha?">
-                           <VBox.margin>
-                              <Insets top="10.0" />
-                           </VBox.margin>
-                        </Hyperlink>
-                        <MFXButton prefHeight="36.0" prefWidth="400.0" text="Entrar" />
-                        <Separator opacity="0.41" prefHeight="2.0" prefWidth="400.0">
-                           <VBox.margin>
-                              <Insets left="20.0" right="20.0" top="20.0" />
-                           </VBox.margin>
-                        </Separator>
-                        <HBox alignment="CENTER" prefHeight="19.0" prefWidth="360.0">
+                        <!-- Cabeçalho -->
+                        <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #182426;" text="Bem-vindo de volta" />
+                        <Label style="-fx-font-size: 12px; -fx-text-fill: #69787B;" text="Entre na sua conta para continuar." />
+
+                        <!-- Campo 1: Usuário / Email -->
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #182426; -fx-font-weight: bold;" text="Username ou e-mail">
                            <VBox.margin>
                               <Insets top="15.0" />
                            </VBox.margin>
+                        </Label>
+                        <MFXTextField floatMode="DISABLED" prefHeight="42.0" prefWidth="400.0" promptText="nome@exemplo.com" styleClass="mfx-text-field" >
+                           <leadingIcon>
+                              <MFXFontIcon description="fas-envelope" size="16.0" style="-fx-fill: #69787B;" />
+                           </leadingIcon>
+                        </MFXTextField>
+
+                        <!-- Campo 2: Senha -->
+                        <Label style="-fx-font-size: 11px; -fx-text-fill: #182426; -fx-font-weight: bold;" text="Senha">
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <MFXPasswordField floatMode="DISABLED" prefHeight="42.0" prefWidth="400.0" promptText="Introduza a sua senha" styleClass="mfx-password-field" >
+                        <leadingIcon>
+                           <MFXFontIcon description="fas-lock" size="16.0" style="-fx-fill: #69787B;" />
+                        </leadingIcon>
+                     </MFXPasswordField>
+                        <!-- Linha Dupla: Checkbox (Lembrar-me) + Hyperlink (Esqueceu a senha?) -->
+                        <HBox alignment="CENTER_LEFT" prefWidth="400.0">
+                           <VBox.margin>
+                              <Insets bottom="10.0" top="5.0" />
+                           </VBox.margin>
                            <children>
-                              <Label prefHeight="35.0" prefWidth="127.0" text="Não tem uma conta?" />
-                              <Hyperlink prefHeight="11.0" prefWidth="76.0" text="Criar conta" />
+                              <io.github.palexdev.materialfx.controls.MFXCheckbox style="-fx-font-size: 11px; -fx-text-fill: #69787B;" text="Lembrar-me" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Hyperlink style="-fx-text-fill: #0F5257; -fx-font-size: 11px; -fx-font-weight: bold;" text="Esqueceu a senha?" />
+                           </children>
+                        </HBox>
+
+                        <!-- Botão Principal com Seta -->
+                        <MFXButton prefHeight="44.0" prefWidth="400.0" styleClass="button-primary" text="Entrar  →" />
+
+                        <Separator opacity="0.3" prefWidth="400.0">
+                           <VBox.margin>
+                              <Insets top="15.0" />
+                           </VBox.margin>
+                        </Separator>
+
+                        <!-- Link para Criar Conta -->
+                        <HBox alignment="CENTER" prefWidth="400.0" spacing="4.0">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                           <children>
+                              <Label style="-fx-text-fill: #69787B; -fx-font-size: 12px;" text="Ainda não tem uma conta?" />
+                              <Hyperlink style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 12px;" text="Criar conta" />
                            </children>
                         </HBox>
                      </children>
                   </VBox>
                </children>
-               <BorderPane.margin>
-                  <Insets />
-               </BorderPane.margin>
-            </AnchorPane>
+            </StackPane>
          </center>
       </BorderPane>
    </children>

@@ -45,15 +45,50 @@
 }
 
 .title {
-    -fx-font-family: "Inter";
+    -fx-text-fill: white;
+    -fx-font-family: "Andale Mono";
     -fx-font-weight: bold; /* O JavaFX mapeará automaticamente para o Inter-Bold.ttf */
     -fx-font-size: 24px;
+
+}
+.icon{
+    -fx-background-color: white;
+    -fx-border-color: #DFE6E7;
+
+    /* Repita o mesmo padrão de cantos para a borda */
+    -fx-background-radius: 15 15 15 0;
+    -fx-border-radius: 15 15 15 0;
+
 }
 
-.button-primary {
-    -fx-font-family: "Inter";
+
+
+.mfx-button.button-primary {
+    -fx-background-color: #0F5257 !important; /* Cor Esmeralda */
+    -fx-text-fill: white !important;
+    -mfx-main: #0F5257 !important;            /* Cor da onda de clique (Ripple Effect) */
+    -fx-font-family: "Inter" !important;
     -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
 }
+
+/* Efeito ao passar o mouse (Hover) no botão do MaterialFX */
+.mfx-button.button-primary:hover {
+    -fx-background-color: #0B4448 !important; /* Verde mais escuro */
+}
+
+/* --- ESTILIZAÇÃO DOS CAMPOS DE TEXTO MATERIALFX --- */
+.mfx-text-field, .mfx-password-field {
+    -fx-font-family: "Inter";
+    -mfx-main: #0F5257; /* Cor da borda ao focar */
+    -fx-background-radius: 10px;
+}
+.label, .text, .mfx-button, .mfx-text-field, .mfx-password-field {
+    -fx-font-family: "Inter", sans-serif;
+}
+
 
 /* Painel Lateral Esquerdo (Gradiente + Clip) */
 .auth-visual {
@@ -64,7 +99,6 @@
 -fx-border-radius: 16;
 
 }
-
 /* Placa Frontal (Efeito Card) */
 .visual-card-front {
     -fx-background-color: rgba(255, 255, 255, 0.95);

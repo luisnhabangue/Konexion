@@ -25,17 +25,21 @@ public class Application extends javafx.application.Application {
                 .setResolveAssets(true)
                 .build()
                 .setGlobal();
-        Font.loadFont(getClass().getResourceAsStream("fonts/Inter_18pt-Medium.ttf"), 14);
+
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Montserrat-Bold.ttf"),14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-Medium.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-Regular.ttf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-SemiBold.ttf"), 14);
-        Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-Bold.ttf"), 14);
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/RegisterView.fxml"));
+
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/LoginView.fxml"));
       //  Parent root = FXMLLoader.load();
 
         Scene scene = new Scene(fxmlLoader.load());
-        
+        if (getClass().getResource("css/style.css") != null) {
 
-
+            scene.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
+        }
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();

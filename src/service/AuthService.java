@@ -155,7 +155,6 @@ public class AuthService {
     public boolean thisEmailExists(String email) {
         return userDao.findByEmail(email) != null;
     }
-
     /**
      * Verifica a existência prévia de um número de telefone.
      * @param phoneNumber Número de telefone
