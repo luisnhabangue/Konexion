@@ -32,19 +32,21 @@ public class Application extends javafx.application.Application {
         Font.loadFont(getClass().getResourceAsStream("/fonts/Inter_18pt-SemiBold.ttf"), 14);
 
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("fxml/LoginView.fxml"));
-      //  Parent root = FXMLLoader.load();
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/fxml/LoginView.fxml"));
 
         Scene scene = new Scene(fxmlLoader.load());
-        if (getClass().getResource("css/style.css") != null) {
+        if (getClass().getResource("/view/css/style.css") != null) {
 
-            scene.getStylesheets().add(getClass().getResource("css/style.css").toExternalForm());
+            scene.getStylesheets().add(getClass().getResource("/view/css/style.css").toExternalForm());
         }
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
 
 
 

@@ -4,9 +4,16 @@ package controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Node;
 import io.github.palexdev.materialfx.controls.MFXPasswordField;
 import io.github.palexdev.materialfx.controls.MFXTextField;
+import model.User;
 import service.AuthService;
+import util.SessionContext;
+
+import java.io.IOException;
 
 
 public class LoginController {
@@ -29,8 +36,12 @@ public class LoginController {
         String password = pfPassword.getText();
 
         try {
-            authService.login(username, password);
-            showAlert(Alert.AlertType.INFORMATION, "Login realizado com sucesso.");
+            User user = authService.login(username, password);
+            SessionContext.setCurrentUser(user);
+            Parent main = FXMLLoader.load(getClass().getResource("/view/fxml/main-layout.fxml"));
+            ((Node) actionEvent.getSource()).getScene().setRoot(main);
+        } catch (IOException exception) {
+            showAlert(Alert.AlertType.ERROR, "Não foi possível abrir a aplicação: " + exception.getMessage());
         } catch (RuntimeException exception) {
             showAlert(Alert.AlertType.ERROR, exception.getMessage());
         }
@@ -45,7 +56,12 @@ public class LoginController {
     }
 
     public void createAccount(ActionEvent actionEvent) {
-
+        try {
+            Parent register = FXMLLoader.load(getClass().getResource("/view/fxml/RegisterView.fxml"));
+            ((Node) actionEvent.getSource()).getScene().setRoot(register);
+        } catch (IOException exception) {
+            showAlert(Alert.AlertType.ERROR, "Não foi possível abrir o registo: " + exception.getMessage());
+        }
     }
 //    txtUsername.textProperty().addListener(
 //        (observable, valorAntigo, valorNovo) -> {

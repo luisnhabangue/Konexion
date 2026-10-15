@@ -30,8 +30,17 @@ public final class GroupValidator {
      * @throws IllegalArgumentException Se tiver menos de 3 caracteres
      */
     public static void validateGroupNameLength(String groupName) {
-        if (groupName == null || groupName.length() < 3) {
-            throw new IllegalArgumentException("O nome do grupo deve ter no mínimo 3 letras.");
+        if (groupName == null || groupName.trim().length() < 3 || groupName.trim().length() > 80) {
+            throw new IllegalArgumentException("O nome do grupo deve ter entre 3 e 80 caracteres.");
+        }
+    }
+
+    public static void validateGroupDescription(String description) {
+        if (description == null || description.isBlank()) {
+            throw new IllegalArgumentException("A descrição do grupo é obrigatória.");
+        }
+        if (description.trim().length() > 150) {
+            throw new IllegalArgumentException("A descrição do grupo não pode exceder 150 caracteres.");
         }
     }
 

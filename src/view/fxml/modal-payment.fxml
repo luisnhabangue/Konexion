@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
 <!-- Modal "Registrar contribuição" -->
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      styleClass="modal" stylesheets="@app.css">
+      styleClass="modal" stylesheets="@app.css" fx:controller="controller.PaymentController">
 
     <HBox styleClass="modal-head" alignment="TOP_LEFT">
         <VBox spacing="5" HBox.hgrow="ALWAYS">
@@ -22,15 +21,7 @@
     <VBox styleClass="modal-body" spacing="15">
         <VBox spacing="7">
             <Label text="Membro" styleClass="field-label"/>
-            <ComboBox fx:id="cmbMember" styleClass="field-select" maxWidth="Infinity" value="Ana Mucavele">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Ana Mucavele"/>
-                        <String fx:value="Ernesto Bila"/>
-                        <String fx:value="Lina Matola"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+            <ComboBox fx:id="cmbMember" styleClass="field-select" maxWidth="Infinity"/>
         </VBox>
 
         <HBox spacing="12">

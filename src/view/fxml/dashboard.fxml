@@ -6,7 +6,8 @@
 <?import javafx.scene.shape.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER">
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.DashboardController">
     <VBox styleClass="page" spacing="22">
 
         <!-- Título -->
@@ -36,8 +37,8 @@
                     <Label fx:id="lblTotalInvested" text="68.500,00 MT" styleClass="summary-value"/>
                     <HBox alignment="CENTER_LEFT" spacing="6" style="-icon: #25855a;">
                         <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M3,17 L9,11 L13,15 L21,7 M15,7 L21,7 L21,13"/></StackPane>
-                        <Label text="+12,5%" styleClass="summary-positive"/>
-                        <Label text="desde o mês passado" styleClass="summary-detail"/>
+                        <Label text="Contribuições pagas" styleClass="summary-positive"/>
+                        <Label text="dados registados na base de dados" styleClass="summary-detail"/>
                     </HBox>
                 </VBox>
                 <StackPane styleClass="summary-icon, summary-teal" StackPane.alignment="BOTTOM_RIGHT">
@@ -58,8 +59,7 @@
                     </HBox>
                     <Label fx:id="lblNextPayout" text="35.000,00 MT" styleClass="summary-value"/>
                     <HBox alignment="CENTER_LEFT" spacing="6">
-                        <Label text="Família Unida" styleClass="summary-detail"/>
-                        <Label text="em 7 dias" styleClass="summary-link"/>
+                        <Label text="Valor potencial por rodada" styleClass="summary-detail"/>
                     </HBox>
                 </VBox>
                 <StackPane styleClass="summary-icon, summary-blue" StackPane.alignment="BOTTOM_RIGHT">
@@ -79,8 +79,8 @@
                     </HBox>
                     <Label fx:id="lblActiveGroups" text="3 grupos" styleClass="summary-value"/>
                     <HBox alignment="CENTER_LEFT" spacing="6">
-                        <Label text="22 membros no total" styleClass="summary-detail"/>
-                        <Label text="+1 este mês" styleClass="summary-link"/>
+                        <Label text="Grupos a que pertence" styleClass="summary-detail"/>
+                        <Label text="ver os seus grupos" styleClass="summary-link"/>
                     </HBox>
                 </VBox>
                 <StackPane styleClass="summary-icon, summary-amber" StackPane.alignment="BOTTOM_RIGHT">

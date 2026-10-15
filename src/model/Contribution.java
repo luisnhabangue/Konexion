@@ -13,7 +13,13 @@ import java.time.LocalDate;
  * @version 1.0
  */
 @Entity
-@Table(name = "contributions")
+@Table(
+        name = "contributions",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_contribution_member_cycle",
+                columnNames = {"user_group_id", "cycle_id"}
+        )
+)
 public class Contribution {
 
     /** Identificador único da contribuição. */

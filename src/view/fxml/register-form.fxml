@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" stylesheets="@app.css"
+            xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.RegisterController">
+    <VBox alignment="TOP_CENTER" spacing="20" style="-fx-background-color: #F6F8F8;">
+        <padding><Insets top="45" right="35" bottom="45" left="35"/></padding>
+        <VBox maxWidth="650" spacing="18" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30;">
+            <Hyperlink fx:id="btnBack" text="&lt; Voltar ao login"/>
+            <VBox spacing="5">
+                <Label text="Criar a sua conta" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #182426;"/>
+                <Label text="Preencha os seus dados para começar a organizar os seus Xitiques." styleClass="page-sub"/>
+            </VBox>
+            <GridPane hgap="14" vgap="12">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="Nome" styleClass="field-label"/>
+                    <TextField fx:id="txtFirstName" promptText="Primeiro nome"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Apelido" styleClass="field-label"/>
+                    <TextField fx:id="txtLastName" promptText="Apelido"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="NUIT / documento" styleClass="field-label"/>
+                    <TextField fx:id="txtDocumentId" promptText="Número do documento"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="Género" styleClass="field-label"/>
+                    <ComboBox fx:id="cmbGender" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <Label text="Username" styleClass="field-label"/>
+                    <TextField fx:id="txtUsername" promptText="ex.: ana.matola"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <Label text="Telefone moçambicano" styleClass="field-label"/>
+                    <TextField fx:id="txtPhone" promptText="+258 84 123 4567"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                    <Label text="Email" styleClass="field-label"/>
+                    <TextField fx:id="txtEmail" promptText="nome@exemplo.com"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                    <Label text="Palavra-passe" styleClass="field-label"/>
+                    <PasswordField fx:id="txtPassword" promptText="Mínimo de 8 caracteres"/>
+                </VBox>
+                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <Label text="Confirmar palavra-passe" styleClass="field-label"/>
+                    <PasswordField fx:id="txtConfirmPassword" promptText="Repita a palavra-passe"/>
+                </VBox>
+            </GridPane>
+            <Button fx:id="btnRegister" maxWidth="Infinity" text="Criar conta" styleClass="btn, btn-primary"/>
+        </VBox>
+    </VBox>
+</ScrollPane>

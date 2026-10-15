@@ -10,7 +10,7 @@
   ou dentro de um StackPane com a classe .modal-backdrop por cima do conteúdo.
 -->
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      styleClass="modal" stylesheets="@app.css">
+      styleClass="modal" stylesheets="@app.css" fx:controller="controller.CreateGroupController">
 
     <HBox styleClass="modal-head" alignment="TOP_LEFT">
         <VBox spacing="5" HBox.hgrow="ALWAYS">

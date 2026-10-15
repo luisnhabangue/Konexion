@@ -6,7 +6,8 @@
 <?import javafx.scene.shape.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER">
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.ProfileController">
     <fx:define>
         <ToggleGroup fx:id="profileTabs"/>
     </fx:define>
@@ -24,14 +25,13 @@
 
             <HBox styleClass="profile-main" spacing="15" alignment="TOP_LEFT">
                 <StackPane styleClass="avatar, avatar-xl, avatar-bordered" translateY="-31" minWidth="60">
-                    <Label text="JS"/>
+                    <Label fx:id="lblProfileInitials" text="?"/>
                 </StackPane>
                 <VBox spacing="4" HBox.hgrow="ALWAYS">
                     <Label fx:id="lblProfileName" text="João Silva" styleClass="profile-name"/>
-                    <Label text="Membro desde Janeiro de 2024" styleClass="profile-since"/>
+                    <Label text="Dados pessoais da sua conta" styleClass="profile-since"/>
                     <HBox spacing="6" alignment="CENTER_LEFT">
-                        <Label text="CONTA VERIFICADA" styleClass="badge, badge-success"/>
-                        <Label text="CRIADOR DE GRUPO" styleClass="badge, badge-brand"/>
+                        <Label text="CONTA ATIVA" styleClass="badge, badge-success"/>
                         <VBox.margin><Insets top="4"/></VBox.margin>
                     </HBox>
                 </VBox>
@@ -64,8 +64,11 @@
         <!-- Painéis: o controller alterna visible/managed conforme o tab selecionado -->
         <StackPane>
             <!-- 1) Histórico -->
-            <VBox fx:id="paneContributions">
-                <fx:include source="activity-table.fxml"/>
+            <VBox fx:id="paneContributions" styleClass="card, table-card">
+                <HBox styleClass="t-head">
+                    <Label text="DATA · GRUPO · VALOR · ESTADO" styleClass="t-th"/>
+                </HBox>
+                <VBox fx:id="profileActivityRows"/>
             </VBox>
 
             <!-- 2) Finalizados (estado vazio) -->

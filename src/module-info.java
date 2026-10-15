@@ -20,6 +20,7 @@ module iXitique {
 
 
     // JavaFX / FXML
+    exports view;
 
     opens view;
     opens controller;
@@ -27,9 +28,5 @@ module iXitique {
     // Hibernate / JPA
     opens model;
 
-    // Testes, se realmente necessário
-    opens test;
-
     opens model.enums;
 }
-

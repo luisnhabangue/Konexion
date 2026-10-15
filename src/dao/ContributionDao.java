@@ -75,13 +75,12 @@ public class ContributionDao implements ContributionDaoInterface {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT c FROM Contribution c WHERE c.cycle.id = :cycleId",
+                            "SELECT c FROM Contribution c JOIN FETCH c.userGroup ug JOIN FETCH ug.user " +
+                                    "WHERE c.cycle.id = :cycleId ORDER BY c.paymentDate DESC",
                             Contribution.class
                     )
                     .setParameter("cycleId", cycleId)
                     .getResultList();
-        } catch (Exception e) {
-            return new ArrayList<>();
         } finally {
             em.close();
         }
@@ -92,13 +91,26 @@ public class ContributionDao implements ContributionDaoInterface {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT c FROM Contribution c WHERE c.userGroup.id = :userGroupId ORDER BY c.paymentDate DESC",
+                            "SELECT c FROM Contribution c JOIN FETCH c.cycle cy JOIN FETCH cy.group " +
+                                    "WHERE c.userGroup.id = :userGroupId ORDER BY c.paymentDate DESC",
                             Contribution.class
                     )
                     .setParameter("userGroupId", userGroupId)
                     .getResultList();
-        } catch (Exception e) {
-            return new ArrayList<>();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Contribution> findByUserId(Long userId) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT c FROM Contribution c JOIN FETCH c.userGroup ug JOIN FETCH ug.user " +
+                                    "JOIN FETCH ug.group JOIN FETCH c.cycle " +
+                                    "WHERE ug.user.id = :userId ORDER BY c.paymentDate DESC",
+                            Contribution.class
+                    ).setParameter("userId", userId).getResultList();
         } finally {
             em.close();
         }

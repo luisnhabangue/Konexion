@@ -6,7 +6,8 @@
 <?import javafx.scene.shape.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER">
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.GroupDetailController">
     <VBox styleClass="page" spacing="16">
 
         <!-- Voltar -->
@@ -19,7 +20,7 @@
         <!-- ================= BANNER ================= -->
         <HBox styleClass="group-banner" alignment="CENTER_LEFT">
             <HBox spacing="17" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                <StackPane styleClass="avatar, avatar-xl, avatar-light"><Label text="FU"/></StackPane>
+                <StackPane styleClass="avatar, avatar-xl, avatar-light"><Label fx:id="lblGroupInitials" text="?"/></StackPane>
                 <VBox spacing="5">
                     <Label fx:id="lblGroupName" text="Família Unida" styleClass="banner-title"/>
                     <Label fx:id="lblGroupDescription" text="Poupamos juntos para realizar os nossos planos em família." styleClass="banner-sub"/>
@@ -74,7 +75,7 @@
                     <Label text="CICLO ATUAL" styleClass="cycle-label"/>
                     <HBox spacing="9" alignment="CENTER_LEFT">
                         <Label fx:id="lblCycleTitle" text="Ciclo nº 3" styleClass="cycle-title"/>
-                        <Label text="EM ANDAMENTO" styleClass="badge, badge-brand"/>
+                        <Label fx:id="lblCycleStatus" text="EM ANDAMENTO" styleClass="badge, badge-brand"/>
                     </HBox>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
@@ -98,10 +99,10 @@
                 <VBox spacing="9" GridPane.columnIndex="0">
                     <Label text="BENEFICIÁRIO DA RODADA" styleClass="cell-label"/>
                     <HBox spacing="11" alignment="CENTER_LEFT">
-                        <StackPane styleClass="avatar, avatar-xl, avatar-mint"><Label text="AM"/></StackPane>
+                        <StackPane styleClass="avatar, avatar-xl, avatar-mint"><Label fx:id="lblBeneficiaryInitials" text="?"/></StackPane>
                         <VBox spacing="4">
                             <Label fx:id="lblBeneficiary" text="Ana Mucavele" styleClass="cell-value"/>
-                            <Label text="3ª posição na fila" styleClass="cell-sub"/>
+                            <Label fx:id="lblBeneficiaryPosition" text="Beneficiário da fila" styleClass="cell-sub"/>
                         </VBox>
                     </HBox>
                 </VBox>
@@ -118,8 +119,8 @@
                         <VBox.margin><Insets top="10" bottom="8"/></VBox.margin>
                     </ProgressBar>
                     <HBox spacing="7" alignment="CENTER_LEFT">
-                        <Label text="5 de 7 membros contribuíram" styleClass="cell-sub"/>
-                        <Label text="2 pendentes" styleClass="badge, badge-warning"/>
+                        <Label fx:id="lblPaidCount" text="5 de 7 membros contribuíram" styleClass="cell-sub"/>
+                        <Label fx:id="lblPendingCount" text="2 pendentes" styleClass="badge, badge-warning"/>
                     </HBox>
                 </VBox>
 

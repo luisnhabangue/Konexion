@@ -50,6 +50,20 @@
 
     </dependencies>
     <build>
+        <sourceDirectory>${project.basedir}/src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/view/fxml</directory>
+                <targetPath>view/fxml</targetPath>
+            </resource>
+            <resource>
+                <directory>src/view/css</directory>
+                <targetPath>view/css</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -58,6 +72,9 @@
 
                 <configuration>
                     <release>25</release>
+                    <excludes>
+                        <exclude>test/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>

@@ -117,7 +117,7 @@
                     </StackPane>
 
                     <HBox alignment="CENTER_LEFT" spacing="10" styleClass="user-card">
-                        <StackPane styleClass="avatar, avatar-sm"><Label text="JS" /></StackPane>
+                        <StackPane styleClass="avatar, avatar-sm"><Label fx:id="lblUserInitials" text="?" /></StackPane>
                         <VBox alignment="CENTER" spacing="3">
                             <Label fx:id="lblUserName" styleClass="user-name" text="João Silva" />
                         </VBox>
@@ -127,8 +127,6 @@
 
             <center>
                 <StackPane fx:id="contentArea" styleClass="content-area">
-                    <!-- pré-visualização: remova quando a navegação estiver pronta -->
-                    <fx:include source="dashboard.fxml" />
                 </StackPane>
             </center>
         </BorderPane>

@@ -38,6 +38,8 @@ public interface UserDaoInterface {
      */
     User findByEmail(String email);
 
+    User findByDocumentId(String documentId);
+
     /**
      * Atualiza os dados de um utilizador existente.
      * @param user Utilizador com dados atualizados

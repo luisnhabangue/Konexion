@@ -41,6 +41,10 @@ public class AuthService {
         if (user == null) {
             throw new IllegalArgumentException("Os dados do utilizador são obrigatórios.");
         }
+        UserValidator.validateRequiredFields(user.getFirstName(), user.getLastName(), user.getDocumentId());
+        if (user.getGender() == null) {
+            throw new IllegalArgumentException("Selecione o género.");
+        }
         UserValidator.validateRequiredFields(
                 user.getUsername(),
                 user.getEmail(),
@@ -68,6 +72,9 @@ public class AuthService {
 
         if (userDao.findByPhone(phoneNumber) != null) {
             throw new UserAlreadyExistsException("Este número de telefone já está registado.");
+        }
+        if (userDao.findByDocumentId(user.getDocumentId()) != null) {
+            throw new UserAlreadyExistsException("Este documento já está registado.");
         }
 
         user.setUsername(username);
@@ -109,6 +116,10 @@ public class AuthService {
 
         if (user == null) {
             throw new UserNotFoundException("Utilizador ou password inválidos!");
+        }
+
+        if (!user.isActive()) {
+            throw new UserNotFoundException("Esta conta está inativa. Contacte o suporte.");
         }
 
         if (!BCrypt.checkpw(password, user.getPassword())) {
@@ -162,5 +173,31 @@ public class AuthService {
      */
     public boolean thisPhoneNumberExists(String phoneNumber) {
         return userDao.findByPhone(normalizePhoneNumber(phoneNumber)) != null;
+    }
+
+    public void updateProfile(User user, String firstName, String lastName, String email, String phoneNumber) {
+        if (user == null || user.getId() == null) {
+            throw new IllegalArgumentException("A conta a atualizar é inválida.");
+        }
+        UserValidator.validateRequiredFields(firstName, lastName, email, phoneNumber);
+        UserValidator.validateEmail(email);
+        UserValidator.validatePhoneNumber(phoneNumber);
+
+        String normalizedEmail = email.trim();
+        String normalizedPhone = normalizePhoneNumber(phoneNumber);
+        User emailOwner = userDao.findByEmail(normalizedEmail);
+        if (emailOwner != null && !emailOwner.getId().equals(user.getId())) {
+            throw new UserAlreadyExistsException("Este e-mail já está registado.");
+        }
+        User phoneOwner = userDao.findByPhone(normalizedPhone);
+        if (phoneOwner != null && !phoneOwner.getId().equals(user.getId())) {
+            throw new UserAlreadyExistsException("Este número de telefone já está registado.");
+        }
+
+        user.setFirstName(firstName.trim());
+        user.setLastName(lastName.trim());
+        user.setEmail(normalizedEmail);
+        user.setPhoneNumber(normalizedPhone);
+        userDao.updateUser(user);
     }
 }

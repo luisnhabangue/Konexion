@@ -6,7 +6,8 @@
 <?import javafx.scene.shape.*?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER">
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.GroupsController">
     <fx:define>
         <ToggleGroup fx:id="filterGroup"/>
     </fx:define>
@@ -20,6 +21,9 @@
                 <Label text="Gira os seus grupos, membros e ciclos num só lugar." styleClass="page-sub"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnSeedDemoData" text="Carregar dados de demonstração" styleClass="btn, btn-secondary">
+                <HBox.margin><Insets right="8"/></HBox.margin>
+            </Button>
             <Button fx:id="btnCreateNewGroup" text="Criar novo grupo" styleClass="btn, btn-primary">
                 <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M12,5 L12,19 M5,12 L19,12"/></StackPane></graphic>
             </Button>
@@ -29,8 +33,8 @@
         <HBox alignment="CENTER_LEFT">
             <HBox styleClass="segments" spacing="0">
                 <ToggleButton fx:id="filterAll" text="Todos  3" styleClass="segment" toggleGroup="$filterGroup" selected="true"/>
-                <ToggleButton fx:id="filterActive" text="Ativos  3" styleClass="segment" toggleGroup="$filterGroup"/>
-                <ToggleButton fx:id="filterFinished" text="Finalizados  0" styleClass="segment" toggleGroup="$filterGroup"/>
+                <ToggleButton fx:id="filterActive" text="Com ciclo ativo  0" styleClass="segment" toggleGroup="$filterGroup"/>
+                <ToggleButton fx:id="filterFinished" text="Com ciclo concluído  0" styleClass="segment" toggleGroup="$filterGroup"/>
             </HBox>
             <Region HBox.hgrow="ALWAYS"/>
             <HBox styleClass="compact-search" alignment="CENTER_LEFT" spacing="9">

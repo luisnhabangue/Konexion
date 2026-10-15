@@ -75,11 +75,24 @@ public class UserDao implements UserDaoInterface {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             return em.createQuery(
-                    "SELECT u FROM User u WHERE u.email = :phoneNumber",
+                    "SELECT u FROM User u WHERE u.email = :email",
                     User.class
-            ).setParameter("phoneNumber", email).getSingleResult();
+            ).setParameter("email", email).getSingleResult();
         } catch (NoResultException e) {
             return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public User findByDocumentId(String documentId) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT u FROM User u WHERE u.documentId = :documentId",
+                            User.class
+                    ).setParameter("documentId", documentId.trim()).getResultStream().findFirst().orElse(null);
         } finally {
             em.close();
         }

@@ -52,4 +52,6 @@ public interface UserGroupInterface {
      * @param userGroup Vínculo a atualizar
      */
     void update(UserGroup userGroup);
+
+    void delete(UserGroup userGroup);
 }
