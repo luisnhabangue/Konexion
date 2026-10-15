@@ -96,5 +96,5 @@ public class Contribution {
     public void setPaymentMethod(PaymentMethod paymentMethod) { this.paymentMethod = paymentMethod; }
 
     public ContributionStatus getStatus() { return status; }
-    public void setStatus(ContributionStatus status) { this.status = status; }
+    void setStatus(ContributionStatus status) { this.status = status; }
 }

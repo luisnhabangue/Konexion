@@ -313,6 +313,7 @@ public class GroupService {
         Group group = findById(groupId);
         if (group == null) {
             throw new IllegalArgumentException("Grupo não encontrado.");
+
         }
 
         UserGroup newFirstMember = userGroupDao.findByUserAndGroup(userGroupIdTarget, groupId);

@@ -30,13 +30,13 @@
                       value="com.mysql.cj.jdbc.Driver"/>
 
             <property name="jakarta.persistence.jdbc.url"
-                      value="jdbc:mysql://localhost:3306/ixitique?useSSL=false&amp;serverTimezone=Africa/Maputo"/>
+                      value="jdbc:mysql://localhost:3306/ixitique?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=Africa/Maputo"/>
 
             <property name="jakarta.persistence.jdbc.user"
-                      value="ixitique"/>
+                      value="root"/>
 
             <property name="jakarta.persistence.jdbc.password"
-                      value="deumaoito"/>
+                      value="....."/>
 
 
             <!-- ============================= -->
