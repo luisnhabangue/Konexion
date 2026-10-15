@@ -106,7 +106,7 @@
                               <Insets top="15.0" />
                            </VBox.margin>
                         </Label>
-                        <MFXTextField floatMode="DISABLED" prefHeight="42.0" prefWidth="400.0" promptText="nome@exemplo.com" styleClass="mfx-text-field" >
+                        <MFXTextField fx:id="tfUsername" floatMode="DISABLED" prefHeight="42.0" prefWidth="400.0" promptText="nome@exemplo.com" styleClass="mfx-text-field">
                            <leadingIcon>
                               <MFXFontIcon description="fas-envelope" size="16.0" style="-fx-fill: #69787B;" />
                            </leadingIcon>
@@ -118,7 +118,7 @@
                               <Insets top="5.0" />
                            </VBox.margin>
                         </Label>
-                        <MFXPasswordField floatMode="DISABLED" prefHeight="42.0" prefWidth="400.0" promptText="Introduza a sua senha" styleClass="mfx-password-field" >
+                        <MFXPasswordField fx:id="pfPassword" floatMode="DISABLED" onAction="#btnEntrar" prefHeight="42.0" prefWidth="400.0" promptText="Introduza a sua senha" styleClass="mfx-password-field">
                         <leadingIcon>
                            <MFXFontIcon description="fas-lock" size="16.0" style="-fx-fill: #69787B;" />
                         </leadingIcon>
@@ -136,7 +136,7 @@
                         </HBox>
 
                         <!-- Botão Principal com Seta -->
-                        <MFXButton prefHeight="44.0" prefWidth="400.0" styleClass="button-primary" text="Entrar  →" />
+                        <MFXButton onAction="#btnEntrar" prefHeight="44.0" prefWidth="400.0" styleClass="button-primary" text="Entrar  →" />
 
                         <Separator opacity="0.3" prefWidth="400.0">
                            <VBox.margin>
