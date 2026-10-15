@@ -1,0 +1,104 @@
+/* --- SIDEBAR --- */
+.sidebar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #ECF0F0;
+    -fx-border-width: 0 1px 0 0; /* Borda fina apenas na direita */
+}
+
+.brand-mark {
+    -fx-background-color: #0F5257;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-background-radius: 10px;
+}
+.profile-name{
+    -fx-font-size: 13px;
+    -fx-font-weight: regulard;
+    -fx-text-fill: #0F5257;
+    -fx-background-color: #E5F8FC;
+    -fx-background-radius: 50%;
+}
+.logo-text {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0F5257;
+}
+
+.nav-label {
+    -fx-text-fill: #899598;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+}
+
+.menu-buttons {
+    -fx-background-color: transparent;
+    -fx-text-fill: #69787B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+}
+.menu-button-logout{
+    -fx-background-color: transparent;
+    -fx-text-fill: #899598;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+
+}
+.menu-buttons:hover {
+    -fx-background-color: #F5F7F7;
+    -fx-text-fill: #0F5257;
+}
+
+.menu-buttons:focused{
+
+    -fx-text-fill: #0B4448;
+    -fx-background-color: #E6F2F1;
+}
+
+/* --- TOPBAR & SCROLL --- */
+.topbar {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #ECF0F0;
+    -fx-border-width: 0 0 1px 0; /* Borda apenas na parte inferior */
+}
+
+.content-scroll {
+    -fx-background-color: #F5F7F7;
+    -fx-background: #F5F7F7;
+    -fx-border-color: transparent;
+}
+
+.button-primary {
+    -fx-background-color: #0F5257;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 9px;
+    -fx-cursor: hand;
+}
+
+.button-primary:hover {
+    -fx-background-color: #0B4448;
+}
+.titles{
+    -fx-text-fill: #182426;
+
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+}
+.subtitles{
+    -fx-font-size: 12px;
+    -fx-text-fill: #69787B;
+
+}
+
+
+.reports-card{
+
+    -fx-background-radius: 10px;
+    -fx-background-color: white;
+}

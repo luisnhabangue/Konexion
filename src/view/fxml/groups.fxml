@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER">
+    <fx:define>
+        <ToggleGroup fx:id="filterGroup"/>
+    </fx:define>
+
+    <VBox styleClass="page" spacing="22">
+
+        <!-- Título + ação -->
+        <HBox alignment="BOTTOM_LEFT">
+            <VBox spacing="6">
+                <Label text="Meus Xitiques" styleClass="page-title"/>
+                <Label text="Gira os seus grupos, membros e ciclos num só lugar." styleClass="page-sub"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnCreateNewGroup" text="Criar novo grupo" styleClass="btn, btn-primary">
+                <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M12,5 L12,19 M5,12 L19,12"/></StackPane></graphic>
+            </Button>
+        </HBox>
+
+        <!-- Filtros -->
+        <HBox alignment="CENTER_LEFT">
+            <HBox styleClass="segments" spacing="0">
+                <ToggleButton fx:id="filterAll" text="Todos  3" styleClass="segment" toggleGroup="$filterGroup" selected="true"/>
+                <ToggleButton fx:id="filterActive" text="Ativos  3" styleClass="segment" toggleGroup="$filterGroup"/>
+                <ToggleButton fx:id="filterFinished" text="Finalizados  0" styleClass="segment" toggleGroup="$filterGroup"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox styleClass="compact-search" alignment="CENTER_LEFT" spacing="9">
+                <StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M4,11 A7,7 0 1 0 18,11 A7,7 0 1 0 4,11 M20,20 L16,16"/></StackPane>
+                <TextField fx:id="groupSearchField" styleClass="search-input" promptText="Pesquisar grupo..." HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </HBox>
+
+        <!-- Grelha de grupos (fx:id="groupsGrid": o controller pode preencher dinamicamente) -->
+        <GridPane fx:id="groupsGrid" hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.34"/>
+            </columnConstraints>
+
+            <VBox fx:id="cardGroup1" styleClass="group-card" GridPane.columnIndex="0" maxWidth="Infinity">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="avatar, avatar-lg"><Label text="FU"/></StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button>
+                </HBox>
+                <Label text="Família Unida" styleClass="group-name"/>
+                <HBox spacing="13" alignment="CENTER_LEFT">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7"/></StackPane>
+                        <Label text="7 membros" styleClass="group-meta"/>
+                    </HBox>
+                    <Label text="Ciclo 3" styleClass="group-meta"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 0 7 0;">
+                    <Label text="Progresso do ciclo" styleClass="progress-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="5/7 pagos" styleClass="progress-value"/>
+                </HBox>
+                <ProgressBar progress="0.714" styleClass="xt-progress" maxWidth="Infinity"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Próximo: 25 Jun" styleClass="group-footer-text"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow"><StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></StackPane>
+                    <VBox.margin><Insets top="16"/></VBox.margin>
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="cardGroup2" styleClass="group-card" GridPane.columnIndex="1" maxWidth="Infinity">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="avatar, avatar-lg, avatar-blue"><Label text="AB"/></StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button>
+                </HBox>
+                <Label text="Amigos da Baixa" styleClass="group-name"/>
+                <HBox spacing="13" alignment="CENTER_LEFT">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7"/></StackPane>
+                        <Label text="6 membros" styleClass="group-meta"/>
+                    </HBox>
+                    <Label text="Ciclo 5" styleClass="group-meta"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 0 7 0;">
+                    <Label text="Progresso do ciclo" styleClass="progress-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="6/6 pagos" styleClass="progress-value"/>
+                </HBox>
+                <ProgressBar progress="1.0" styleClass="xt-progress" maxWidth="Infinity"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Próximo: 25 Jun" styleClass="group-footer-text"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow"><StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></StackPane>
+                    <VBox.margin><Insets top="16"/></VBox.margin>
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="cardGroup3" styleClass="group-card" GridPane.columnIndex="2" maxWidth="Infinity">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="avatar, avatar-lg, avatar-amber"><Label text="EM"/></StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button>
+                </HBox>
+                <Label text="Empreendedores" styleClass="group-name"/>
+                <HBox spacing="13" alignment="CENTER_LEFT">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7"/></StackPane>
+                        <Label text="9 membros" styleClass="group-meta"/>
+                    </HBox>
+                    <Label text="Ciclo 2" styleClass="group-meta"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 0 7 0;">
+                    <Label text="Progresso do ciclo" styleClass="progress-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="4/9 pagos" styleClass="progress-value"/>
+                </HBox>
+                <ProgressBar progress="0.444" styleClass="xt-progress" maxWidth="Infinity"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Próximo: 25 Jun" styleClass="group-footer-text"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow"><StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></StackPane>
+                    <VBox.margin><Insets top="16"/></VBox.margin>
+                </HBox>
+            </VBox>
+        </GridPane>
+    </VBox>
+</ScrollPane>

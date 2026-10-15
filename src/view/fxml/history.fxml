@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER">
+    <VBox styleClass="page" spacing="22">
+        <VBox spacing="6">
+            <Label text="Histórico" styleClass="page-title"/>
+            <Label text="Consulte todas as suas contribuições e recebimentos." styleClass="page-sub"/>
+        </VBox>
+
+        <fx:include source="activity-table.fxml"/>
+    </VBox>
+</ScrollPane>

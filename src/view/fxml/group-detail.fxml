@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER">
+    <VBox styleClass="page" spacing="16">
+
+        <!-- Voltar -->
+        <HBox>
+            <Button fx:id="btnBack" text="Voltar aos grupos" styleClass="back-link">
+                <graphic><StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M15,18 L9,12 L15,6"/></StackPane></graphic>
+            </Button>
+        </HBox>
+
+        <!-- ================= BANNER ================= -->
+        <HBox styleClass="group-banner" alignment="CENTER_LEFT">
+            <HBox spacing="17" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <StackPane styleClass="avatar, avatar-xl, avatar-light"><Label text="FU"/></StackPane>
+                <VBox spacing="5">
+                    <Label fx:id="lblGroupName" text="Família Unida" styleClass="banner-title"/>
+                    <Label fx:id="lblGroupDescription" text="Poupamos juntos para realizar os nossos planos em família." styleClass="banner-sub"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="ATIVO" styleClass="badge, badge-on-dark"/>
+                        <HBox spacing="5" alignment="CENTER_LEFT">
+                            <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7"/></StackPane>
+                            <Label fx:id="lblGroupMembers" text="7 membros" styleClass="banner-meta"/>
+                        </HBox>
+                        <Label text="Criado por si" styleClass="banner-meta"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <HBox alignment="CENTER_LEFT">
+                <VBox styleClass="banner-stat" spacing="8">
+                    <Label text="QUOTA MENSAL" styleClass="banner-stat-label"/>
+                    <Label fx:id="lblQuota" text="5.000,00 MT" styleClass="banner-stat-value"/>
+                </VBox>
+                <VBox styleClass="banner-stat" spacing="8">
+                    <Label text="DIA DE PAGAMENTO" styleClass="banner-stat-label"/>
+                    <Label fx:id="lblPayDay" text="Dia 25" styleClass="banner-stat-value"/>
+                </VBox>
+                <VBox styleClass="banner-stat" spacing="8">
+                    <Label text="FREQUÊNCIA" styleClass="banner-stat-label"/>
+                    <Label fx:id="lblFrequency" text="Mensal" styleClass="banner-stat-value"/>
+                </VBox>
+            </HBox>
+        </HBox>
+
+        <!-- ================= AÇÕES ================= -->
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <Button fx:id="btnAddMember" text="Adicionar membro" styleClass="btn, btn-primary">
+                <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M16,21 L16,19 A4,4 0 0 0 12,15 L5,15 A4,4 0 0 0 1,19 L1,21 M4.5,7 A4,4 0 1 0 12.5,7 A4,4 0 1 0 4.5,7 M18,8 L18,14 M15,11 L21,11"/></StackPane></graphic>
+            </Button>
+            <Button fx:id="btnNewCycle" text="Abrir novo ciclo" styleClass="btn, btn-secondary">
+                <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M12,5 L12,19 M5,12 L19,12"/></StackPane></graphic>
+            </Button>
+            <Button fx:id="btnReorderTop" text="Reordenar fila" styleClass="btn, btn-secondary">
+                <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M16,3 L21,3 L21,8 M4,20 L21,3 M21,16 L21,21 L16,21 M15,15 L21,21 M4,4 L9,9"/></StackPane></graphic>
+            </Button>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnDeleteGroup" text="Eliminar grupo" styleClass="btn, btn-danger">
+                <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M4,7 L20,7 M9,7 L9,4 L15,4 L15,7 M7,7 L8,21 L16,21 L17,7 M10,11 L10,17 M14,11 L14,17"/></StackPane></graphic>
+            </Button>
+        </HBox>
+
+        <!-- ================= CICLO ATUAL ================= -->
+        <VBox styleClass="cycle-card">
+            <HBox styleClass="cycle-head" alignment="CENTER_LEFT">
+                <VBox spacing="5">
+                    <Label text="CICLO ATUAL" styleClass="cycle-label"/>
+                    <HBox spacing="9" alignment="CENTER_LEFT">
+                        <Label fx:id="lblCycleTitle" text="Ciclo nº 3" styleClass="cycle-title"/>
+                        <Label text="EM ANDAMENTO" styleClass="badge, badge-brand"/>
+                    </HBox>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox styleClass="countdown" alignment="CENTER_LEFT" spacing="8">
+                    <StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M3,12 A9,9 0 1 0 21,12 A9,9 0 1 0 3,12 M12,7 L12,12 L15,14"/></StackPane>
+                    <VBox spacing="1">
+                        <Label text="Próximo pagamento" styleClass="countdown-label"/>
+                        <Label fx:id="lblCountdown" text="7 dias" styleClass="countdown-value"/>
+                    </VBox>
+                </HBox>
+            </HBox>
+
+            <GridPane styleClass="cycle-content" hgap="30" alignment="CENTER_LEFT">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="32"/>
+                    <ColumnConstraints percentWidth="48"/>
+                    <ColumnConstraints percentWidth="20"/>
+                </columnConstraints>
+
+                <!-- Beneficiário -->
+                <VBox spacing="9" GridPane.columnIndex="0">
+                    <Label text="BENEFICIÁRIO DA RODADA" styleClass="cell-label"/>
+                    <HBox spacing="11" alignment="CENTER_LEFT">
+                        <StackPane styleClass="avatar, avatar-xl, avatar-mint"><Label text="AM"/></StackPane>
+                        <VBox spacing="4">
+                            <Label fx:id="lblBeneficiary" text="Ana Mucavele" styleClass="cell-value"/>
+                            <Label text="3ª posição na fila" styleClass="cell-sub"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Pote -->
+                <VBox styleClass="pot" spacing="0" GridPane.columnIndex="1">
+                    <HBox alignment="BOTTOM_LEFT" spacing="0">
+                        <Label text="Total arrecadado" styleClass="cell-sub"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblPotAmount" text="25.000,00 MT" styleClass="cell-value"/>
+                        <Label fx:id="lblPotTarget" text="  de 35.000,00 MT" styleClass="cell-sub"/>
+                    </HBox>
+                    <ProgressBar fx:id="potProgress" progress="0.714" styleClass="xt-progress, xt-progress-lg" maxWidth="Infinity">
+                        <VBox.margin><Insets top="10" bottom="8"/></VBox.margin>
+                    </ProgressBar>
+                    <HBox spacing="7" alignment="CENTER_LEFT">
+                        <Label text="5 de 7 membros contribuíram" styleClass="cell-sub"/>
+                        <Label text="2 pendentes" styleClass="badge, badge-warning"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Data de entrega -->
+                <VBox spacing="8" GridPane.columnIndex="2">
+                    <Label text="DATA DE ENTREGA" styleClass="cell-label"/>
+                    <Label fx:id="lblPayoutDate" text="25 Jun 2025" styleClass="cell-value"/>
+                    <Label text="às 18:00" styleClass="cell-sub"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- ================= FILA + CONTRIBUIÇÕES ================= -->
+        <GridPane hgap="15">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="35"/>
+                <ColumnConstraints percentWidth="65"/>
+            </columnConstraints>
+
+            <!-- Ordem de recebimento -->
+            <VBox styleClass="card, queue-card" GridPane.columnIndex="0" maxWidth="Infinity" GridPane.vgrow="NEVER">
+                <HBox styleClass="card-heading" alignment="CENTER_LEFT">
+                    <VBox spacing="5">
+                        <Label text="Ordem de recebimento" styleClass="section-title"/>
+                        <Label text="Fila do ciclo atual" styleClass="section-sub"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnReorder" text="Reordenar" styleClass="btn, btn-ghost">
+                        <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M16,3 L21,3 L21,8 M4,20 L21,3 M21,16 L21,21 L16,21 M15,15 L21,21 M4,4 L9,9"/></StackPane></graphic>
+                    </Button>
+                </HBox>
+
+                <VBox fx:id="memberQueue">
+                    <HBox styleClass="member-row" spacing="9">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M7,6 A1,1 0 1 0 9,6 A1,1 0 1 0 7,6 M15,6 A1,1 0 1 0 17,6 A1,1 0 1 0 15,6 M7,12 A1,1 0 1 0 9,12 A1,1 0 1 0 7,12 M15,12 A1,1 0 1 0 17,12 A1,1 0 1 0 15,12 M7,18 A1,1 0 1 0 9,18 A1,1 0 1 0 7,18 M15,18 A1,1 0 1 0 17,18 A1,1 0 1 0 15,18"/></StackPane>
+                        <Label text="1º" styleClass="member-order"/>
+                        <StackPane styleClass="avatar, avatar-sm"><Label text="MC"/></StackPane>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Marta Cossa" styleClass="member-name"/><Label text="+258 84 123 4567" styleClass="member-phone"/></VBox>
+                        <Label text="Já recebeu" styleClass="badge, badge-success"/>
+                    </HBox>
+                    <HBox styleClass="member-row" spacing="9">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M7,6 A1,1 0 1 0 9,6 A1,1 0 1 0 7,6 M15,6 A1,1 0 1 0 17,6 A1,1 0 1 0 15,6 M7,12 A1,1 0 1 0 9,12 A1,1 0 1 0 7,12 M15,12 A1,1 0 1 0 17,12 A1,1 0 1 0 15,12 M7,18 A1,1 0 1 0 9,18 A1,1 0 1 0 7,18 M15,18 A1,1 0 1 0 17,18 A1,1 0 1 0 15,18"/></StackPane>
+                        <Label text="2º" styleClass="member-order"/>
+                        <StackPane styleClass="avatar, avatar-sm"><Label text="JS"/></StackPane>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="João Silva" styleClass="member-name"/><Label text="+258 85 643 2210" styleClass="member-phone"/></VBox>
+                        <Label text="Já recebeu" styleClass="badge, badge-success"/>
+                    </HBox>
+                    <HBox styleClass="member-row, member-row-current" spacing="9">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M7,6 A1,1 0 1 0 9,6 A1,1 0 1 0 7,6 M15,6 A1,1 0 1 0 17,6 A1,1 0 1 0 15,6 M7,12 A1,1 0 1 0 9,12 A1,1 0 1 0 7,12 M15,12 A1,1 0 1 0 17,12 A1,1 0 1 0 15,12 M7,18 A1,1 0 1 0 9,18 A1,1 0 1 0 7,18 M15,18 A1,1 0 1 0 17,18 A1,1 0 1 0 15,18"/></StackPane>
+                        <Label text="3º" styleClass="member-order"/>
+                        <StackPane styleClass="avatar, avatar-sm"><Label text="AM"/></StackPane>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Ana Mucavele" styleClass="member-name"/><Label text="+258 87 990 1802" styleClass="member-phone"/></VBox>
+                        <Label text="Nesta rodada" styleClass="badge, badge-brand"/>
+                    </HBox>
+                    <HBox styleClass="member-row" spacing="9">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M7,6 A1,1 0 1 0 9,6 A1,1 0 1 0 7,6 M15,6 A1,1 0 1 0 17,6 A1,1 0 1 0 15,6 M7,12 A1,1 0 1 0 9,12 A1,1 0 1 0 7,12 M15,12 A1,1 0 1 0 17,12 A1,1 0 1 0 15,12 M7,18 A1,1 0 1 0 9,18 A1,1 0 1 0 7,18 M15,18 A1,1 0 1 0 17,18 A1,1 0 1 0 15,18"/></StackPane>
+                        <Label text="4º" styleClass="member-order"/>
+                        <StackPane styleClass="avatar, avatar-sm"><Label text="EB"/></StackPane>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Ernesto Bila" styleClass="member-name"/><Label text="+258 86 301 6621" styleClass="member-phone"/></VBox>
+                        <Label text="Aguardando" styleClass="badge, badge-neutral"/>
+                    </HBox>
+                    <HBox styleClass="member-row" spacing="9">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M7,6 A1,1 0 1 0 9,6 A1,1 0 1 0 7,6 M15,6 A1,1 0 1 0 17,6 A1,1 0 1 0 15,6 M7,12 A1,1 0 1 0 9,12 A1,1 0 1 0 7,12 M15,12 A1,1 0 1 0 17,12 A1,1 0 1 0 15,12 M7,18 A1,1 0 1 0 9,18 A1,1 0 1 0 7,18 M15,18 A1,1 0 1 0 17,18 A1,1 0 1 0 15,18"/></StackPane>
+                        <Label text="5º" styleClass="member-order"/>
+                        <StackPane styleClass="avatar, avatar-sm"><Label text="LM"/></StackPane>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS"><Label text="Lina Matola" styleClass="member-name"/><Label text="+258 84 775 9341" styleClass="member-phone"/></VBox>
+                        <Label text="Aguardando" styleClass="badge, badge-neutral"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- Contribuições do ciclo -->
+            <VBox styleClass="card, contribution-card" GridPane.columnIndex="1" maxWidth="Infinity">
+                <HBox styleClass="card-heading" alignment="CENTER_LEFT">
+                    <VBox spacing="5">
+                        <Label text="Contribuições do ciclo" styleClass="section-title"/>
+                        <Label text="Pagamentos referentes a Junho" styleClass="section-sub"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="btnRegisterPayment" text="Registrar pagamento" styleClass="btn, btn-primary">
+                        <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M12,5 L12,19 M5,12 L19,12"/></StackPane></graphic>
+                    </Button>
+                </HBox>
+
+                <HBox styleClass="t-head" alignment="CENTER_LEFT">
+                    <Label text="MEMBRO" styleClass="t-th" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                    <Label text="QUOTA" styleClass="t-th, c-w110"/>
+                    <Label text="PAGAMENTO" styleClass="t-th, c-w110"/>
+                    <Label text="MÉTODO" styleClass="t-th, c-w90"/>
+                    <Label text="ESTADO" styleClass="t-th, c-w110"/>
+                    <Label styleClass="t-th, c-w40"/>
+                </HBox>
+
+                <VBox fx:id="contributionRows">
+                    <HBox styleClass="t-row">
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity"><StackPane styleClass="avatar, avatar-sm"><Label text="MC"/></StackPane><Label text="Marta Cossa" styleClass="t-name"/></HBox>
+                        <Label text="5.000,00 MT" styleClass="t-amount, c-w110"/>
+                        <Label text="14 Jun 2025" styleClass="t-td, c-w110"/>
+                        <Label text="M-Pesa" styleClass="t-td, c-w90"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PAGO" styleClass="badge, badge-success"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                    <HBox styleClass="t-row">
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity"><StackPane styleClass="avatar, avatar-sm"><Label text="JS"/></StackPane><Label text="João Silva" styleClass="t-name"/></HBox>
+                        <Label text="5.000,00 MT" styleClass="t-amount, c-w110"/>
+                        <Label text="15 Jun 2025" styleClass="t-td, c-w110"/>
+                        <Label text="E-Mola" styleClass="t-td, c-w90"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PAGO" styleClass="badge, badge-success"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                    <HBox styleClass="t-row">
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity"><StackPane styleClass="avatar, avatar-sm"><Label text="AM"/></StackPane><Label text="Ana Mucavele" styleClass="t-name"/></HBox>
+                        <Label text="5.000,00 MT" styleClass="t-amount, c-w110"/>
+                        <Label text="16 Jun 2025" styleClass="t-td, c-w110"/>
+                        <Label text="E-Mola" styleClass="t-td, c-w90"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PAGO" styleClass="badge, badge-success"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                    <HBox styleClass="t-row">
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity"><StackPane styleClass="avatar, avatar-sm"><Label text="EB"/></StackPane><Label text="Ernesto Bila" styleClass="t-name"/></HBox>
+                        <Label text="5.000,00 MT" styleClass="t-amount, c-w110"/>
+                        <Label text="—" styleClass="t-td, c-w110"/>
+                        <Label text="—" styleClass="t-td, c-w90"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PENDENTE" styleClass="badge, badge-warning"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                    <HBox styleClass="t-row, t-row-last">
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity"><StackPane styleClass="avatar, avatar-sm"><Label text="LM"/></StackPane><Label text="Lina Matola" styleClass="t-name"/></HBox>
+                        <Label text="5.000,00 MT" styleClass="t-amount, c-w110"/>
+                        <Label text="—" styleClass="t-td, c-w110"/>
+                        <Label text="—" styleClass="t-td, c-w90"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="ATRASADO" styleClass="badge, badge-danger"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </GridPane>
+    </VBox>
+</ScrollPane>

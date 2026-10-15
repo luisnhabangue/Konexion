@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<!-- Modal "Registrar contribuição" -->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="modal" stylesheets="@app.css">
+
+    <HBox styleClass="modal-head" alignment="TOP_LEFT">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Registrar contribuição" styleClass="modal-title"/>
+            <Label text="Adicione um pagamento ao ciclo atual." styleClass="modal-sub"/>
+        </VBox>
+        <Button fx:id="btnClose" styleClass="icon-button">
+            <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M6,6 L18,18 M18,6 L6,18"/></StackPane></graphic>
+        </Button>
+    </HBox>
+
+    <VBox styleClass="modal-body" spacing="15">
+        <VBox spacing="7">
+            <Label text="Membro" styleClass="field-label"/>
+            <ComboBox fx:id="cmbMember" styleClass="field-select" maxWidth="Infinity" value="Ana Mucavele">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Ana Mucavele"/>
+                        <String fx:value="Ernesto Bila"/>
+                        <String fx:value="Lina Matola"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </VBox>
+
+        <HBox spacing="12">
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Ciclo" styleClass="field-label"/>
+                <HBox styleClass="field-control" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtCycle" styleClass="field-input" promptText="Ciclo nº 3" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Valor (MT)" styleClass="field-label"/>
+                <HBox styleClass="field-control" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtAmount" styleClass="field-input" promptText="5.000,00" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="7">
+            <Label text="Método de pagamento" styleClass="field-label"/>
+            <ComboBox fx:id="cmbMethod" styleClass="field-select" maxWidth="Infinity" value="M-Pesa">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="M-Pesa"/>
+                        <String fx:value="E-Mola"/>
+                        <String fx:value="Transferência bancária"/>
+                        <String fx:value="Dinheiro em espécie"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </VBox>
+
+        <VBox spacing="7">
+            <Label text="Data de pagamento" styleClass="field-label"/>
+            <DatePicker fx:id="dpPaymentDate" styleClass="field-select" maxWidth="Infinity" promptText="18/06/2025"/>
+        </VBox>
+    </VBox>
+
+    <HBox styleClass="modal-footer" alignment="CENTER_RIGHT" spacing="9">
+        <Button fx:id="btnCancel" text="Cancelar" styleClass="btn, btn-ghost"/>
+        <Button fx:id="btnConfirm" text="Confirmar pagamento" styleClass="btn, btn-primary"/>
+    </HBox>
+</VBox>
