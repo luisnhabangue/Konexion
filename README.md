@@ -29,7 +29,24 @@ O sistema prevê as seguintes funcionalidades:
 -Histórico de operações: consulta dos acontecimentos relevantes relacionados com os grupos e as suas operações.
 -Validação das regras de negócio: prevenção de operações inválidas e manutenção da consistência dos dados.
 
-Estas funcionalidades serão implementadas progressivamente durante o desenvolvimento do projeto.
+As principais telas da aplicação já usam os dados persistidos: o utilizador pode registar-se e entrar, criar grupos, consultar os grupos de que participa, gerir membros, abrir ciclos, registar pagamentos, consultar o histórico e editar os dados de perfil.
+
+### Executar e utilizar
+
+1. Configure uma base de dados MySQL local e ajuste a URL e o utilizador da ligação em `src/main/resources/META-INF/persistence.xml`. O Hibernate cria/atualiza as tabelas da aplicação.
+2. Execute `mvn test` para compilar o projeto. No IDE, inicie a classe `view.Application`.
+3. No ecrã de entrada, crie uma conta. Depois de entrar, crie um grupo e adicione os utilizadores registados pelo respetivo username ou documento.
+4. Abra um ciclo com pelo menos dois membros e registe as contribuições na tela de detalhes. O histórico, o painel inicial e o perfil apresentam os registos da base de dados, sem depender dos exemplos visuais antigos.
+5. Para experimentar sem inserir manualmente vários registos, use **Carregar dados de demonstração** na tela de grupos. A operação é explícita e idempotente por conta; adiciona um grupo, dois membros fictícios, um ciclo e duas contribuições à base de dados.
+
+### Regras de negócio da interface
+
+- O username, email, telefone e documento não podem repetir-se; emails, telefones e palavras-passe são validados no registo.
+- Um grupo exige nome entre 3 e 80 caracteres, descrição até 150 caracteres, quota positiva, dia de pagamento entre 1 e 31 e frequência válida. O criador entra automaticamente como primeiro membro.
+- Só o criador pode adicionar membros, reordenar a fila ou eliminar o grupo. Não se adicionam/removem membros nem se elimina um grupo depois de começar o histórico de ciclos.
+- Um ciclo exige pelo menos dois membros e não pode ser aberto enquanto outro estiver em andamento. A rotação reinicia depois de todos os membros receberem.
+- Cada membro pode pagar uma única quota por ciclo; o valor deve ser pelo menos a quota do grupo e a data deve estar entre o início do ciclo e o dia atual. O ciclo conclui quando todos os membros pagam.
+- Um grupo com ciclos iniciados não pode ser eliminado, para preservar o histórico financeiro.
 
 Tecnologias Utilizadas
 Java            Desenvolvimento da lógica da aplicação.                

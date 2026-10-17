@@ -4,7 +4,9 @@ import dao.interfaces.GroupDaoInterface;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
 import model.Group;
+import model.User;
 
 import java.util.ArrayList;
 
@@ -38,12 +40,15 @@ public class GroupDao implements GroupDaoInterface {
 
     @Override
     public Group findByName(String name) {
+        if (name == null || name.isBlank()) {
+            return null;
+        }
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             return em.createQuery(
-                    "SELECT g FROM Group g WHERE g.groupName = :name",
+                    "SELECT g FROM Group g WHERE LOWER(g.groupName) = LOWER(:name)",
                     Group.class
-            ).setParameter("name", name).getSingleResult();
+            ).setParameter("name", name.trim()).getResultStream().findFirst().orElse(null);
         } finally {
             em.close();
         }
@@ -55,6 +60,9 @@ public class GroupDao implements GroupDaoInterface {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
+            User creator = entityManager.getReference(User.class, group.getCreatedBy().getId());
+            group.setCreatedBy(creator);
+            group.getMembers().forEach(member -> member.setUser(creator));
             entityManager.persist(group);
             transaction.commit();
         } catch (Exception e) {
@@ -72,10 +80,47 @@ public class GroupDao implements GroupDaoInterface {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             return new ArrayList<>(
-                    entityManager.createQuery("SELECT g FROM Group g", Group.class).getResultList()
+                    entityManager.createQuery(
+                            "SELECT DISTINCT g FROM Group g LEFT JOIN FETCH g.members m LEFT JOIN FETCH m.user ORDER BY g.createdAt DESC",
+                            Group.class
+                    ).getResultList()
             );
         } catch (Exception e) {
             throw new RuntimeException("Erro ao listar os grupos.", e);
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    @Override
+    public ArrayList<Group> findAllForUser(Long userId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            return new ArrayList<>(entityManager.createQuery(
+                            "SELECT DISTINCT g FROM Group g " +
+                                    "LEFT JOIN FETCH g.members m LEFT JOIN FETCH m.user " +
+                                    "WHERE g.createdBy.id = :userId OR EXISTS " +
+                                    "(SELECT ug.id FROM UserGroup ug WHERE ug.group = g AND ug.user.id = :userId) " +
+                                    "ORDER BY g.createdAt DESC",
+                            Group.class
+                    ).setParameter("userId", userId).getResultList());
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao listar os grupos do utilizador.", e);
+        } finally {
+            entityManager.close();
+        }
+    }
+
+    @Override
+    public Group findByIdWithMembers(Long id) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            return entityManager.createQuery(
+                            "SELECT DISTINCT g FROM Group g LEFT JOIN FETCH g.members m LEFT JOIN FETCH m.user WHERE g.groupId = :id",
+                            Group.class
+                    ).setParameter("id", id).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } finally {
             entityManager.close();
         }
@@ -101,14 +146,6 @@ public class GroupDao implements GroupDaoInterface {
 
     @Override
     public void deleteGroup(Group group) {
-        if (group.getMembers() != null && !group.getMembers().isEmpty()) {
-            throw new IllegalStateException("Não é possível remover um grupo que já possui membros vinculados.");
-        }
-
-        if (group.getCycles() != null && !group.getCycles().isEmpty()) {
-            throw new IllegalStateException("Não é possível remover um grupo que já possui histórico de ciclos/rodadas.");
-        }
-
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
         try {

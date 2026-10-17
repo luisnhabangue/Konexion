@@ -58,6 +58,11 @@
     /* Repita o mesmo padrão de cantos para a borda */
     -fx-background-radius: 15 15 15 0;
     -fx-border-radius: 15 15 15 0;
+}
+.icon-personaldata{
+    -fx-background-color: #0F5257;
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
 
 }
 

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<!--
+  Modal "Criar novo grupo". Mostre num Stage próprio (UNDECORATED/TRANSPARENT)
+  ou dentro de um StackPane com a classe .modal-backdrop por cima do conteúdo.
+-->
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="modal" stylesheets="@app.css" fx:controller="controller.CreateGroupController">
+
+    <HBox styleClass="modal-head" alignment="TOP_LEFT">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label text="Criar novo grupo" styleClass="modal-title"/>
+            <Label text="Configure as regras do seu novo Xitique." styleClass="modal-sub"/>
+        </VBox>
+        <Button fx:id="btnClose" styleClass="icon-button">
+            <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M6,6 L18,18 M18,6 L6,18"/></StackPane></graphic>
+        </Button>
+    </HBox>
+
+    <VBox styleClass="modal-body" spacing="15">
+        <VBox spacing="7">
+            <Label text="Nome do grupo" styleClass="field-label"/>
+            <HBox styleClass="field-control" alignment="CENTER_LEFT">
+                <TextField fx:id="txtName" styleClass="field-input" promptText="Ex.: Família Unida" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+
+        <VBox spacing="7">
+            <Label text="Descrição" styleClass="field-label"/>
+            <TextArea fx:id="txtDescription" styleClass="field-textarea" promptText="Qual é o objetivo deste grupo?" wrapText="true" prefRowCount="3"/>
+        </VBox>
+
+        <HBox spacing="12">
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Valor por membro (MT)" styleClass="field-label"/>
+                <HBox styleClass="field-control" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtAmount" styleClass="field-input" promptText="5.000,00" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Dia de pagamento" styleClass="field-label"/>
+                <HBox styleClass="field-control" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtPayDay" styleClass="field-input" promptText="25" HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="7">
+            <Label text="Frequência" styleClass="field-label"/>
+            <ComboBox fx:id="cmbFrequency" styleClass="field-select" maxWidth="Infinity" value="Mensal (30 dias)">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Semanal (7 dias)"/>
+                        <String fx:value="Quinzenal (15 dias)"/>
+                        <String fx:value="Mensal (30 dias)"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </VBox>
+    </VBox>
+
+    <HBox styleClass="modal-footer" alignment="CENTER_RIGHT" spacing="9">
+        <Button fx:id="btnCancel" text="Cancelar" styleClass="btn, btn-ghost"/>
+        <Button fx:id="btnConfirm" text="Criar grupo" styleClass="btn, btn-primary"/>
+    </HBox>
+</VBox>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.ProfileController">
+    <fx:define>
+        <ToggleGroup fx:id="profileTabs"/>
+    </fx:define>
+
+    <VBox styleClass="page" spacing="22">
+
+        <VBox spacing="6">
+            <Label text="Meu perfil" styleClass="page-title"/>
+            <Label text="Consulte os seus dados, histórico e preferências." styleClass="page-sub"/>
+        </VBox>
+
+        <!-- ================= CARTÃO DE PERFIL ================= -->
+        <VBox styleClass="profile-card">
+            <Region styleClass="profile-cover"/>
+
+            <HBox styleClass="profile-main" spacing="15" alignment="TOP_LEFT">
+                <StackPane styleClass="avatar, avatar-xl, avatar-bordered" translateY="-31" minWidth="60">
+                    <Label fx:id="lblProfileInitials" text="?"/>
+                </StackPane>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label fx:id="lblProfileName" text="João Silva" styleClass="profile-name"/>
+                    <Label text="Dados pessoais da sua conta" styleClass="profile-since"/>
+                    <HBox spacing="6" alignment="CENTER_LEFT">
+                        <Label text="CONTA ATIVA" styleClass="badge, badge-success"/>
+                        <VBox.margin><Insets top="4"/></VBox.margin>
+                    </HBox>
+                </VBox>
+                <Button fx:id="btnEditProfile" text="Editar perfil" styleClass="btn, btn-secondary">
+                    <HBox.margin><Insets top="16"/></HBox.margin>
+                </Button>
+            </HBox>
+
+            <GridPane styleClass="profile-info" hgap="12">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25"/>
+                </columnConstraints>
+                <VBox spacing="6" GridPane.columnIndex="0"><Label text="Username" styleClass="info-label"/><Label fx:id="lblUsername" text="@joaosilva" styleClass="info-value"/></VBox>
+                <VBox spacing="6" GridPane.columnIndex="1"><Label text="Telefone" styleClass="info-label"/><Label fx:id="lblPhone" text="+258 85 643 2210" styleClass="info-value"/></VBox>
+                <VBox spacing="6" GridPane.columnIndex="2"><Label text="Email" styleClass="info-label"/><Label fx:id="lblEmail" text="joao.silva@email.co.mz" styleClass="info-value"/></VBox>
+                <VBox spacing="6" GridPane.columnIndex="3"><Label text="NUIT / BI" styleClass="info-label"/><Label fx:id="lblDocument" text="1104•••••" styleClass="info-value"/></VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- ================= TABS ================= -->
+        <HBox styleClass="tabs" spacing="25">
+            <ToggleButton fx:id="tabContributions" text="Histórico de contribuições" styleClass="tab-btn" toggleGroup="$profileTabs" selected="true"/>
+            <ToggleButton fx:id="tabFinished" text="Xitiques finalizados" styleClass="tab-btn" toggleGroup="$profileTabs"/>
+            <ToggleButton fx:id="tabSettings" text="Configurações da conta" styleClass="tab-btn" toggleGroup="$profileTabs"/>
+        </HBox>
+
+        <!-- Painéis: o controller alterna visible/managed conforme o tab selecionado -->
+        <StackPane>
+            <!-- 1) Histórico -->
+            <VBox fx:id="paneContributions" styleClass="card, table-card">
+                <HBox styleClass="t-head">
+                    <Label text="DATA · GRUPO · VALOR · ESTADO" styleClass="t-th"/>
+                </HBox>
+                <VBox fx:id="profileActivityRows"/>
+            </VBox>
+
+            <!-- 2) Finalizados (estado vazio) -->
+            <VBox fx:id="paneFinished" styleClass="card, empty-card" alignment="CENTER" spacing="8" visible="false" managed="false">
+                <StackPane styleClass="empty-icon">
+                    <StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-lg" content="M5,12 L9,16 L19,6"/></StackPane>
+                </StackPane>
+                <Label text="Ainda não há xitiques finalizados" styleClass="section-title"/>
+                <Label text="Os grupos concluídos serão apresentados aqui." styleClass="section-sub"/>
+            </VBox>
+
+            <!-- 3) Configurações -->
+            <VBox fx:id="paneSettings" styleClass="card, settings-card" visible="false" managed="false">
+                <Label text="Preferências da conta" styleClass="section-title"/>
+                <HBox styleClass="setting-row" alignment="CENTER_LEFT">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Notificações de pagamentos" styleClass="setting-title"/>
+                        <Label text="Receber lembretes antes da data da quota" styleClass="setting-sub"/>
+                    </VBox>
+                    <CheckBox fx:id="chkPaymentNotifications" selected="true"/>
+                    <VBox.margin><Insets top="12"/></VBox.margin>
+                </HBox>
+                <HBox styleClass="setting-row" alignment="CENTER_LEFT">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Resumo mensal" styleClass="setting-title"/>
+                        <Label text="Receber um relatório financeiro por email" styleClass="setting-sub"/>
+                    </VBox>
+                    <CheckBox fx:id="chkMonthlySummary" selected="true"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+    </VBox>
+</ScrollPane>

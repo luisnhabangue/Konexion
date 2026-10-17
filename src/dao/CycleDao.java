@@ -84,13 +84,12 @@ public class CycleDao implements CycleDaoInterface {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             return em.createQuery(
-                            "SELECT c FROM Cycle c WHERE c.group.groupId = :groupId ORDER BY c.numero ASC",
+                            "SELECT c FROM Cycle c LEFT JOIN FETCH c.beneficiary b LEFT JOIN FETCH b.user " +
+                                    "WHERE c.group.groupId = :groupId ORDER BY c.numero ASC",
                             Cycle.class
                     )
                     .setParameter("groupId", groupId)
                     .getResultList();
-        } catch (Exception e) {
-            return new ArrayList<>();
         } finally {
             em.close();
         }

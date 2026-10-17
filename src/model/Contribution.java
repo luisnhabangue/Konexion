@@ -13,7 +13,13 @@ import java.time.LocalDate;
  * @version 1.0
  */
 @Entity
-@Table(name = "contributions")
+@Table(
+        name = "contributions",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_contribution_member_cycle",
+                columnNames = {"user_group_id", "cycle_id"}
+        )
+)
 public class Contribution {
 
     /** Identificador único da contribuição. */
@@ -90,5 +96,5 @@ public class Contribution {
     public void setPaymentMethod(PaymentMethod paymentMethod) { this.paymentMethod = paymentMethod; }
 
     public ContributionStatus getStatus() { return status; }
-    public void setStatus(ContributionStatus status) { this.status = status; }
+    void setStatus(ContributionStatus status) { this.status = status; }
 }

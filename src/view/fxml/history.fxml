@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.HistoryController">
+    <VBox styleClass="page" spacing="22">
+        <HBox alignment="CENTER_LEFT">
+            <VBox spacing="6">
+                <Label text="Histórico" styleClass="page-title"/>
+                <Label text="Consulte as contribuições registadas na sua conta." styleClass="page-sub"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnExportCsv" text="Exportar CSV" styleClass="btn, btn-ghost"/>
+        </HBox>
+        <VBox styleClass="card, table-card">
+            <HBox styleClass="t-head">
+                <Label text="DATA" styleClass="t-th, c-w150"/>
+                <Label text="GRUPO" styleClass="t-th" HBox.hgrow="ALWAYS"/>
+                <Label text="VALOR" styleClass="t-th, c-w130"/>
+                <Label text="ESTADO" styleClass="t-th, c-w110"/>
+            </HBox>
+            <VBox fx:id="activityRows"/>
+        </VBox>
+    </VBox>
+</ScrollPane>

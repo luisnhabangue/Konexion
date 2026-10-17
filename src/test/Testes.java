@@ -13,14 +13,17 @@ import java.time.LocalDate;
 
 public class Testes {
 
-    static void main(String[] args) {
 
+
+
+    static void main(String[] args) {
         //Teste registro
 
         AuthService as = new AuthService();
 
         User user = new User(null,"Luis","Nhabangue","21214214142", Gender.M,"nhabangue","12345678","luisnhabangue@gmail.com","+258 870252417");
       //  as.register(user, "12345678");
+
 
              //User user_2 = new User(null,"Wagner","Vilanculo","212142141242", Gender.M,"vilanculo","12345678","luisnhaban@gmail.com","+258 870252617");
 

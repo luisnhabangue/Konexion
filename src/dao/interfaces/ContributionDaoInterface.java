@@ -1,6 +1,7 @@
 package dao.interfaces;
 
 import model.Contribution;
+
 import java.math.BigDecimal;
 import java.util.List;
 

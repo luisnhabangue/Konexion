@@ -15,5 +15,8 @@ public enum PaymentMethod {
     EMOLA,
 
     /** Pagamento efetuado via transferência ou depósito bancário. */
-    BANK
+    BANK,
+
+    /** Pagamento em numerário. */
+    CASH
 }

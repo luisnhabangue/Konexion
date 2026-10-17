@@ -59,6 +59,27 @@ public class UserGroupDao implements UserGroupInterface {
     }
 
     @Override
+    public void delete(UserGroup userGroup) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            UserGroup managed = em.find(UserGroup.class, userGroup.getId());
+            if (managed != null) {
+                em.remove(managed);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw new RuntimeException("Erro ao remover o membro do grupo.", e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
     public UserGroup findByUserAndGroup(Long userId, Long groupId) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
@@ -86,8 +107,6 @@ public class UserGroupDao implements UserGroupInterface {
                     )
                     .setParameter("groupId", groupId)
                     .getResultList();
-        } catch (Exception e) {
-            return new ArrayList<>();
         } finally {
             em.close();
         }

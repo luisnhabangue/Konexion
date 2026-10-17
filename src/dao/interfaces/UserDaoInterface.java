@@ -1,6 +1,7 @@
 package dao.interfaces;
 
 import model.User;
+
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ public interface UserDaoInterface {
 
     /**
      * Procura um utilizador pelo seu ID.
+     *
      * @param id Identificador do utilizador
      * @return {@link User} se encontrado, ou {@code null}
      */
@@ -37,6 +39,8 @@ public interface UserDaoInterface {
      * @return {@link User} se encontrado, ou {@code null}
      */
     User findByEmail(String email);
+
+    User findByDocumentId(String documentId);
 
     /**
      * Atualiza os dados de um utilizador existente.

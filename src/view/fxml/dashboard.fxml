@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.DashboardController">
+    <VBox styleClass="page" spacing="22">
+
+        <!-- Título -->
+        <VBox spacing="6">
+            <Label fx:id="lblGreeting" text="Bom dia, João" styleClass="page-title"/>
+            <Label fx:id="lblToday" text="Aqui está o resumo dos seus xitiques hoje, 18 de Junho." styleClass="page-sub"/>
+        </VBox>
+
+        <!-- Cards de resumo -->
+        <GridPane hgap="15">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.34"/>
+            </columnConstraints>
+
+            <!-- Total investido -->
+            <StackPane styleClass="card, summary-card" GridPane.columnIndex="0" maxWidth="Infinity">
+                <VBox alignment="TOP_LEFT" spacing="0">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Total investido" styleClass="summary-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="mini-button">
+                            <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M4,12 A1,1 0 1 0 6,12 A1,1 0 1 0 4,12 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M18,12 A1,1 0 1 0 20,12 A1,1 0 1 0 18,12"/></StackPane></graphic>
+                        </Button>
+                    </HBox>
+                    <Label fx:id="lblTotalInvested" text="68.500,00 MT" styleClass="summary-value"/>
+                    <HBox alignment="CENTER_LEFT" spacing="6" style="-icon: #25855a;">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M3,17 L9,11 L13,15 L21,7 M15,7 L21,7 L21,13"/></StackPane>
+                        <Label text="Contribuições pagas" styleClass="summary-positive"/>
+                        <Label text="dados registados na base de dados" styleClass="summary-detail"/>
+                    </HBox>
+                </VBox>
+                <StackPane styleClass="summary-icon, summary-teal" StackPane.alignment="BOTTOM_RIGHT">
+                    <StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M6,5 L18,5 A3,3 0 0 1 21,8 L21,17 A3,3 0 0 1 18,20 L6,20 A3,3 0 0 1 3,17 L3,8 A3,3 0 0 1 6,5 Z M16,13 L21,13 M3,9 L21,9"/></StackPane>
+                    <StackPane.margin><Insets right="0" bottom="0"/></StackPane.margin>
+                </StackPane>
+            </StackPane>
+
+            <!-- Próximo recebimento -->
+            <StackPane styleClass="card, summary-card" GridPane.columnIndex="1" maxWidth="Infinity">
+                <VBox alignment="TOP_LEFT" spacing="0">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Próximo recebimento" styleClass="summary-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="mini-button">
+                            <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M4,12 A1,1 0 1 0 6,12 A1,1 0 1 0 4,12 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M18,12 A1,1 0 1 0 20,12 A1,1 0 1 0 18,12"/></StackPane></graphic>
+                        </Button>
+                    </HBox>
+                    <Label fx:id="lblNextPayout" text="35.000,00 MT" styleClass="summary-value"/>
+                    <HBox alignment="CENTER_LEFT" spacing="6">
+                        <Label text="Valor potencial por rodada" styleClass="summary-detail"/>
+                    </HBox>
+                </VBox>
+                <StackPane styleClass="summary-icon, summary-blue" StackPane.alignment="BOTTOM_RIGHT">
+                    <StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M5,5 L19,5 A2,2 0 0 1 21,7 L21,19 A2,2 0 0 1 19,21 L5,21 A2,2 0 0 1 3,19 L3,7 A2,2 0 0 1 5,5 Z M16,3 L16,7 M8,3 L8,7 M3,10 L21,10"/></StackPane>
+                </StackPane>
+            </StackPane>
+
+            <!-- Xitiques ativos -->
+            <StackPane styleClass="card, summary-card" GridPane.columnIndex="2" maxWidth="Infinity">
+                <VBox alignment="TOP_LEFT" spacing="0">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Xitiques ativos" styleClass="summary-label"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="mini-button">
+                            <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M4,12 A1,1 0 1 0 6,12 A1,1 0 1 0 4,12 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M18,12 A1,1 0 1 0 20,12 A1,1 0 1 0 18,12"/></StackPane></graphic>
+                        </Button>
+                    </HBox>
+                    <Label fx:id="lblActiveGroups" text="3 grupos" styleClass="summary-value"/>
+                    <HBox alignment="CENTER_LEFT" spacing="6">
+                        <Label text="Grupos a que pertence" styleClass="summary-detail"/>
+                        <Label text="ver os seus grupos" styleClass="summary-link"/>
+                    </HBox>
+                </VBox>
+                <StackPane styleClass="summary-icon, summary-amber" StackPane.alignment="BOTTOM_RIGHT">
+                    <StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M16,21 L16,19 A4,4 0 0 0 12,15 L5,15 A4,4 0 0 0 1,19 L1,21 M4.5,7 A4,4 0 1 0 12.5,7 A4,4 0 1 0 4.5,7 M18,8 L18,14 M15,11 L21,11"/></StackPane>
+                </StackPane>
+            </StackPane>
+        </GridPane>
+
+        <!-- Cabeçalho da secção de grupos -->
+        <HBox styleClass="section-heading" alignment="CENTER_LEFT">
+            <VBox spacing="5">
+                <Label text="Meus grupos de Xitique" styleClass="section-title"/>
+                <Label text="Acompanhe os ciclos e contribuições dos seus grupos" styleClass="section-sub"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnSeeAllGroups" text="Ver todos" styleClass="btn, btn-ghost" contentDisplay="RIGHT">
+                <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></graphic>
+            </Button>
+        </HBox>
+
+        <!-- Cards de grupos -->
+        <GridPane hgap="15">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.34"/>
+            </columnConstraints>
+
+            <!-- Família Unida -->
+            <VBox fx:id="cardGroup1" styleClass="group-card" GridPane.columnIndex="0" maxWidth="Infinity">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="avatar, avatar-lg"><Label text="FU"/></StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button>
+                </HBox>
+                <Label text="Família Unida" styleClass="group-name"/>
+                <HBox spacing="13" alignment="CENTER_LEFT" styleClass="group-meta">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7"/></StackPane>
+                        <Label text="7 membros" styleClass="group-meta"/>
+                    </HBox>
+                    <Label text="Ciclo 3" styleClass="group-meta"/>
+                </HBox>
+                <HBox styleClass="progress-row" alignment="CENTER_LEFT" style="-fx-padding: 20 0 7 0;">
+                    <Label text="Progresso do ciclo" styleClass="progress-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="5/7 pagos" styleClass="progress-value"/>
+                </HBox>
+                <ProgressBar progress="0.714" styleClass="xt-progress" maxWidth="Infinity"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Próximo: 25 Jun" styleClass="group-footer-text"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow"><StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></StackPane>
+                    <VBox.margin><Insets top="16"/></VBox.margin>
+                </HBox>
+            </VBox>
+
+            <!-- Amigos da Baixa -->
+            <VBox fx:id="cardGroup2" styleClass="group-card" GridPane.columnIndex="1" maxWidth="Infinity">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="avatar, avatar-lg, avatar-blue"><Label text="AB"/></StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button>
+                </HBox>
+                <Label text="Amigos da Baixa" styleClass="group-name"/>
+                <HBox spacing="13" alignment="CENTER_LEFT">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7"/></StackPane>
+                        <Label text="6 membros" styleClass="group-meta"/>
+                    </HBox>
+                    <Label text="Ciclo 5" styleClass="group-meta"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 0 7 0;">
+                    <Label text="Progresso do ciclo" styleClass="progress-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="6/6 pagos" styleClass="progress-value"/>
+                </HBox>
+                <ProgressBar progress="1.0" styleClass="xt-progress" maxWidth="Infinity"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Próximo: 25 Jun" styleClass="group-footer-text"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow"><StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></StackPane>
+                    <VBox.margin><Insets top="16"/></VBox.margin>
+                </HBox>
+            </VBox>
+
+            <!-- Empreendedores -->
+            <VBox fx:id="cardGroup3" styleClass="group-card" GridPane.columnIndex="2" maxWidth="Infinity">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="avatar, avatar-lg, avatar-amber"><Label text="EM"/></StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button>
+                </HBox>
+                <Label text="Empreendedores" styleClass="group-name"/>
+                <HBox spacing="13" alignment="CENTER_LEFT">
+                    <HBox spacing="4" alignment="CENTER_LEFT">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7"/></StackPane>
+                        <Label text="9 membros" styleClass="group-meta"/>
+                    </HBox>
+                    <Label text="Ciclo 2" styleClass="group-meta"/>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 0 7 0;">
+                    <Label text="Progresso do ciclo" styleClass="progress-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="4/9 pagos" styleClass="progress-value"/>
+                </HBox>
+                <ProgressBar progress="0.444" styleClass="xt-progress" maxWidth="Infinity"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Próximo: 25 Jun" styleClass="group-footer-text"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow"><StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></StackPane>
+                    <VBox.margin><Insets top="16"/></VBox.margin>
+                </HBox>
+            </VBox>
+        </GridPane>
+
+        <!-- Atividade recente -->
+        <VBox styleClass="card, table-card">
+            <HBox styleClass="table-toolbar" alignment="CENTER_LEFT">
+                <VBox spacing="5">
+                    <Label text="Atividade recente" styleClass="section-title"/>
+                    <Label text="As suas últimas movimentações" styleClass="section-sub"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnSeeAllActivity" text="Ver todas" styleClass="btn, btn-ghost" contentDisplay="RIGHT">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane></graphic>
+                </Button>
+            </HBox>
+
+            <HBox styleClass="t-head" alignment="CENTER_LEFT">
+                <Label text="DATA" styleClass="t-th, c-w150"/>
+                <Label text="GRUPO" styleClass="t-th" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Label text="VALOR" styleClass="t-th, c-w130"/>
+                <Label text="ESTADO" styleClass="t-th, c-w110"/>
+                <Label styleClass="t-th, c-w40"/>
+            </HBox>
+
+            <HBox fx:id="activityList" spacing="0">
+                <VBox HBox.hgrow="ALWAYS">
+                    <HBox styleClass="t-row">
+                        <Label text="Hoje, 09:42" styleClass="t-td, c-w150"/>
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                            <StackPane styleClass="avatar, avatar-sm"><Label text="FU"/></StackPane>
+                            <Label text="Família Unida" styleClass="t-name"/>
+                        </HBox>
+                        <Label text="5.000,00 MT" styleClass="t-amount, c-w130"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PAGO" styleClass="badge, badge-success"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                    <HBox styleClass="t-row">
+                        <Label text="Ontem, 14:18" styleClass="t-td, c-w150"/>
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                            <StackPane styleClass="avatar, avatar-sm"><Label text="AB"/></StackPane>
+                            <Label text="Amigos da Baixa" styleClass="t-name"/>
+                        </HBox>
+                        <Label text="3.500,00 MT" styleClass="t-amount, c-w130"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PAGO" styleClass="badge, badge-success"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                    <HBox styleClass="t-row">
+                        <Label text="12 Jun, 11:05" styleClass="t-td, c-w150"/>
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                            <StackPane styleClass="avatar, avatar-sm"><Label text="EM"/></StackPane>
+                            <Label text="Empreendedores" styleClass="t-name"/>
+                        </HBox>
+                        <Label text="7.500,00 MT" styleClass="t-amount, c-w130"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PENDENTE" styleClass="badge, badge-warning"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                    <HBox styleClass="t-row, t-row-last">
+                        <Label text="08 Jun, 16:32" styleClass="t-td, c-w150"/>
+                        <HBox spacing="9" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                            <StackPane styleClass="avatar, avatar-sm"><Label text="FU"/></StackPane>
+                            <Label text="Família Unida" styleClass="t-name"/>
+                        </HBox>
+                        <Label text="5.000,00 MT" styleClass="t-amount, c-w130"/>
+                        <HBox styleClass="c-w110" alignment="CENTER_LEFT"><Label text="PAGO" styleClass="badge, badge-success"/></HBox>
+                        <HBox styleClass="c-w40" alignment="CENTER_RIGHT"><Button styleClass="mini-button"><graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M11,5 A1,1 0 1 0 13,5 A1,1 0 1 0 11,5 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12 M11,19 A1,1 0 1 0 13,19 A1,1 0 1 0 11,19"/></StackPane></graphic></Button></HBox>
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>

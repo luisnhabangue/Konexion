@@ -31,6 +31,10 @@ public interface GroupDaoInterface {
      */
     List<Group> findAll();
 
+    List<Group> findAllForUser(Long userId);
+
+    Group findByIdWithMembers(Long id);
+
     /**
      * Atualiza as informações de um grupo.
      * @param group Grupo a atualizar
