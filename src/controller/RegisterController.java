@@ -1,5 +1,8 @@
 package controller;
 
+import io.github.palexdev.materialfx.controls.MFXButton;
+import io.github.palexdev.materialfx.controls.MFXPasswordField;
+import io.github.palexdev.materialfx.controls.MFXTextField;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -8,42 +11,35 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.stage.Window;
-
 import model.User;
 import model.enums.Gender;
 import service.AuthService;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDate;
 
 public class RegisterController {
 
     private final AuthService authService = new AuthService();
 
-    // Dados pessoais - Passo 1
-    @FXML private TextField txtPrimeirosNomes;
-    @FXML private TextField txtApelidos;
-    @FXML private TextField txtDocumento;
+    @FXML private MFXTextField txtPrimeirosNomes;
+    @FXML private MFXTextField txtApelidos;
+    @FXML private MFXTextField txtDocumento;
     @FXML private ComboBox<Gender> cmbGenero;
     @FXML private DatePicker dpDataNascimento;
-    @FXML private TextField txtTelefone;
+    @FXML private MFXTextField txtTelefone;
 
-    // Credenciais - Passo 2
-    @FXML private TextField txtUsername;
-    @FXML private TextField txtEmail;
-    @FXML private PasswordField txtPassword;
-    @FXML private PasswordField txtConfirmPassword;
+    @FXML private MFXTextField txtUsername;
+    @FXML private MFXTextField txtEmail;
+    @FXML private MFXPasswordField txtPassword;
+    @FXML private MFXPasswordField txtConfirmPassword;
 
-    // Botões e navegação
-    @FXML private javafx.scene.control.Button btnContinuar;
-    @FXML private javafx.scene.control.Button btnCriarConta;
-    @FXML private javafx.scene.control.Button btnVoltarPasso;
+    @FXML private MFXButton btnContinuar;
+    @FXML private MFXButton btnCriarConta;
+    @FXML private MFXButton btnVoltarPasso;
     @FXML private Hyperlink linkVoltarLogin;
 
-    // Dados pessoais guardados durante a navegação
     private String firstName;
     private String lastName;
     private String documentId;
@@ -53,15 +49,12 @@ public class RegisterController {
 
     @FXML
     private void initialize() {
-
-        // Inicializar apenas os campos existentes no ecrã atual
         if (cmbGenero != null) {
             cmbGenero.getItems().setAll(
                     Gender.M,
                     Gender.F,
                     Gender.NOT_SPECIFIED
             );
-            cmbGenero.setValue(Gender.NOT_SPECIFIED);
         }
 
         if (btnContinuar != null) {
@@ -81,16 +74,13 @@ public class RegisterController {
         }
     }
 
-    // PASSO 1: validar e avançar
     private void continueRegistration(Object source) {
-
-        if (txtPrimeirosNomes.getText().trim().isEmpty()
-                || txtApelidos.getText().trim().isEmpty()
-                || txtDocumento.getText().trim().isEmpty()
-                || txtTelefone.getText().trim().isEmpty()
+        if (isBlank(txtPrimeirosNomes.getText())
+                || isBlank(txtApelidos.getText())
+                || isBlank(txtDocumento.getText())
+                || isBlank(txtTelefone.getText())
                 || cmbGenero.getValue() == null
                 || dpDataNascimento.getValue() == null) {
-
             showAlert(Alert.AlertType.WARNING,
                     "Preencha todos os dados pessoais antes de continuar.");
             return;
@@ -103,34 +93,25 @@ public class RegisterController {
         birthDate = dpDataNascimento.getValue();
         phone = txtTelefone.getText().trim();
 
-        showScreen(source, "/view/fxml/register_step2.fxml");
+        showStep(source, "/view/fxml/register_step2.fxml");
     }
 
-    // PASSO 2: criar conta
     private void createAccount(Object source) {
-
-        if (txtUsername.getText().trim().isEmpty()
-                || txtEmail.getText().trim().isEmpty()
-                || txtPassword.getText().isEmpty()
-                || txtConfirmPassword.getText().isEmpty()) {
-
+        if (isBlank(txtUsername.getText())
+                || isBlank(txtEmail.getText())
+                || isBlank(txtPassword.getText())
+                || isBlank(txtConfirmPassword.getText())) {
             showAlert(Alert.AlertType.WARNING,
                     "Preencha todos os campos das credenciais.");
             return;
         }
 
         if (!txtPassword.getText().equals(txtConfirmPassword.getText())) {
-            showAlert(Alert.AlertType.ERROR,
-                    "As senhas não coincidem.");
+            showAlert(Alert.AlertType.ERROR, "As senhas não coincidem.");
             return;
         }
 
         try {
-            /*
-             * IMPORTANTE:
-             * Este construtor deve corresponder ao construtor real
-             * da tua classe User.
-             */
             User user = new User(
                     null,
                     firstName,
@@ -144,65 +125,63 @@ public class RegisterController {
             );
 
             authService.register(user, txtConfirmPassword.getText());
-
             showAlert(Alert.AlertType.INFORMATION,
                     "A conta foi criada com sucesso. Entre com o seu username e senha.");
-
             showLogin(source);
-
-        } catch (RuntimeException e) {
-            showAlert(Alert.AlertType.ERROR, e.getMessage());
+        } catch (RuntimeException exception) {
+            showAlert(Alert.AlertType.ERROR, exception.getMessage());
         }
     }
 
-    // VOLTAR DO PASSO 2 PARA O PASSO 1
     private void showPreviousStep(Object source) {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/view/fxml/register_step1.fxml")
-            );
-
-            Parent root = loader.load();
-
-            RegisterController controller = loader.getController();
-
-            // Restaurar os dados anteriormente preenchidos
-            controller.txtPrimeirosNomes.setText(firstName);
-            controller.txtApelidos.setText(lastName);
-            controller.txtDocumento.setText(documentId);
-            controller.cmbGenero.setValue(gender);
-            controller.dpDataNascimento.setValue(birthDate);
-            controller.txtTelefone.setText(phone);
-
-            ((Node) source).getScene().setRoot(root);
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR,
-                    "Não foi possível voltar ao passo anterior: " + e.getMessage());
-        }
+        showStep(source, "/view/fxml/register_step1.fxml");
     }
 
-    // ABRIR O LOGIN
     private void showLogin(Object source) {
-        showScreen(source, "/view/fxml/LoginView.fxml");
+        showStep(source, "/view/fxml/LoginView.fxml");
     }
 
-    // MÉTODO AUXILIAR PARA MUDAR DE ECRÃ
-    private void showScreen(Object source, String fxmlPath) {
+    private void showStep(Object source, String fxmlPath) {
+        URL fxmlUrl = getClass().getResource(fxmlPath);
+        if (fxmlUrl == null) {
+            showAlert(Alert.AlertType.ERROR, "Não foi possível encontrar o ecrã: " + fxmlPath);
+            return;
+        }
 
         try {
-            Parent root = FXMLLoader.load(
-                    getClass().getResource(fxmlPath)
-            );
-
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent root = loader.load();
+            Object loadedController = loader.getController();
+            if (loadedController instanceof RegisterController target) {
+                target.restorePersonalData(this);
+            }
             ((Node) source).getScene().setRoot(root);
-
-        } catch (IOException | NullPointerException e) {
+        } catch (IOException exception) {
             showAlert(Alert.AlertType.ERROR,
-                    "Não foi possível abrir o ecrã: " + fxmlPath
-                            + "\n" + e.getMessage());
+                    "Não foi possível abrir o ecrã: " + fxmlPath + "\n" + exception.getMessage());
         }
+    }
+
+    private void restorePersonalData(RegisterController source) {
+        firstName = source.firstName;
+        lastName = source.lastName;
+        documentId = source.documentId;
+        gender = source.gender;
+        birthDate = source.birthDate;
+        phone = source.phone;
+
+        if (txtPrimeirosNomes != null && firstName != null) {
+            txtPrimeirosNomes.setText(firstName);
+            txtApelidos.setText(lastName);
+            txtDocumento.setText(documentId);
+            cmbGenero.setValue(gender);
+            dpDataNascimento.setValue(birthDate);
+            txtTelefone.setText(phone);
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     private void showAlert(Alert.AlertType type, String message) {

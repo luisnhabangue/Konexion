@@ -57,7 +57,7 @@ public class LoginController {
 
     public void createAccount(ActionEvent actionEvent) {
         try {
-            Parent register = FXMLLoader.load(getClass().getResource("/view/fxml/RegisterView.fxml"));
+            Parent register = FXMLLoader.load(getClass().getResource("/view/fxml/register_step1.fxml"));
             ((Node) actionEvent.getSource()).getScene().setRoot(register);
         } catch (IOException exception) {
             showAlert(Alert.AlertType.ERROR, "Não foi possível abrir o registo: " + exception.getMessage());
