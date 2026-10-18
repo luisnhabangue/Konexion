@@ -19,7 +19,7 @@
 
 <br/>
 
-[Repositório](https://github.com/luisnhabangue/iXitique) · [Perfil da autora](https://github.com/aristidiatembe-dev) · [Equipa](#-equipa)
+[Repositório](https://github.com/luisnhabangue/iXitique) · [Equipa](#-equipa)
 
 </div>
 
