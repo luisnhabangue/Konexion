@@ -5,13 +5,21 @@ import exceptions.InvalidUsernameException;
 import exceptions.UserAlreadyExistsException;
 import exceptions.UserNotFoundException;
 import model.User;
+import model.enums.UserRole;
 import org.mindrot.jbcrypt.BCrypt;
 import util.EntityManagerFactoryUtil;
 import util.PasswordUtil;
 import validation.UserValidator;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
+
 /**
- * Serviço responsável pela autenticação e gestão de registo de utilizadores.
+ * Serviço responsável pelo registo, autenticação e gestão
+ * dos dados pessoais dos utilizadores do sistema Konexion.
+ *
+ * Aplica as regras de negócio relacionadas com contas,
+ * credenciais e validação dos dados.
  *
  * @author Sistema iXitique
  * @version 1.0
@@ -20,8 +28,35 @@ public class AuthService {
 
     private final UserDao userDao;
 
+    private static final Pattern USERNAME_PATTERN =
+            Pattern.compile("^[a-z][a-z0-9._]{2,18}[a-z0-9_]$");
+
+    private static final Pattern MOZAMBICAN_PHONE_PATTERN =
+            Pattern.compile("^(?:\\+258)?(?:82|83|84|85|86|87)[0-9]{7}$");
+
+    private static final Pattern BI_PATTERN =
+            Pattern.compile("^[0-9]{12}[A-Z]$");
+
+    private static final Pattern NUIT_PATTERN =
+            Pattern.compile("^[0-9]{9}$");
+
+    private static final Pattern NAME_PATTERN =
+            Pattern.compile("^[\\p{L}]+(?:[ '-][\\p{L}]+)*$");
+
+    private static final Pattern PASSWORD_UPPERCASE =
+            Pattern.compile(".*[A-Z].*");
+
+    private static final Pattern PASSWORD_LOWERCASE =
+            Pattern.compile(".*[a-z].*");
+
+    private static final Pattern PASSWORD_DIGIT =
+            Pattern.compile(".*[0-9].*");
+
+    private static final Pattern PASSWORD_SYMBOL =
+            Pattern.compile(".*[^a-zA-Z0-9].*");
+
     /**
-     * Construtor padrão que inicializa a DAO de utilizador com o Entity Manager singleton.
+     * Inicializa a DAO responsável pela persistência dos utilizadores.
      */
     public AuthService() {
         this.userDao = new UserDao(
@@ -30,174 +65,417 @@ public class AuthService {
     }
 
     /**
-     * Regista um novo utilizador no sistema efetuando validações prévias e encriptação da palavra-passe.
+     * Regista um novo utilizador após validar os dados e verificar
+     * a existência de registos duplicados.
+     *
+     * A conta é criada ativa e com o papel base.
      *
      * @param user Dados do novo utilizador
      * @param confirmPassword Confirmação da palavra-passe
-     * @throws IllegalArgumentException Se os dados forem nulos
-     * @throws UserAlreadyExistsException Se o username, e-mail ou telefone já existirem
      */
     public void register(User user, String confirmPassword) {
+
         if (user == null) {
-            throw new IllegalArgumentException("Os dados do utilizador são obrigatórios.");
+            throw new IllegalArgumentException(
+                    "Os dados do utilizador são obrigatórios."
+            );
         }
-        UserValidator.validateRequiredFields(user.getFirstName(), user.getLastName(), user.getDocumentId());
+
+        validateName(user.getFirstName(), "primeiro nome");
+        validateName(user.getLastName(), "apelido");
+
         if (user.getGender() == null) {
             throw new IllegalArgumentException("Selecione o género.");
         }
+
         UserValidator.validateRequiredFields(
                 user.getUsername(),
                 user.getEmail(),
                 user.getPhoneNumber(),
-                user.getPassword()
+                user.getPassword(),
+                user.getDocumentId(),
+                confirmPassword
         );
 
-        UserValidator.validateUsername(user.getUsername());
-        UserValidator.validateEmail(user.getEmail());
-        UserValidator.validatePhoneNumber(user.getPhoneNumber());
-        UserValidator.validatePassword(user.getPassword());
-        UserValidator.validatePasswordConfirmation(user.getPassword(), confirmPassword);
-
-        String username = user.getUsername().trim();
-        String email = user.getEmail().trim();
+        String username = normalizeUsername(user.getUsername());
+        String email = normalizeEmail(user.getEmail());
         String phoneNumber = normalizePhoneNumber(user.getPhoneNumber());
+        String documentId = normalizeDocumentId(user.getDocumentId());
+
+        validateUsername(username);
+        UserValidator.validateEmail(email);
+        validatePhoneNumber(phoneNumber);
+        validateDocumentId(documentId);
+        validateStrongPassword(user.getPassword());
+
+        UserValidator.validatePasswordConfirmation(
+                user.getPassword(),
+                confirmPassword
+        );
 
         if (userDao.findByUsername(username) != null) {
-            throw new UserAlreadyExistsException("Este nome de utilizador já está registado.");
+            throw new UserAlreadyExistsException(
+                    "Este nome de utilizador já está registado."
+            );
         }
 
         if (userDao.findByEmail(email) != null) {
-            throw new UserAlreadyExistsException("Este e-mail já está registado.");
+            throw new UserAlreadyExistsException(
+                    "Este e-mail já está registado."
+            );
         }
 
         if (userDao.findByPhone(phoneNumber) != null) {
-            throw new UserAlreadyExistsException("Este número de telefone já está registado.");
-        }
-        if (userDao.findByDocumentId(user.getDocumentId()) != null) {
-            throw new UserAlreadyExistsException("Este documento já está registado.");
+            throw new UserAlreadyExistsException(
+                    "Este número de telefone já está registado."
+            );
         }
 
+        if (userDao.findByDocumentId(documentId) != null) {
+            throw new UserAlreadyExistsException(
+                    "Este documento já está registado."
+            );
+        }
+
+        user.setFirstName(user.getFirstName().trim());
+        user.setLastName(user.getLastName().trim());
+        user.setDocumentId(documentId);
         user.setUsername(username);
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);
 
-        String hashPassword = PasswordUtil.createHashPassword(user.getPassword());
-        user.setPassword(hashPassword);
+        // A palavra-passe nunca deve ser guardada em texto simples.
+        user.setPassword(
+                PasswordUtil.createHashPassword(user.getPassword())
+        );
+
+        // O registo não permite criar uma conta de administrador.
+        user.setUserRole(UserRole.base);
+
+        // O registo ativa imediatamente a conta.
+        user.setActive(true);
 
         userDao.createUser(user);
     }
 
     /**
-     * Realiza a autenticação (login) de um utilizador aceitando username, e-mail ou número de telefone.
+     * Autentica um utilizador através do username, e-mail ou telefone.
      *
-     * @param identifier Identificador (username, e-mail ou telefone)
-     * @param password Palavra-passe em texto limpo
-     * @return O utilizador autenticado {@link User}
-     * @throws UserNotFoundException Se as credenciais forem inválidas
+     * @param identifier Username, e-mail ou telefone
+     * @param password Palavra-passe em texto simples
+     * @return Utilizador autenticado
      */
     public User login(String identifier, String password) {
-        UserValidator.validateRequiredFields(identifier, password);
+
+        if (identifier == null || identifier.isBlank()
+                || password == null || password.isBlank()) {
+            throw invalidCredentials();
+        }
 
         String normalizedIdentifier = identifier.trim();
         User user;
 
         if (normalizedIdentifier.contains("@")) {
-            user = userDao.findByEmail(normalizedIdentifier);
-        } else if (normalizedIdentifier.matches("^(?:\\+258)?(?:82|83|84|85|86|87)[0-9]{7}$")) {
-            user = userDao.findByPhone(normalizePhoneNumber(normalizedIdentifier));
+
+            user = userDao.findByEmail(
+                    normalizeEmail(normalizedIdentifier)
+            );
+
+        } else if (MOZAMBICAN_PHONE_PATTERN.matcher(
+                normalizedIdentifier.replaceAll("\\s+", "")
+        ).matches()) {
+
+            user = userDao.findByPhone(
+                    normalizePhoneNumber(normalizedIdentifier)
+            );
+
         } else {
+
+            String username = normalizeUsername(normalizedIdentifier);
+
             try {
-                UserValidator.validateUsername(normalizedIdentifier);
-            } catch (InvalidUsernameException e) {
-                throw new UserNotFoundException("Utilizador ou password inválidos!");
+                validateUsername(username);
+            } catch (IllegalArgumentException
+                     | InvalidUsernameException exception) {
+                throw invalidCredentials();
             }
-            user = userDao.findByUsername(normalizedIdentifier);
+
+            user = userDao.findByUsername(username);
         }
 
-        if (user == null) {
-            throw new UserNotFoundException("Utilizador ou password inválidos!");
+        // A mensagem não revela se o utilizador existe ou não.
+        if (user == null || !user.isActive()) {
+            throw invalidCredentials();
         }
 
-        if (!user.isActive()) {
-            throw new UserNotFoundException("Esta conta está inativa. Contacte o suporte.");
-        }
-
-        if (!BCrypt.checkpw(password, user.getPassword())) {
-            throw new UserNotFoundException("Utilizador ou password inválidos!");
+        if (user.getPassword() == null
+                || !BCrypt.checkpw(password, user.getPassword())) {
+            throw invalidCredentials();
         }
 
         return user;
     }
 
     /**
-     * Procura um utilizador pelo seu ID.
+     * Procura um utilizador pelo identificador.
      *
      * @param id Identificador do utilizador
-     * @return Objeto {@link User} encontrado
+     * @return Utilizador encontrado ou null
      */
     public User findById(Long id) {
+
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("ID de utilizador inválido.");
+        }
+
         return userDao.findById(id);
     }
 
     /**
-     * Remove os espaços em branco de um número de telefone.
-     *
-     * @param phoneNumber Número de telefone com possível formatação
-     * @return Número de telefone normalizado
-     */
-    private String normalizePhoneNumber(String phoneNumber) {
-        return phoneNumber.replaceAll("\\s+", "");
-    }
-
-    /**
-     * Verifica a existência prévia de um username.
-     * @param username Nome de utilizador
-     * @return {@code true} se já existir; {@code false} caso contrário
+     * Verifica se o username já está registado.
      */
     public boolean thisUsernameExists(String username) {
-        return userDao.findByUsername(username) != null;
+
+        if (username == null || username.isBlank()) {
+            return false;
+        }
+
+        return userDao.findByUsername(
+                normalizeUsername(username)
+        ) != null;
     }
 
     /**
-     * Verifica a existência prévia de um e-mail.
-     * @param email Endereço de e-mail
-     * @return {@code true} se já existir; {@code false} caso contrário
+     * Verifica se o e-mail já está registado.
      */
     public boolean thisEmailExists(String email) {
-        return userDao.findByEmail(email) != null;
+
+        if (email == null || email.isBlank()) {
+            return false;
+        }
+
+        return userDao.findByEmail(
+                normalizeEmail(email)
+        ) != null;
     }
+
     /**
-     * Verifica a existência prévia de um número de telefone.
-     * @param phoneNumber Número de telefone
-     * @return {@code true} se já existir; {@code false} caso contrário
+     * Verifica se o telefone já está registado.
      */
     public boolean thisPhoneNumberExists(String phoneNumber) {
-        return userDao.findByPhone(normalizePhoneNumber(phoneNumber)) != null;
+
+        if (phoneNumber == null || phoneNumber.isBlank()) {
+            return false;
+        }
+
+        return userDao.findByPhone(
+                normalizePhoneNumber(phoneNumber)
+        ) != null;
     }
 
-    public void updateProfile(User user, String firstName, String lastName, String email, String phoneNumber) {
+    /**
+     * Atualiza os dados pessoais do utilizador.
+     *
+     * O username, o papel e a palavra-passe não são alterados
+     * por este método.
+     *
+     * A alteração do e-mail fica bloqueada até existir o fluxo
+     * de confirmação do novo endereço.
+     */
+    public void updateProfile(
+            User user,
+            String firstName,
+            String lastName,
+            String email,
+            String phoneNumber
+    ) {
+
         if (user == null || user.getId() == null) {
-            throw new IllegalArgumentException("A conta a atualizar é inválida.");
+            throw new IllegalArgumentException(
+                    "A conta a atualizar é inválida."
+            );
         }
-        UserValidator.validateRequiredFields(firstName, lastName, email, phoneNumber);
+
+        validateName(firstName, "primeiro nome");
+        validateName(lastName, "apelido");
+
+        UserValidator.validateRequiredFields(email, phoneNumber);
         UserValidator.validateEmail(email);
-        UserValidator.validatePhoneNumber(phoneNumber);
 
-        String normalizedEmail = email.trim();
+        String normalizedEmail = normalizeEmail(email);
         String normalizedPhone = normalizePhoneNumber(phoneNumber);
-        User emailOwner = userDao.findByEmail(normalizedEmail);
-        if (emailOwner != null && !emailOwner.getId().equals(user.getId())) {
-            throw new UserAlreadyExistsException("Este e-mail já está registado.");
-        }
-        User phoneOwner = userDao.findByPhone(normalizedPhone);
-        if (phoneOwner != null && !phoneOwner.getId().equals(user.getId())) {
-            throw new UserAlreadyExistsException("Este número de telefone já está registado.");
+
+        validatePhoneNumber(normalizedPhone);
+
+        // Recarrega a conta para não depender apenas do objeto recebido.
+        User storedUser = userDao.findById(user.getId());
+
+        if (storedUser == null) {
+            throw new UserNotFoundException(
+                    "Não foi possível encontrar a conta."
+            );
         }
 
-        user.setFirstName(firstName.trim());
-        user.setLastName(lastName.trim());
-        user.setEmail(normalizedEmail);
-        user.setPhoneNumber(normalizedPhone);
-        userDao.updateUser(user);
+        // O novo e-mail só poderá substituir o atual depois
+        // de implementarmos a confirmação por token.
+        if (!normalizedEmail.equals(normalizeEmail(storedUser.getEmail()))) {
+            throw new IllegalStateException(
+                    "A alteração do e-mail requer confirmação. "
+                            + "Este processo ainda precisa de ser implementado."
+            );
+        }
+
+        User phoneOwner = userDao.findByPhone(normalizedPhone);
+
+        if (phoneOwner != null
+                && !phoneOwner.getId().equals(storedUser.getId())) {
+            throw new UserAlreadyExistsException(
+                    "Este número de telefone já está registado."
+            );
+        }
+
+        storedUser.setFirstName(firstName.trim());
+        storedUser.setLastName(lastName.trim());
+        storedUser.setPhoneNumber(normalizedPhone);
+
+        userDao.updateUser(storedUser);
+    }
+
+    /**
+     * Valida o formato do username.
+     *
+     * Regras:
+     * - Entre 4 e 20 caracteres;
+     * - Começa por uma letra;
+     * - Aceita letras, números, pontos e underscores;
+     * - Não termina com ponto;
+     * - Não aceita pontos consecutivos.
+     */
+    private void validateUsername(String username) {
+
+        UserValidator.validateUsername(username);
+
+        if (username == null
+                || username.length() < 4
+                || username.length() > 20
+                || !USERNAME_PATTERN.matcher(username).matches()
+                || username.contains("..")) {
+
+            throw new InvalidUsernameException(
+                    "O username deve ter 4 a 20 caracteres, "
+                            + "começar por uma letra e usar apenas letras, "
+                            + "números, pontos ou underscores."
+            );
+        }
+    }
+
+    /**
+     * Valida o nome ou apelido.
+     */
+    private void validateName(String name, String fieldName) {
+
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(
+                    "O campo " + fieldName + " é obrigatório."
+            );
+        }
+
+        String normalizedName = name.trim();
+
+        if (normalizedName.length() < 2
+                || normalizedName.length() > 60
+                || !NAME_PATTERN.matcher(normalizedName).matches()) {
+
+            throw new IllegalArgumentException(
+                    "O campo " + fieldName
+                            + " deve ter entre 2 e 60 caracteres "
+                            + "e conter apenas letras, espaços, apóstrofos "
+                            + "ou hífenes."
+            );
+        }
+    }
+
+    /**
+     * Valida BI ou NUIT.
+     *
+     * BI: 12 dígitos seguidos de uma letra.
+     * NUIT: exatamente 9 dígitos.
+     */
+    private void validateDocumentId(String documentId) {
+
+        if (!BI_PATTERN.matcher(documentId).matches()
+                && !NUIT_PATTERN.matcher(documentId).matches()) {
+
+            throw new IllegalArgumentException(
+                    "Documento inválido. Introduza um BI com "
+                            + "12 dígitos e uma letra, ou um NUIT com 9 dígitos."
+            );
+        }
+    }
+
+    /**
+     * Valida o formato do telefone móvel moçambicano.
+     */
+    private void validatePhoneNumber(String phoneNumber) {
+
+        if (!MOZAMBICAN_PHONE_PATTERN.matcher(phoneNumber).matches()) {
+            throw new IllegalArgumentException(
+                    "Introduza um número móvel moçambicano válido."
+            );
+        }
+    }
+
+    /**
+     * Aplica a política de segurança da palavra-passe.
+     */
+    private void validateStrongPassword(String password) {
+
+        if (password == null
+                || password.length() < 8
+                || password.length() > 64
+                || !PASSWORD_UPPERCASE.matcher(password).matches()
+                || !PASSWORD_LOWERCASE.matcher(password).matches()
+                || !PASSWORD_DIGIT.matcher(password).matches()
+                || !PASSWORD_SYMBOL.matcher(password).matches()) {
+
+            throw new IllegalArgumentException(
+                    "A palavra-passe deve ter entre 8 e 64 caracteres "
+                            + "e incluir uma letra maiúscula, uma minúscula, "
+                            + "um número e um símbolo."
+            );
+        }
+    }
+
+    private String normalizeUsername(String username) {
+        return username.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String normalizeDocumentId(String documentId) {
+        return documentId.trim().toUpperCase(Locale.ROOT);
+    }
+
+    /**
+     * Remove espaços e guarda o telefone num formato único.
+     * Números locais são convertidos para o formato +258.
+     */
+    private String normalizePhoneNumber(String phoneNumber) {
+
+        String normalized = phoneNumber.replaceAll("\\s+", "");
+
+        if (!normalized.startsWith("+258")) {
+            normalized = "+258" + normalized;
+        }
+
+        return normalized;
+    }
+
+    private UserNotFoundException invalidCredentials() {
+        return new UserNotFoundException(
+                "Utilizador ou palavra-passe inválidos."
+        );
     }
 }
