@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 import model.User;
 import model.UserGroup;
 import service.GroupService;
+import util.StyledDialogs;
+import util.SessionContext;
 import util.UiFormatting;
 
 import java.util.Locale;
@@ -55,12 +57,11 @@ public class AddMemberController {
             return;
         }
         String identifier = query.trim().toLowerCase(Locale.ROOT);
-        selectedUser = groupService.findActiveUsers().stream()
-                .filter(user -> user.getUsername().equalsIgnoreCase(identifier)
-                        || user.getDocumentId().equalsIgnoreCase(identifier))
-                .filter(user -> groupService.findMembers(groupId).stream()
-                        .noneMatch(member -> member.getUser().getId().equals(user.getId())))
-                .findFirst().orElse(null);
+        selectedUser = groupService.findActiveUserByIdentifier(identifier);
+        if (selectedUser != null && groupService.findMembers(groupId).stream()
+                .anyMatch(member -> member.getUser().getId().equals(selectedUser.getId()))) {
+            selectedUser = null;
+        }
         if (selectedUser == null) {
             lblResultName.setText("Nenhum utilizador disponível com esse username ou documento.");
             lblResultInfo.setText("Confirme os dados e tente novamente.");
@@ -78,7 +79,9 @@ public class AddMemberController {
             return;
         }
         try {
-            groupService.addMemberToGroup(groupId, selectedUser.getId());
+            groupService.inviteMember(groupId, SessionContext.getCurrentUser().getId(), selectedUser.getId());
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
+                    "Convite enviado. O utilizador poderá aceitá-lo ou recusá-lo nas notificações."));
             afterSave.run();
             close();
         } catch (RuntimeException e) {
@@ -87,7 +90,7 @@ public class AddMemberController {
     }
 
     private void showError(String message) {
-        new Alert(Alert.AlertType.ERROR, message).showAndWait();
+        StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, message));
     }
 
     private void close() {
