@@ -1,22 +1,23 @@
 package model.enums;
 
-/**
- * Enumeração que define os papéis e níveis de acesso de um utilizador no sistema.
- *
- * @author Sistema iXitique
- * @version 1.0
- */
+/** Account access roles. Legacy values remain for existing persisted rows. */
 public enum UserRole {
 
-    /** Administrador do sistema com acesso total a todas as funcionalidades. */
+    ADMINISTRATOR,
+    USER,
+    GROUP_LEADER,
+
+    // Legacy values remain readable for existing database rows.
     admin,
-
-    /** Gestor de grupo responsável por administrar grupos e aprovar membros/ciclos. */
     group_manager,
-
-    /** Membro participante num ou mais grupos. */
     member,
+    base;
 
-    /** Utilizador base com permissões padrão. */
-    base
+    public boolean isAdministrator() {
+        return this == ADMINISTRATOR || this == admin;
+    }
+
+    public boolean isGroupLeader() {
+        return this == GROUP_LEADER || this == group_manager;
+    }
 }
