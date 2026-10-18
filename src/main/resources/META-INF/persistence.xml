@@ -17,8 +17,8 @@
         <class>model.Cycle</class>
         <class>model.Contribution</class>
         <class>model.User</class>
-        <class>model.Person</class>
         <class>model.UserGroup</class>
+        <class>model.PaymentTransaction</class>
 
         <properties>
 
@@ -36,7 +36,7 @@
                       value="root"/>
 
             <property name="jakarta.persistence.jdbc.password"
-                      value="....."/>
+                      value="alteza77"/>
 
 
             <!-- ============================= -->

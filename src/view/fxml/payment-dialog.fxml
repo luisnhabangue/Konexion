@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXRadioButton?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<StackPane styleClass="pay-shell" stylesheets="@../css/payment-dialog.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PaymentDialogController">
+
+    <VBox minHeight="580.0" prefWidth="460.0" styleClass="pay-root">
+        <children>
+
+            <!-- CABEÇALHO DA JANELA POP-UP -->
+            <HBox fx:id="header" alignment="CENTER_LEFT" spacing="12.0" styleClass="pay-header">
+                <children>
+                    <Button onAction="#onCancel" styleClass="pay-back-btn">
+                        <graphic>
+                            <SVGPath content="M19,12 L5,12 M11,6 L5,12 L11,18" styleClass="pay-back-ico" />
+                        </graphic>
+                    </Button>
+                    <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                        <children>
+                            <Label styleClass="pay-header-title" text="Simulação de Pagamento" />
+                            <Label styleClass="pay-header-subtitle" text="Efetue o pagamento da sua quota ou contribuição" />
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
+
+            <!-- CORPO DO POP-UP -->
+            <VBox spacing="18.0">
+                <padding>
+                    <Insets bottom="24.0" left="24.0" right="24.0" top="20.0" />
+                </padding>
+                <children>
+
+                    <!-- RESUMO DO VALOR A PAGAR -->
+                    <VBox spacing="8.0" styleClass="pay-summary-card">
+                        <children>
+                            <HBox alignment="CENTER_LEFT">
+                                <children>
+                                    <Label styleClass="pay-summary-label" text="VALOR A CONTRIBUIR" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="cycleLabel" styleClass="pay-summary-badge" text="Ciclo #04" />
+                                </children>
+                            </HBox>
+                            <Label fx:id="amountLabel" styleClass="pay-summary-amount" text="2.500,00 MT" />
+                            <Label fx:id="groupLabel" style="-fx-text-fill: rgba(255,255,255,0.65); -fx-font-size: 10px;" text="Grupo: Poupança Familiar Konexion" />
+                        </children>
+                    </VBox>
+
+                    <!-- SELEÇÃO DA CARTEIRA MÓVEL -->
+                    <Label style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #182426;" text="Selecione o método de pagamento" />
+
+                    <fx:define>
+                        <ToggleGroup fx:id="paymentMethodGroup" />
+                    </fx:define>
+
+                    <!-- Opção 1: M-Pesa -->
+                    <HBox fx:id="cardMpesa" alignment="CENTER_LEFT" spacing="12.0" styleClass="pay-method-card-selected">
+                        <children>
+                            <StackPane styleClass="badge-mpesa">
+                                <children>
+                                    <Label styleClass="badge-text" text="M-PESA" />
+                                </children>
+                            </StackPane>
+                            <VBox HBox.hgrow="ALWAYS">
+                                <children>
+                                    <Label styleClass="pay-method-title" text="M-Pesa " />
+                                    <Label styleClass="pay-method-desc" text="Pagamento instantâneo via USSD Push" />
+                                </children>
+                            </VBox>
+                            <MFXRadioButton fx:id="radioMpesa" selected="true">
+                        <toggleGroup>
+                           <ToggleGroup fx:id="paymentMethodGroup" />
+                        </toggleGroup></MFXRadioButton>
+                        </children>
+                    </HBox>
+
+                    <!-- Opção 2: e-Mola -->
+                    <HBox fx:id="cardEmola" alignment="CENTER_LEFT" spacing="12.0" styleClass="pay-method-card">
+                        <children>
+                            <StackPane styleClass="badge-emola">
+                                <children>
+                                    <Label styleClass="badge-text" text="e-Mola" />
+                                </children>
+                            </StackPane>
+                            <VBox HBox.hgrow="ALWAYS">
+                                <children>
+                                    <Label styleClass="pay-method-title" text="e-Mola " />
+                                    <Label styleClass="pay-method-desc" text="Debitado diretamente da sua conta e-Mola" />
+                                </children>
+                            </VBox>
+                            <MFXRadioButton fx:id="radioEmola" text="Radio" toggleGroup="$paymentMethodGroup" />
+                        </children>
+                    </HBox>
+
+                    <!-- CAMPO DO NÚMERO DE TELEFONE -->
+                    <VBox spacing="5.0">
+                        <children>
+                            <Label style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #182426;" text="Número de Telefone" />
+                            <MFXTextField fx:id="txtTelefone" floatMode="DISABLED" prefHeight="42.0" prefWidth="412.0" promptText="+258 84 123 4567" styleClass="mfx-text-field">
+                                <leadingIcon>
+                                    <MFXFontIcon description="fas-phone" size="14.0" style="-fx-fill: #69787B;" />
+                                </leadingIcon>
+                            </MFXTextField>
+                        </children>
+                    </VBox>
+
+                    <!-- MENSAGEM DE ESTADO (escondida até ser preciso) -->
+                    <Label fx:id="messageLabel" managed="false" maxWidth="412.0" styleClass="pay-msg" visible="false" wrapText="true" />
+
+                    <Separator opacity="0.4" />
+
+                    <!-- BOTÕES DE AÇÃO -->
+                    <VBox alignment="CENTER" spacing="8.0">
+                        <children>
+                            <MFXButton fx:id="btnPagar" onAction="#onConfirmPayment" prefHeight="44.0" prefWidth="412.0" styleClass="pay-submit-btn" text="Simular Pagamento  →" />
+                            <Button onAction="#onCancel" styleClass="pay-cancel-btn" text="Cancelar" />
+                        </children>
+                    </VBox>
+
+                </children>
+            </VBox>
+        </children>
+    </VBox>
+</StackPane>

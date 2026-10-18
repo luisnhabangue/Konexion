@@ -4,6 +4,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXCheckbox?>
 <?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
@@ -17,7 +18,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
       <BorderPane prefHeight="768.0" prefWidth="1171.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -45,7 +45,7 @@
                            <children>
                               <Label style="-fx-background-color: rgba(111,221,165,0.15); -fx-text-fill: #B9EED2; -fx-padding: 4 10; -fx-background-radius: 12; -fx-font-size: 10; -fx-font-weight: bold;" text="POUPAR JUNTOS, CRESCER JUNTOS" />
                               <Label style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold; -fx-line-spacing: 2; -fx-font-family: &quot;Inter&quot;;" text="A sua comunidade.&#10;Os seus objetivos.&#10;Um futuro melhor." />
-                              <Label maxWidth="423.0" prefHeight="36.0" prefWidth="423.0" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true">
+                              <Label maxWidth="423.0" prefHeight="49.0" prefWidth="397.0" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin></Label>
@@ -151,7 +151,7 @@
                            </VBox.margin>
                            <children>
                               <Label style="-fx-text-fill: #69787B; -fx-font-size: 12px;" text="Ainda não tem uma conta?" />
-                              <Hyperlink onAction="#createAccount" style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 12px;" text="Criar conta" />
+                              <Hyperlink style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 12px;" text="Criar conta" />
                            </children>
                         </HBox>
                      </children>
