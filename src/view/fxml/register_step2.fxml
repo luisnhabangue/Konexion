@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane minHeight="600.0" minWidth="900.0" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+
+    <children>
+        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+            <!-- PAINEL LATERAL -->
+            <left>
+                <StackPane minWidth="400.0" prefWidth="480.0" styleClass="auth-visual" BorderPane.alignment="CENTER">
+
+                    <children>
+                        <Circle fill="transparent" radius="250.0" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" translateX="150.0" translateY="-120.0" StackPane.alignment="TOP_RIGHT" />
+
+                        <Circle fill="transparent" radius="200.0" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" translateX="-130.0" translateY="100.0" StackPane.alignment="BOTTOM_LEFT" />
+
+                        <VBox alignment="TOP_LEFT" maxWidth="480.0" spacing="30.0">
+
+                            <padding>
+                                <Insets bottom="30.0" left="40.0" right="36.0" top="38.0" />
+                            </padding>
+
+                            <children>
+                                <!-- LOGÓTIPO -->
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <children>
+                                        <StackPane prefHeight="38.0" prefWidth="42.0" styleClass="icon">
+                                            <children>
+                                                <Label style="-fx-text-fill: #0F5257;                                                               -fx-font-weight: bold;                                                               -fx-font-size: 19px;" text="K" />
+                                            </children>
+                                        </StackPane>
+
+                                        <Label style="-fx-text-fill: white;                                                       -fx-font-size: 23px;                                                       -fx-font-weight: bold;" text="Konexion" />
+                                    </children>
+                                </HBox>
+
+                                <!-- APRESENTAÇÃO -->
+                                <VBox alignment="CENTER_LEFT" spacing="16.0" VBox.vgrow="ALWAYS">
+
+                                    <children>
+                                        <Label style="-fx-background-color: rgba(111,221,165,0.15);                                                       -fx-text-fill: #B9EED2;                                                       -fx-padding: 7px 11px;                                                       -fx-background-radius: 14px;                                                       -fx-font-size: 10px;                                                       -fx-font-weight: bold;" text="POUPAR JUNTOS, CRESCER JUNTOS" />
+
+                                        <Label style="-fx-text-fill: white;                                                       -fx-font-size: 32px;                                                       -fx-font-weight: bold;                                                       -fx-line-spacing: 3px;" text="A sua comunidade.&#10;Os seus objetivos.&#10;Um futuro melhor." wrapText="true" />
+
+                                        <Label maxWidth="340.0" style="-fx-text-fill: rgba(255,255,255,0.75);                                                       -fx-font-size: 13px;                                                       -fx-line-spacing: 3px;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true" />
+
+                                        <!-- CARTÕES ILUSTRATIVOS -->
+                                        <Pane maxWidth="350.0" prefHeight="175.0" prefWidth="350.0">
+
+                                            <children>
+                                                <VBox layoutX="175.0" layoutY="48.0" prefHeight="85.0" prefWidth="145.0" spacing="10.0" styleClass="visual-card-back">
+                                                    <padding>
+                                                        <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+                                                    </padding>
+                                                    <children>
+                                                        <Label style="-fx-text-fill: rgba(255,255,255,0.65);                                                                       -fx-font-size: 10px;" text="Próximo ciclo" />
+                                                        <Label style="-fx-text-fill: white;                                                                       -fx-font-size: 17px;                                                                       -fx-font-weight: bold;" text="25 Jun" />
+                                                    </children>
+                                                </VBox>
+
+                                                <VBox layoutX="10.0" layoutY="12.0" prefHeight="132.0" prefWidth="240.0" spacing="9.0" styleClass="visual-card-front">
+                                                    <padding>
+                                                        <Insets bottom="12.0" left="15.0" right="15.0" top="15.0" />
+                                                    </padding>
+                                                    <children>
+                                                        <Label style="-fx-text-fill: #69787B;                                                                       -fx-font-size: 10px;" text="Poupança do grupo" />
+
+                                                        <Label style="-fx-text-fill: #182426;                                                                       -fx-font-size: 21px;                                                                       -fx-font-weight: bold;" text="35.000,00 MT" />
+
+                                                        <StackPane maxHeight="7.0" prefHeight="7.0" style="-fx-background-color: #E4ECEC;                                                                           -fx-background-radius: 5px;">
+                                                            <children>
+                                                                <Region maxWidth="145.0" prefWidth="145.0" style="-fx-background-color: #0F5257;                                                                                -fx-background-radius: 5px;" StackPane.alignment="CENTER_LEFT" />
+                                                            </children>
+                                                        </StackPane>
+
+                                                        <Label style="-fx-text-fill: #69787B;                                                                       -fx-font-size: 10px;" text="Meta: 71% alcançada" />
+                                                    </children>
+                                                </VBox>
+
+                                                <StackPane layoutX="0.0" layoutY="0.0" prefHeight="42.0" prefWidth="42.0" styleClass="coin-badge">
+                                                    <children>
+                                                        <Label style="-fx-text-fill: #6F4E00;                                                                       -fx-font-weight: bold;                                                                       -fx-font-size: 11px;" text="MT" />
+                                                    </children>
+                                                </StackPane>
+                                            </children>
+                                        </Pane>
+                                    </children>
+                                </VBox>
+
+                                <Label style="-fx-text-fill: rgba(255,255,255,0.55);                                               -fx-font-size: 10px;" text="Seguro · Transparente · Feito para Moçambique" wrapText="true" />
+                            </children>
+                        </VBox>
+                    </children>
+                </StackPane>
+            </left>
+
+            <!-- PASSO 2: CREDENCIAIS -->
+            <center>
+                <StackPane style="-fx-background-color: #FFFFFF;" BorderPane.alignment="CENTER">
+
+                    <children>
+                        <VBox alignment="CENTER_LEFT" maxWidth="470.0" spacing="14.0">
+
+                            <padding>
+                                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                            </padding>
+
+                            <children>
+                                <!-- VOLTAR AO LOGIN -->
+                                <Hyperlink fx:id="linkVoltarLogin" style="-fx-text-fill: #69787B;                                                   -fx-font-size: 12px;                                                   -fx-border-color: transparent;                                                   -fx-padding: 0 0 8px 0;" text="← Voltar ao login" />
+
+                                <!-- CABEÇALHO -->
+                                <Label style="-fx-font-size: 28px;                                               -fx-font-weight: bold;                                               -fx-text-fill: #182426;" text="Criar a sua conta" />
+
+                                <Label style="-fx-font-size: 13px;                                               -fx-text-fill: #69787B;" text="Só faltam os seus dados de acesso." wrapText="true" />
+
+                                <!-- INDICADOR DE PROGRESSO -->
+                                <HBox alignment="CENTER_LEFT" spacing="9.0" style="-fx-padding: 12px 0 16px 0;">
+
+                                    <children>
+                                        <StackPane minHeight="25.0" minWidth="25.0" style="-fx-background-color: #0F5257;                                                           -fx-background-radius: 50px;">
+                                            <children>
+                                                <MFXFontIcon description="fas-check" size="11.0" style="-fx-fill: white;">
+                                       <color>
+                                          <Color red="0.9342105388641357" green="0.9212353825569153" blue="0.9212353825569153" />
+                                       </color></MFXFontIcon>
+                                            </children>
+                                        </StackPane>
+
+                                        <Label style="-fx-font-size: 11px;                                                       -fx-text-fill: #69787B;" text="Dados pessoais" />
+
+                                        <Separator opacity="0.4" HBox.hgrow="ALWAYS" />
+
+                                        <StackPane minHeight="25.0" minWidth="25.0" style="-fx-background-color: #0F5257;                                                           -fx-background-radius: 50px;">
+                                            <children>
+                                                <Label style="-fx-text-fill: white;                                                               -fx-font-size: 11px;                                                               -fx-font-weight: bold;" text="2" />
+                                            </children>
+                                        </StackPane>
+
+                                        <Label style="-fx-font-size: 11px;                                                       -fx-font-weight: bold;                                                       -fx-text-fill: #182426;" text="Credenciais" />
+                                    </children>
+                                </HBox>
+
+                                <!-- NOME DE UTILIZADOR -->
+                                <VBox spacing="6.0">
+                                    <children>
+                                        <Label style="-fx-font-size: 12px;                                                       -fx-font-weight: bold;                                                       -fx-text-fill: #182426;" text="Nome de utilizador" />
+
+                                        <MFXTextField fx:id="txtUsername" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Ex.: joaosilva" styleClass="mfx-text-field" />
+                                    </children>
+                                </VBox>
+
+                                <!-- EMAIL -->
+                                <VBox spacing="6.0">
+                                    <children>
+                                        <Label style="-fx-font-size: 12px;                                                       -fx-font-weight: bold;                                                       -fx-text-fill: #182426;" text="Email" />
+
+                                        <MFXTextField fx:id="txtEmail" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="nome@exemplo.com" styleClass="mfx-text-field" />
+                                    </children>
+                                </VBox>
+
+                                <!-- SENHA E CONFIRMAÇÃO -->
+                                <HBox spacing="14.0">
+                                    <children>
+                                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label style="-fx-font-size: 12px;                                                               -fx-font-weight: bold;                                                               -fx-text-fill: #182426;" text="Senha" />
+
+                                                <MFXPasswordField fx:id="txtPassword" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Introduza a senha" styleClass="mfx-password-field" />
+                                            </children>
+                                        </VBox>
+
+                                        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                                            <children>
+                                                <Label style="-fx-font-size: 12px;                                                               -fx-font-weight: bold;                                                               -fx-text-fill: #182426;" text="Confirmar senha" />
+
+                                                <MFXPasswordField fx:id="txtConfirmPassword" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Repita a senha" styleClass="mfx-password-field" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+
+                                <!-- BOTÃO CRIAR CONTA -->
+                                <MFXButton fx:id="btnCriarConta" maxWidth="Infinity" prefHeight="46.0" styleClass="button-primary" text="Criar conta  →">
+                                    <VBox.margin>
+                                        <Insets top="8.0" />
+                                    </VBox.margin>
+                                </MFXButton>
+
+                                <!-- VOLTAR AO PASSO ANTERIOR -->
+                                <MFXButton fx:id="btnVoltarPasso" maxWidth="Infinity" prefHeight="42.0" style="-fx-background-color: #EAF0F0;                                                   -fx-text-fill: #182426;                                                   -fx-font-weight: bold;                                                   -fx-background-radius: 8px;" text="← Voltar ao passo anterior">
+                                    <VBox.margin>
+                                        <Insets top="2.0" />
+                                    </VBox.margin>
+                                </MFXButton>
+                            </children>
+                        </VBox>
+                    </children>
+                </StackPane>
+            </center>
+        </BorderPane>
+    </children>
+</AnchorPane>
