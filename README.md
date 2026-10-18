@@ -1,7 +1,7 @@
 
 <div align="center">
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:022C22,45:065F46,100:059669&height=200&section=header&text=XITIQUE%20DIGITAL&fontSize=40&fontColor=FFFFFF&fontAlignY=38&desc=Sistema%20de%20Gest%C3%A3o%20de%20Poupan%C3%A7as%20Rotativas&descSize=15&descAlignY=60&descColor=ECFDF5" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:022C22,45:065F46,100:059669&height=200&section=header&text=KONEXION&fontSize=40&fontColor=FFFFFF&fontAlignY=38&desc=Sistema%20de%20Gest%C3%A3o%20de%20Poupan%C3%A7as%20Rotativas&descSize=15&descAlignY=60&descColor=ECFDF5" />
 
 <br/>
 
