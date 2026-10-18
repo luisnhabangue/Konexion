@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true"
+            fx:controller="controller.AdminDashboardController">
+    <VBox styleClass="page" spacing="18">
+        <VBox spacing="5">
+            <Label text="Painel de administração" styleClass="page-title"/>
+            <Label text="Indicadores do sistema, validação KYC e moderação de denúncias." styleClass="page-sub"/>
+        </VBox>
+        <GridPane hgap="12" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.34"/>
+            </columnConstraints>
+            <VBox styleClass="card, admin-metric" spacing="5" GridPane.columnIndex="0">
+                <Label text="UTILIZADORES" styleClass="cell-label"/>
+                <Label fx:id="lblUsers" text="0" styleClass="metric-value"/>
+                <Label fx:id="lblVerified" text="0 verificados" styleClass="section-sub"/>
+            </VBox>
+            <VBox styleClass="card, admin-metric" spacing="5" GridPane.columnIndex="1">
+                <Label text="GRUPOS" styleClass="cell-label"/>
+                <Label fx:id="lblGroups" text="0" styleClass="metric-value"/>
+                <Label fx:id="lblContributed" text="0 MT" styleClass="section-sub"/>
+            </VBox>
+            <VBox styleClass="card, admin-metric" spacing="5" GridPane.columnIndex="2">
+                <Label text="PAGAMENTOS / DENÚNCIAS" styleClass="cell-label"/>
+                <Label fx:id="lblPaid" text="0" styleClass="metric-value"/>
+                <Label fx:id="lblReports" text="0 denúncias abertas" styleClass="section-sub"/>
+            </VBox>
+        </GridPane>
+        <HBox spacing="14">
+            <VBox styleClass="card, admin-chart" spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="Estado de verificação dos utilizadores" styleClass="section-title"/>
+                <PieChart fx:id="verificationChart" prefHeight="250" legendVisible="true"/>
+            </VBox>
+            <VBox styleClass="card, admin-chart" spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="Resumo do sistema" styleClass="section-title"/>
+                <BarChart fx:id="activityChart" prefHeight="250" animated="false">
+                    <xAxis><CategoryAxis label="Categoria"/></xAxis>
+                    <yAxis><NumberAxis label="Total" forceZeroInRange="true"/></yAxis>
+                </BarChart>
+            </VBox>
+        </HBox>
+        <VBox styleClass="card, admin-section" spacing="10">
+            <Label text="Verificações KYC pendentes" styleClass="section-title"/>
+            <VBox fx:id="kycRows" spacing="8"/>
+        </VBox>
+        <VBox styleClass="card, admin-section" spacing="10">
+            <Label text="Pedidos para chefe de grupo" styleClass="section-title"/>
+            <VBox fx:id="leadershipRows" spacing="8"/>
+        </VBox>
+        <VBox styleClass="card, admin-section" spacing="10">
+            <Label text="Denúncias de utilizadores" styleClass="section-title"/>
+            <VBox fx:id="reportRows" spacing="8"/>
+        </VBox>
+        <VBox styleClass="card, admin-section" spacing="10">
+            <Label text="Gestão de utilizadores" styleClass="section-title"/>
+            <VBox fx:id="userRows" spacing="8"/>
+        </VBox>
+    </VBox>
+</ScrollPane>
