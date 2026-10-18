@@ -290,8 +290,18 @@ public class GroupDetailController {
             showError("Abra um ciclo antes de registrar pagamentos.");
             return;
         }
-        showModal("/view/fxml/modal-payment.fxml", (controller, stage) ->
-                ((PaymentController) controller).configure(group.getGroupId(), stage, this::render));
+        try {
+            boolean paid = PaymentDialogController.show(
+                    memberQueue.getScene().getWindow(),
+                    group,
+                    SessionContext.getCurrentUser()
+            );
+            if (paid) {
+                render();
+            }
+        } catch (RuntimeException e) {
+            showError(e.getMessage());
+        }
     }
 
     private void showModal(String resource, java.util.function.BiConsumer<Object, Stage> configure) {

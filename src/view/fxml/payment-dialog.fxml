@@ -80,10 +80,7 @@
                                     <Label styleClass="pay-method-desc" text="Pagamento instantâneo via USSD Push" />
                                 </children>
                             </VBox>
-                            <MFXRadioButton fx:id="radioMpesa" selected="true">
-                        <toggleGroup>
-                           <ToggleGroup fx:id="paymentMethodGroup" />
-                        </toggleGroup></MFXRadioButton>
+                            <MFXRadioButton fx:id="radioMpesa" selected="true" toggleGroup="$paymentMethodGroup" />
                         </children>
                     </HBox>
 

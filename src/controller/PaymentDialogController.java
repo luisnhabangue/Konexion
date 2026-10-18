@@ -24,6 +24,7 @@ import service.GroupService;
 import service.PaymentService;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class PaymentDialogController {
 
@@ -50,9 +51,17 @@ public class PaymentDialogController {
 
     /** Abre o pop-up e só volta quando fecha. Devolve true se o pagamento foi feito. */
     public static boolean show(Window owner, Group group, User user) {
+        if (owner == null || group == null || user == null) {
+            throw new IllegalArgumentException("Janela, grupo e utilizador são obrigatórios para pagar.");
+        }
+
+        URL resource = PaymentDialogController.class.getResource("/view/fxml/payment-dialog.fxml");
+        if (resource == null) {
+            throw new IllegalStateException("Não foi possível encontrar o ecrã de pagamento.");
+        }
+
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    PaymentDialogController.class.getResource("/view/payment-dialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(resource);
             Parent root = loader.load();
             PaymentDialogController controller = loader.getController();
 
@@ -79,7 +88,7 @@ public class PaymentDialogController {
         this.group = group;
         this.user = user;
 
-        amountLabel.setText(group.getAmountPerUser() + " MT");
+        amountLabel.setText(util.UiFormatting.money(group.getAmountPerUser()));
         groupLabel.setText("Grupo: " + group.getGroupName());
         cycleLabel.setText(loadCycleText(group));
         txtTelefone.setText(user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
@@ -110,12 +119,8 @@ public class PaymentDialogController {
     }
 
     private String loadCycleText(Group g) {
-        try {
-            Cycle c = groupService.findActiveCycle(g.getGroupId());
-            return c == null ? "Sem ciclo" : "Ciclo #" + String.format("%02d", c.getNumero());
-        } catch (RuntimeException e) {
-            return "";
-        }
+        Cycle cycle = groupService.findActiveCycle(g.getGroupId());
+        return cycle == null ? "Sem ciclo" : "Ciclo #" + String.format("%02d", cycle.getNumero());
     }
 
     @FXML
