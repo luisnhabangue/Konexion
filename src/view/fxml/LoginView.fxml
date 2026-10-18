@@ -151,7 +151,7 @@
                            </VBox.margin>
                            <children>
                               <Label style="-fx-text-fill: #69787B; -fx-font-size: 12px;" text="Ainda não tem uma conta?" />
-                              <Hyperlink style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 12px;" text="Criar conta" />
+                              <Hyperlink fx:id="linkCreateAccount" style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 12px;" text="Criar conta" />
                            </children>
                         </HBox>
                      </children>

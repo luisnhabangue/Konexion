@@ -6,7 +6,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.TextInputDialog;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import model.Contribution;
 import model.User;
 import model.Cycle;
@@ -16,8 +20,9 @@ import service.GroupService;
 import util.SessionContext;
 import util.UiFormatting;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 
 public class ProfileController {
     private final GroupService groupService = new GroupService();
@@ -98,30 +103,31 @@ public class ProfileController {
     }
 
     private void editProfile(User user) {
-        Optional<String> firstName = prompt("Editar perfil", "Nome", user.getFirstName());
-        if (firstName.isEmpty()) return;
-        Optional<String> lastName = prompt("Editar perfil", "Apelido", user.getLastName());
-        if (lastName.isEmpty()) return;
-        Optional<String> email = prompt("Editar perfil", "Email", user.getEmail());
-        if (email.isEmpty()) return;
-        Optional<String> phone = prompt("Editar perfil", "Telefone", user.getPhoneNumber());
-        if (phone.isEmpty()) return;
         try {
-            authService.updateProfile(user, firstName.get(), lastName.get(), email.get(), phone.get());
-            lblProfileName.setText(UiFormatting.fullName(user));
-            lblProfileInitials.setText(UiFormatting.initials(user));
-            lblEmail.setText(user.getEmail());
-            lblPhone.setText(user.getPhoneNumber());
-        } catch (RuntimeException e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
-        }
-    }
+            URL editDialogUrl = getClass().getResource("/view/fxml/profile-edit-dialog.fxml");
+            if (editDialogUrl == null) {
+                throw new IOException("Não foi possível encontrar a tela de edição do perfil.");
+            }
+            FXMLLoader loader = new FXMLLoader(editDialogUrl);
+            Parent content = loader.load();
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(btnEditProfile.getScene().getWindow());
+            dialog.setTitle("Editar perfil");
+            dialog.setScene(new Scene(content));
 
-    private Optional<String> prompt(String title, String field, String current) {
-        TextInputDialog dialog = new TextInputDialog(current);
-        dialog.setTitle(title);
-        dialog.setHeaderText("Atualizar os seus dados.");
-        dialog.setContentText(field + ":");
-        return dialog.showAndWait();
+            ProfileEditDialogController controller = loader.getController();
+            controller.configure(user, dialog, () -> {
+                lblProfileName.setText(UiFormatting.fullName(user));
+                lblProfileInitials.setText(UiFormatting.initials(user));
+                lblEmail.setText(user.getEmail());
+                lblPhone.setText(user.getPhoneNumber());
+            });
+            dialog.showAndWait();
+        } catch (IOException | RuntimeException e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage() == null
+                    ? "Não foi possível abrir a edição do perfil."
+                    : e.getMessage()).showAndWait();
+        }
     }
 }

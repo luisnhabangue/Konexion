@@ -339,6 +339,11 @@ public class AuthService {
         storedUser.setPhoneNumber(normalizedPhone);
 
         userDao.updateUser(storedUser);
+
+        user.setFirstName(storedUser.getFirstName());
+        user.setLastName(storedUser.getLastName());
+        user.setEmail(storedUser.getEmail());
+        user.setPhoneNumber(storedUser.getPhoneNumber());
     }
 
     /**

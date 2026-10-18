@@ -22,11 +22,18 @@ public class LoginController {
     private MFXTextField tfUsername;
     @FXML
     private MFXPasswordField pfPassword;
+    @FXML
+    private javafx.scene.control.Hyperlink linkCreateAccount;
 
 
     public LoginController() {
       //  this.as = new AuthService();
 
+    }
+
+    @FXML
+    private void initialize() {
+        linkCreateAccount.setOnAction(this::createAccount);
     }
 
     @FXML
@@ -55,9 +62,14 @@ public class LoginController {
         alert.showAndWait();
     }
 
+    @FXML
     public void createAccount(ActionEvent actionEvent) {
         try {
-            Parent register = FXMLLoader.load(getClass().getResource("/view/fxml/register_step1.fxml"));
+            java.net.URL registerUrl = getClass().getResource("/view/fxml/register_step1.fxml");
+            if (registerUrl == null) {
+                throw new IOException("Não foi possível encontrar a tela de registo.");
+            }
+            Parent register = FXMLLoader.load(registerUrl);
             ((Node) actionEvent.getSource()).getScene().setRoot(register);
         } catch (IOException exception) {
             showAlert(Alert.AlertType.ERROR, "Não foi possível abrir o registo: " + exception.getMessage());
