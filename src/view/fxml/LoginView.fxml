@@ -45,13 +45,13 @@
                            <children>
                               <Label style="-fx-background-color: rgba(111,221,165,0.15); -fx-text-fill: #B9EED2; -fx-padding: 4 10; -fx-background-radius: 12; -fx-font-size: 10; -fx-font-weight: bold;" text="POUPAR JUNTOS, CRESCER JUNTOS" />
                               <Label style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold; -fx-line-spacing: 2; -fx-font-family: &quot;Inter&quot;;" text="A sua comunidade.&#10;Os seus objetivos.&#10;Um futuro melhor." />
-                              <Label maxWidth="423.0" prefHeight="60.0" prefWidth="422.0" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true">
+                              <Label maxWidth="423.0" prefHeight="49.0" prefWidth="397.0" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin></Label>
                               <Pane prefHeight="180" prefWidth="350">
                                  <children>
-                                    <VBox layoutX="190.0" layoutY="50.0" prefHeight="80" prefWidth="140" styleClass="visual-card-back">
+                                    <VBox layoutX="190" layoutY="50" prefHeight="80" prefWidth="140" styleClass="visual-card-back">
                                        <padding>
                                           <Insets bottom="10" left="10" right="10" top="10" />
                                        </padding>
@@ -66,7 +66,7 @@
                                           <Label style="-fx-text-fill: #182426; -fx-font-size: 20; -fx-font-weight: bold;" text="35.000,00 MT" />
                                           <StackPane alignment="CENTER_LEFT" prefHeight="6" style="-fx-background-color: #E4ECEC; -fx-background-radius: 4;">
                                              <children>
-                                                <Region prefHeight="6.0" prefWidth="163.0" style="-fx-background-color: #0F5257; -fx-background-radius: 4;" />
+                                                <Region prefHeight="6" prefWidth="170" style="-fx-background-color: #0F5257; -fx-background-radius: 4;" />
                                              </children>
                                           </StackPane>
                                           <Label style="-fx-text-fill: #69787B; -fx-font-size: 9;" text="Meta 71% alcançada" />
@@ -151,7 +151,7 @@
                            </VBox.margin>
                            <children>
                               <Label style="-fx-text-fill: #69787B; -fx-font-size: 12px;" text="Ainda não tem uma conta?" />
-                              <Hyperlink onAction="#createAccount" style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 12px;" text="Criar conta" />
+                              <Hyperlink style="-fx-text-fill: #0F5257; -fx-font-weight: bold; -fx-font-size: 12px;" text="Criar conta" />
                            </children>
                         </HBox>
                      </children>
