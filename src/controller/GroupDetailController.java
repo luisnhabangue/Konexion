@@ -317,7 +317,7 @@ public class GroupDetailController {
         return switch (contribution.getPaymentMethod()) {
             case MPESA -> "M-Pesa";
             case EMOLA -> "E-Mola";
-            case BANK -> "Banco";
+            case BIM -> "Banco";
             case CASH -> "Dinheiro";
         };
     }

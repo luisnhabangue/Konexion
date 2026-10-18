@@ -22,7 +22,7 @@ public class PaymentController {
     private static final Map<String, PaymentMethod> METHODS = Map.of(
             "M-Pesa", PaymentMethod.MPESA,
             "E-Mola", PaymentMethod.EMOLA,
-            "Transferência bancária", PaymentMethod.BANK,
+            "Transferência bancária", PaymentMethod.BIM,
             "Dinheiro em espécie", PaymentMethod.CASH
     );
     private final GroupService groupService = new GroupService();
