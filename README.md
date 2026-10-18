@@ -27,7 +27,7 @@
 
 ## 🌿 Sobre o Projeto
 
-O **Xitique Digital** é uma aplicação desktop desenvolvida para facilitar a gestão de grupos de poupança rotativa, inspirada na prática tradicional do xitique.
+O **Konexion** é uma aplicação desktop desenvolvida para facilitar a gestão de grupos de poupança rotativa, inspirada na prática tradicional do xitique.
 
 A aplicação procura tornar a organização dos participantes, o acompanhamento das contribuições e a gestão dos ciclos de poupança mais simples e transparentes.
 
@@ -228,7 +228,7 @@ As permissões devem respeitar o contexto do grupo e as regras de acesso impleme
 
 ## 👩🏽‍💻 Equipa
 
-O Xitique Digital é um projeto desenvolvido em equipa.
+O Konexion é um projeto desenvolvido em equipa.
 
 <div align="center">
 
@@ -238,7 +238,7 @@ O Xitique Digital é um projeto desenvolvido em equipa.
 <a href="https://github.com/aristidiatembe-dev">
 <img src="https://github.com/aristidiatembe-dev.png" width="90" alt="Perfil GitHub da autora" />
 <br/>
-<strong>Aristídia Tembe</strong>
+<strong>Aristidia Tembe</strong>
 </a>
 <br/>
 <sub>Desenvolvimento</sub>
@@ -268,7 +268,7 @@ O Xitique Digital é um projeto desenvolvido em equipa.
 
 ## 🎓 Contexto Académico
 
-O **Xitique Digital** é um projeto semestral desenvolvido no âmbito da cadeira de Programação, com o objetivo de aplicar conhecimentos de:
+O **Konexion** é um projeto semestral desenvolvido no âmbito da cadeira de Programação, com o objetivo de aplicar conhecimentos de:
 
 - Programação Orientada a Objetos.
 - Modelagem de sistemas.
@@ -284,7 +284,7 @@ O **Xitique Digital** é um projeto semestral desenvolvido no âmbito da cadeira
 
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:059669,50:065F46,100:022C22&height=100&section=footer" />
 
-### Xitique Digital
+### Konexion
 
 **Poupar juntos. Crescer juntos.**
 
