@@ -10,6 +10,11 @@ import javafx.stage.Window;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+/**
+ * Utilitário partilhado que centraliza a funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public final class ModalDialogs {
     private ModalDialogs() {

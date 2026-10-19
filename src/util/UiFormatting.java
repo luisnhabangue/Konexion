@@ -7,6 +7,11 @@ import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+/**
+ * Utilitário partilhado que centraliza a funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public final class UiFormatting {
     private static final NumberFormat MONEY = NumberFormat.getNumberInstance(Locale.forLanguageTag("pt-MZ"));

@@ -2,6 +2,11 @@ package test;
 
 import model.enums.PaymentMethod;
 import service.PaymentService;
+/**
+ * Componente de apoio à aplicação, responsável pela funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public class TesteServicoPagamento {
     public static void main(String[] args) {

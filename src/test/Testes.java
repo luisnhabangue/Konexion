@@ -10,6 +10,11 @@ import service.GroupService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+/**
+ * Componente de apoio à aplicação, responsável pela funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public class Testes {
 

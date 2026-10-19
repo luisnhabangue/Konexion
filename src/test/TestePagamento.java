@@ -4,6 +4,11 @@ import model.enums.PaymentMethod;
 import payment.PaymentGatewayRegistry;
 import payment.PaymentRequest;
 import java.math.BigDecimal;
+/**
+ * Componente de apoio à aplicação, responsável pela funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public class TestePagamento {
     public static void main(String[] args) {

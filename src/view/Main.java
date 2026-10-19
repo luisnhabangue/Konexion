@@ -12,6 +12,11 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
+/**
+ * Ponto de entrada da interface gráfica JavaFX da aplicação.
+ *
+ * @since 1.0
+ */
 
 
 public class Main extends Application {

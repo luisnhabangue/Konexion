@@ -5,6 +5,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "membership_invitations")
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class MembershipInvitation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

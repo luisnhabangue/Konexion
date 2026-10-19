@@ -15,6 +15,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "users")
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class User extends Person {
 
     /** Nome de utilizador para autenticação. */

@@ -8,6 +8,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payment_transactions")
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class PaymentTransaction {
 
     @Id

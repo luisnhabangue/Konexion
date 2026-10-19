@@ -4,6 +4,11 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import model.PaymentTransaction;
+/**
+ * Implementação de acesso a dados responsável por consultar e persistir as entidades correspondentes através de JPA.
+ *
+ * @since 1.0
+ */
 
 public class PaymentTransactionDao {
 

@@ -6,7 +6,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -25,7 +24,17 @@ import util.StyledDialogs;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Controlador JavaFX para a vista de listagem e exploração de grupos de Xitique.
+ * <p>
+ * Permite filtrar os grupos do utilizador (todos, ativos, concluídos), pesquisar por nome,
+ * consultar/aderir a grupos públicos e semear dados de demonstração.
+ * </p>
+
+ * @since 1.0
+ */
 public class GroupsController {
+
     private final GroupService groupService = new GroupService();
     private List<Group> groups;
     private String searchText = "";
@@ -38,8 +47,13 @@ public class GroupsController {
     @FXML private ToggleButton filterActive;
     @FXML private ToggleButton filterFinished;
     @FXML private VBox publicGroupRows;
+
+    /** Número de colunas no grelha de grupos (responsivo). */
     private int responsiveColumns = 3;
 
+    /**
+     * Configura os ouvintes de eventos da pesquisa, botões de filtro e redimensionamento da grelha.
+     */
     @FXML
     private void initialize() {
         groupsGrid.getChildren().clear();
@@ -56,10 +70,18 @@ public class GroupsController {
         refresh();
     }
 
+    /**
+     * Define o texto da pesquisa programaticamente e atualiza a filtragem.
+     *
+     * @param value Texto de pesquisa a aplicar.
+     */
     public void search(String value) {
         groupSearchField.setText(value == null ? "" : value);
     }
 
+    /**
+     * Recarrega a lista de grupos do utilizador e a lista de grupos públicos disponíveis.
+     */
     private void refresh() {
         try {
             groups = groupService.findAllForUser(SessionContext.getCurrentUser().getId());
@@ -70,6 +92,9 @@ public class GroupsController {
         }
     }
 
+    /**
+     * Renderiza os cartões dos grupos na grelha com base nos filtros e pesquisa ativos.
+     */
     private void renderGroups() {
         if (groups == null) {
             return;
@@ -119,6 +144,11 @@ public class GroupsController {
         }).count());
     }
 
+    /**
+     * Ajusta o número de colunas da grelha dinamicamente de acordo com a largura da janela.
+     *
+     * @param width Largura atual do contentor.
+     */
     private void updateGridColumns(double width) {
         int columns = width < 650 ? 1 : width < 980 ? 2 : 3;
         if (columns == responsiveColumns) {
@@ -135,6 +165,9 @@ public class GroupsController {
         renderGroups();
     }
 
+    /**
+     * Renderiza a lista de grupos públicos disponíveis para participação.
+     */
     private void renderPublicGroups() {
         publicGroupRows.getChildren().clear();
         for (Group group : groupService.findPublicGroups()) {
@@ -162,6 +195,11 @@ public class GroupsController {
         }
     }
 
+    /**
+     * Junta o utilizador atual a um grupo público.
+     *
+     * @param group Grupo público selecionado.
+     */
     private void joinPublicGroup(Group group) {
         try {
             groupService.joinPublicGroup(group.getGroupId(), SessionContext.getCurrentUser().getId());
@@ -173,16 +211,19 @@ public class GroupsController {
         }
     }
 
+    /** Abre a vista detalhada de um grupo especificando o seu ID. */
     private void openGroup(Long groupId) {
         Navigator.setSelectedGroupId(groupId);
         Navigator.go(Page.GROUP_DETAIL);
     }
 
+    /** Abre a janela modal de criação de novo grupo. */
     private void openCreateGroup() {
         Window owner = groupsGrid.getScene().getWindow();
         ModalDialogs.showCreateGroup(owner, this::refresh);
     }
 
+    /** Popula a base de dados com dados de demonstração de teste. */
     private void seedDemoData() {
         try {
             String message = new DemoDataService().seedForCurrentUser();
@@ -193,6 +234,7 @@ public class GroupsController {
         }
     }
 
+    /** Apresenta uma mensagem de erro ao utilizador. */
     private void showError(String message) {
         StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, message));
     }

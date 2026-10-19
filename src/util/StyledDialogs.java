@@ -5,6 +5,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 
 import java.util.Optional;
+/**
+ * Utilitário partilhado que centraliza a funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public final class StyledDialogs {
     private StyledDialogs() {

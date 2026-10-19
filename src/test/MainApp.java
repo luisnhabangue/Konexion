@@ -4,6 +4,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+/**
+ * Componente de apoio à aplicação, responsável pela funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public class MainApp extends Application {
 

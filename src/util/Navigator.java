@@ -11,6 +11,11 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.function.Consumer;
+/**
+ * Utilitário partilhado que centraliza a funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public final class Navigator {
     private static StackPane content;

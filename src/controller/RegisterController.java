@@ -19,6 +19,11 @@ import util.StyledDialogs;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+/**
+ * Controlador JavaFX responsável por apresentar e coordenar as interações da funcionalidade correspondente.
+ *
+ * @since 1.0
+ */
 
 public class RegisterController {
 

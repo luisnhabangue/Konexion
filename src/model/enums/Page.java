@@ -1,4 +1,9 @@
 package model.enums;
+/**
+ * Enumeração dos valores válidos para o conceito indicado pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public enum Page {
     DASHBOARD("dashboard.fxml"), GROUPS("groups.fxml"), GROUP_DETAIL("group-detail.fxml"),

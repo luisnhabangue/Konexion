@@ -1,6 +1,11 @@
 package util;
 
 import model.User;
+/**
+ * Utilitário partilhado que centraliza a funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public final class SessionContext {
     private static User currentUser;

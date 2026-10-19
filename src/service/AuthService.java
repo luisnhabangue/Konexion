@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 /**
  * Serviço responsável pelo registo, autenticação e gestão
- * dos dados pessoais dos utilizadores do sistema Konexion.
+ * dos dados pessoais dos utilizadores do sistema iXitique.
  *
  * Aplica as regras de negócio relacionadas com contas,
  * credenciais e validação dos dados.

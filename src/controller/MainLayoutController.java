@@ -4,41 +4,84 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import model.MembershipInvitation;
 import model.enums.Page;
+import service.GroupService;
 import util.ModalDialogs;
 import util.Navigator;
 import util.SessionContext;
 import util.StyledDialogs;
-import model.MembershipInvitation;
-import service.GroupService;
-import javafx.scene.control.ButtonType;
-import java.util.List;
-import model.enums.UserRole;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador JavaFX responsável pela estrutura principal (Main Layout / Shell) da aplicação[cite: 110].
+ * <p>
+ * Gere o menu de navegação lateral, o cabeçalho do utilizador, a central de notificações e convites
+ * pendentes, o fecho de sessão e o contentor dinâmico de vistas ({@link StackPane})[cite: 110].
+ * </p>
+ *
+ * @author Sistema Xitique
+ * @version 1.0
+ * @since 1.0
+ */
 public class MainLayoutController {
+
+    /** Contentor de pilha onde as páginas da aplicação são carregadas dinamicamente[cite: 110]. */
     @FXML private StackPane contentArea;
+
+    /** Botão de navegação para a vista de Painel/Visão Geral ou Painel de Administração[cite: 110]. */
     @FXML private Button navDashboard;
+
+    /** Botão de navegação para a vista de Grupos[cite: 110]. */
     @FXML private Button navGroups;
+
+    /** Botão de navegação para a vista de Histórico de Contribuições[cite: 110]. */
     @FXML private Button navHistory;
+
+    /** Botão de navegação para a vista do Perfil do utilizador[cite: 110]. */
     @FXML private Button navProfile;
+
+    /** Botão para fechar a sessão ativa do utilizador[cite: 110]. */
     @FXML private Button btnLogout;
+
+    /** Botão para abrir o diálogo de criação de novo grupo ou verificação de conta[cite: 110]. */
     @FXML private Button btnCreateGroup;
+
+    /** Botão para abrir a lista de notificações/convites pendentes[cite: 110]. */
     @FXML private Button btnNotifications;
+
+    /** Campo de pesquisa global por grupos[cite: 110]. */
     @FXML private TextField searchField;
+
+    /** Rótulo com o primeiro nome do utilizador autenticado[cite: 110]. */
     @FXML private Label lblUserName;
+
+    /** Rótulo com as iniciais do utilizador para exibição no avatar[cite: 110]. */
     @FXML private Label lblUserInitials;
+
+    /** Rótulo para exibição do contador de notificações pendentes[cite: 110]. */
     @FXML private Label lblNotificationCount;
 
+    /** Mapeamento entre as páginas da aplicação e os respetivos botões de navegação[cite: 110]. */
     private final Map<Page, Button> navigation = new EnumMap<>(Page.class);
+
+    /** Identificador da página atualmente apresentada[cite: 110]. */
     private Page currentPage = Page.DASHBOARD;
+
+    /** Serviço responsável pelas operações de grupos e gestão de convites[cite: 110]. */
     private final GroupService groupService = new GroupService();
 
+    /**
+     * Inicializa os botões de navegação, ajusta o papel do utilizador (administrador vs regular)
+     * e configura os ouvintes de eventos e notificações pendentes[cite: 110].
+     */
     @FXML
     private void initialize() {
         navigation.put(Page.DASHBOARD, navDashboard);
@@ -75,11 +118,23 @@ public class MainLayoutController {
         }
     }
 
+    /**
+     * Navega para a página especificada e guarda o estado da página ativa[cite: 110].
+     *
+     * @param <T> O tipo do controlador associado à página.
+     * @param page A página {@link Page} para a qual se pretende navegar.
+     * @return A instância do controlador da página carregada.
+     */
     private <T> T navigate(Page page) {
         currentPage = page;
         return Navigator.go(page);
     }
 
+    /**
+     * Atualiza a indicação visual do menu de navegação, atribuindo a classe ativa ao botão selecionado[cite: 110].
+     *
+     * @param page A página {@link Page} em exibição.
+     */
     private void updateNavigation(Page page) {
         lblUserName.setText(SessionContext.getCurrentUser().getFirstName());
         lblUserInitials.setText(util.UiFormatting.initials(SessionContext.getCurrentUser()));
@@ -90,10 +145,16 @@ public class MainLayoutController {
         }
     }
 
+    /**
+     * Abre a caixa de diálogo modal para criação de um novo grupo de Xitique[cite: 110].
+     */
     private void openCreateGroup() {
         ModalDialogs.showCreateGroup(contentArea.getScene().getWindow(), () -> navigate(currentPage));
     }
 
+    /**
+     * Encerra a sessão atual do utilizador, limpa o contexto da sessão e redireciona para o ecrã de login[cite: 110].
+     */
     private void logout() {
         try {
             SessionContext.clear();
@@ -107,6 +168,9 @@ public class MainLayoutController {
         }
     }
 
+    /**
+     * Exibe sequencialmente em caixas de diálogo os convites de grupos pendentes, permitindo aceitá-los ou recusá-los[cite: 110].
+     */
     private void showInvitations() {
         try {
             List<MembershipInvitation> invitations = groupService.findPendingInvitations(
@@ -137,6 +201,9 @@ public class MainLayoutController {
         }
     }
 
+    /**
+     * Atualiza o contador de convites pendentes e altera a visibilidade do badge de notificação[cite: 110].
+     */
     private void refreshInvitationCount() {
         int pending = groupService.findPendingInvitations(SessionContext.getCurrentUser().getId()).size();
         lblNotificationCount.setText(Integer.toString(pending));

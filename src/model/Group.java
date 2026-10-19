@@ -14,6 +14,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "tb_group")
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class Group {
 
     /** Identificador único do grupo. */

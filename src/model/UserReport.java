@@ -5,6 +5,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_reports")
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class UserReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -14,6 +14,11 @@ import util.EntityManagerFactoryUtil;
 
 import java.math.BigDecimal;
 import java.util.List;
+/**
+ * Serviço de aplicação que coordena as regras de negócio e as operações de domínio correspondentes.
+ *
+ * @since 1.0
+ */
 
 public class AdminService {
     public record Metrics(long users, long activeUsers, long verifiedUsers, long groups,

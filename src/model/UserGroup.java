@@ -19,6 +19,11 @@ import java.util.List;
                 @UniqueConstraint(columnNames = {"user_id", "group_id"})
         }
 )
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class UserGroup {
 
     /** Identificador único do vínculo. */

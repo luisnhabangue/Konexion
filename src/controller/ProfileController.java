@@ -1,44 +1,62 @@
 package controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Contribution;
-import model.User;
 import model.Cycle;
 import model.Group;
-import service.AuthService;
+import model.User;
 import service.AdminService;
+import service.AuthService;
 import service.GroupService;
 import util.SessionContext;
 import util.StyledDialogs;
 import util.UiFormatting;
 
-import java.io.IOException;
 import java.io.File;
-import java.nio.file.Files;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.List;
 
+/**
+ * Controlador JavaFX para o ecrã de perfil do utilizador[cite: 113].
+ * <p>
+ * Permite a gestão das informações de conta, a submissão de documentos KYC de verificação de identidade,
+ * a solicitação do cargo de chefe de grupo, e a consulta de contribuições e grupos concluídos[cite: 113].
+ * </p>
+ *
+ * @author Sistema Xitique
+ * @version 1.0
+ * @since 1.0
+ */
 public class ProfileController {
+
+    /** Serviço responsável pelas operações de grupo[cite: 113]. */
     private final GroupService groupService = new GroupService();
+
+    /** Serviço responsável por atualizações de conta e submissão de KYC[cite: 113]. */
     private final AuthService authService = new AuthService();
+
+    /** Serviço responsável por pedidos administrativos[cite: 113]. */
     private final AdminService adminService = new AdminService();
+
+    /** Ficheiro contendo a imagem do documento de identidade do utilizador[cite: 113]. */
     private File documentPhoto;
+
+    /** Ficheiro contendo a selfie de confirmação do utilizador[cite: 113]. */
     private File selfiePhoto;
 
     @FXML private Label lblProfileName;
@@ -66,6 +84,10 @@ public class ProfileController {
     @FXML private VBox paneFinished;
     @FXML private VBox profileActivityRows;
 
+    /**
+     * Carrega as informações do utilizador da sessão ativa e configura as secções
+     * de verificação KYC, pedido de liderança e histórico de contribuições[cite: 113].
+     */
     @FXML
     private void initialize() {
         User user = SessionContext.getCurrentUser();
@@ -106,17 +128,26 @@ public class ProfileController {
         renderFinishedGroups(groupService.findAllForUser(user.getId()));
     }
 
+    /**
+     * Envia o pedido de atribuição da função de chefe de grupo para avaliação administrativa[cite: 113].
+     *
+     * @param user O utilizador requerente.
+     */
     private void requestLeadership(User user) {
-            try {
-                adminService.requestGroupLeadership(user.getId(), txtLeadershipReason.getText());
-                leadershipSection.setVisible(false);
-                leadershipSection.setManaged(false);
-                StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
-                        "O pedido foi enviado ao administrador para análise."));
-            } catch (RuntimeException exception) {
-                StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
-            }
+        try {
+            adminService.requestGroupLeadership(user.getId(), txtLeadershipReason.getText());
+            leadershipSection.setVisible(false);
+            leadershipSection.setManaged(false);
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
+                    "O pedido foi enviado ao administrador para análise."));
+        } catch (RuntimeException exception) {
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
         }
+    }
+
+    /**
+     * Reconfigura responsivamente as colunas do painel de dados de perfil consoante a largura disponível[cite: 113].
+     */
     private void configureProfileColumns() {
         if (profileInfo == null || profileInfo.getChildren().isEmpty()) {
             return;
@@ -136,6 +167,11 @@ public class ProfileController {
         }
     }
 
+    /**
+     * Abre a caixa de diálogo para seleção de ficheiros de imagem referentes aos documentos KYC[cite: 113].
+     *
+     * @param document {@code true} se a imagem for a foto do documento; {@code false} se for a selfie.
+     */
     private void choosePhoto(boolean document) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(document ? "Selecionar fotografia do documento" : "Selecionar fotografia de confirmação");
@@ -154,6 +190,11 @@ public class ProfileController {
         }
     }
 
+    /**
+     * Valida os tamanhos das imagens e envia os documentos para análise da verificação KYC[cite: 113].
+     *
+     * @param user O utilizador que envia os documentos.
+     */
     private void submitKyc(User user) {
         try {
             if (documentPhoto == null || selfiePhoto == null) {
@@ -177,6 +218,11 @@ public class ProfileController {
         }
     }
 
+    /**
+     * Apresenta no painel as linhas com o histórico de contribuições do utilizador[cite: 113].
+     *
+     * @param contributions Lista das contribuições efetuadas.
+     */
     private void renderContributions(List<Contribution> contributions) {
         profileActivityRows.getChildren().clear();
         for (Contribution contribution : contributions) {
@@ -204,6 +250,11 @@ public class ProfileController {
         }
     }
 
+    /**
+     * Alterna a visibilidade entre os painéis de histórico e grupos concluídos[cite: 113].
+     *
+     * @param selected Painel VBox a exibir.
+     */
     private void showPane(VBox selected) {
         paneContributions.setVisible(selected == paneContributions);
         paneContributions.setManaged(selected == paneContributions);
@@ -211,6 +262,11 @@ public class ProfileController {
         paneFinished.setManaged(selected == paneFinished);
     }
 
+    /**
+     * Renderiza os grupos em que o utilizador participou e que já concluíram o seu ciclo[cite: 113].
+     *
+     * @param groups Lista de grupos a filtrar.
+     */
     private void renderFinishedGroups(List<Group> groups) {
         paneFinished.getChildren().clear();
         List<Group> finished = groups.stream().filter(group -> {
@@ -228,6 +284,11 @@ public class ProfileController {
         }
     }
 
+    /**
+     * Abre a janela modal para edição dos dados pessoais do utilizador[cite: 113].
+     *
+     * @param user Utilizador cujos dados serão editados.
+     */
     private void editProfile(User user) {
         try {
             URL editDialogUrl = getClass().getResource("/view/fxml/profile-edit-dialog.fxml");

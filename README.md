@@ -78,19 +78,24 @@ GitHub          Alojamento do repositório e colaboração da equipa.
 
 
 Arquitetura do Projeto
-O código será organizado em camadas, separando as responsabilidades de cada componente para facilitar a manutenção e a evolução da aplicação.
--Model: contém as entidades e as classes que representam os conceitos do sistema.
--DAO: responsável pelas operações de acesso e persistência dos dados.
--Service: responsável pelas regras de negócio, validações e coordenação das operações.
--Controller: recebe e trata as ações da interface, comunicando com a camada de serviço.
--View: contém os componentes da interface gráfica desenvolvidos com JavaFX.
+O código está organizado por responsabilidades, com a interface JavaFX a comunicar com serviços, que aplicam as regras de negócio e recorrem a DAOs para persistir entidades JPA.
 
+- `src/model`: entidades e objetos de domínio, incluindo utilizadores, grupos, participações, ciclos, contribuições, pagamentos e pedidos administrativos. `src/model/enums` define os estados, papéis e opções válidas.
+- `src/controller`: controladores JavaFX das telas e diálogos; `src/controller/register` contém os controladores das etapas do registo.
+- `src/service`: regras e casos de uso de autenticação, gestão de grupos, administração, pagamentos e dados de demonstração.
+- `src/dao` e `src/dao/interfaces`: implementações e contratos de acesso à base de dados.
+- `src/validation`: validação dos dados de utilizador e grupo.
+- `src/payment`: contrato, pedidos, respostas e seleção de gateways; `src/payment/simulated` contém integrações simuladas de M-Pesa, e-Mola e BIM.
+- `src/util`: utilitários de persistência, sessão, navegação, formatação e diálogos.
+- `src/exceptions`: exceções específicas das regras de domínio.
+- `src/main/resources`: recursos da aplicação, incluindo vistas e configuração de persistência.
 
+As classes e interfaces Java incluem documentação Javadoc em português. Para atualizar ou gerar a documentação de referência, execute `mvn javadoc:javadoc`; o resultado é criado em `target/site/apidocs`.
 
- Moelagem e Base de Dados
-A modelagem do sistema será orientada pelos princípios da Programação Orientada a Objetos e representada através de diagramas UML.
-A base de dados será implementada em MySQL, utilizando Hibernate/JPA para estabelecer o mapeamento entre as classes Java e as tabelas relacionais.
-O modelo deverá representar os utilizadores, grupos, participações, ciclos, rondas e contribuições, incluindo os dados necessários para gerir os recebimentos e o histórico das operações.
+Modelagem e Base de Dados
+A modelagem do sistema é orientada pelos princípios da Programação Orientada a Objetos e pode ser representada através de diagramas UML.
+A base de dados é MySQL, com Hibernate/JPA a estabelecer o mapeamento entre as classes Java e as tabelas relacionais.
+O modelo representa utilizadores, grupos, participações, ciclos, contribuições, pagamentos e histórico das operações.
 As regras de negócio serão tratadas principalmente na camada de serviço, recorrendo também a mecanismos de integridade da base de dados sempre que necessário.
 
 
