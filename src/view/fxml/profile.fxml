@@ -32,6 +32,7 @@
                     <Label text="Dados pessoais da sua conta" styleClass="profile-since"/>
                     <HBox spacing="6" alignment="CENTER_LEFT">
                         <Label text="CONTA ATIVA" styleClass="badge, badge-success"/>
+                        <Label fx:id="lblVerificationStatus" text="POR VERIFICAR" styleClass="badge, badge-warning"/>
                         <VBox.margin><Insets top="4"/></VBox.margin>
                     </HBox>
                 </VBox>
@@ -40,7 +41,7 @@
                 </Button>
             </HBox>
 
-            <GridPane styleClass="profile-info" hgap="12">
+            <GridPane fx:id="profileInfo" styleClass="profile-info" hgap="12">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="25"/>
                     <ColumnConstraints percentWidth="25"/>
@@ -54,11 +55,39 @@
             </GridPane>
         </VBox>
 
+        <VBox fx:id="kycSection" styleClass="card, kyc-card" spacing="12">
+            <Label text="Verificação de identidade (KYC)" styleClass="section-title"/>
+            <Label text="Submeta o BI ou NUIT e fotografias para o administrador rever. A conta continua apta a participar em grupos enquanto aguarda."
+                   styleClass="section-sub" wrapText="true"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="txtKycDocument" promptText="Número do BI ou NUIT" styleClass="field-input"
+                           HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnChooseDocumentPhoto" text="Foto do documento" styleClass="btn, btn-secondary"/>
+            </HBox>
+            <Label fx:id="lblDocumentPhoto" text="Nenhuma foto do documento selecionada" styleClass="section-sub"
+                   wrapText="true"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="btnChooseSelfie" text="Selecionar fotografia" styleClass="btn, btn-secondary"/>
+                <Label fx:id="lblSelfiePhoto" text="Nenhuma fotografia selecionada" styleClass="section-sub"
+                       wrapText="true" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnSubmitKyc" text="Enviar para aprovação" styleClass="btn, btn-primary"/>
+            </HBox>
+        </VBox>
+        <VBox fx:id="leadershipSection" styleClass="card, kyc-card" spacing="10">
+            <Label text="Pedir nomeação como chefe de grupo" styleClass="section-title"/>
+            <Label text="O administrador analisa os pedidos. A nomeação dá acesso às ferramentas de gestão de grupos."
+                   styleClass="section-sub" wrapText="true"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="txtLeadershipReason" promptText="Explique por que deseja ser chefe de grupo"
+                           styleClass="field-input" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnRequestLeadership" text="Enviar pedido" styleClass="btn, btn-secondary"/>
+            </HBox>
+        </VBox>
+
         <!-- ================= TABS ================= -->
         <HBox styleClass="tabs" spacing="25">
             <ToggleButton fx:id="tabContributions" text="Histórico de contribuições" styleClass="tab-btn" toggleGroup="$profileTabs" selected="true"/>
             <ToggleButton fx:id="tabFinished" text="Xitiques finalizados" styleClass="tab-btn" toggleGroup="$profileTabs"/>
-            <ToggleButton fx:id="tabSettings" text="Configurações da conta" styleClass="tab-btn" toggleGroup="$profileTabs"/>
         </HBox>
 
         <!-- Painéis: o controller alterna visible/managed conforme o tab selecionado -->
@@ -66,7 +95,10 @@
             <!-- 1) Histórico -->
             <VBox fx:id="paneContributions" styleClass="card, table-card">
                 <HBox styleClass="t-head">
-                    <Label text="DATA · GRUPO · VALOR · ESTADO" styleClass="t-th"/>
+                    <Label text="DATA" styleClass="t-th, c-w110"/>
+                    <Label text="GRUPO" styleClass="t-th" HBox.hgrow="ALWAYS"/>
+                    <Label text="VALOR" styleClass="t-th, c-w130"/>
+                    <Label text="ESTADO" styleClass="t-th, c-w110"/>
                 </HBox>
                 <VBox fx:id="profileActivityRows"/>
             </VBox>
@@ -80,25 +112,6 @@
                 <Label text="Os grupos concluídos serão apresentados aqui." styleClass="section-sub"/>
             </VBox>
 
-            <!-- 3) Configurações -->
-            <VBox fx:id="paneSettings" styleClass="card, settings-card" visible="false" managed="false">
-                <Label text="Preferências da conta" styleClass="section-title"/>
-                <HBox styleClass="setting-row" alignment="CENTER_LEFT">
-                    <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="Notificações de pagamentos" styleClass="setting-title"/>
-                        <Label text="Receber lembretes antes da data da quota" styleClass="setting-sub"/>
-                    </VBox>
-                    <CheckBox fx:id="chkPaymentNotifications" selected="true"/>
-                    <VBox.margin><Insets top="12"/></VBox.margin>
-                </HBox>
-                <HBox styleClass="setting-row" alignment="CENTER_LEFT">
-                    <VBox spacing="4" HBox.hgrow="ALWAYS">
-                        <Label text="Resumo mensal" styleClass="setting-title"/>
-                        <Label text="Receber um relatório financeiro por email" styleClass="setting-sub"/>
-                    </VBox>
-                    <CheckBox fx:id="chkMonthlySummary" selected="true"/>
-                </HBox>
-            </VBox>
         </StackPane>
     </VBox>
 </ScrollPane>

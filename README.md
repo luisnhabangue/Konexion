@@ -41,12 +41,31 @@ As principais telas da aplicação já usam os dados persistidos: o utilizador p
 
 ### Regras de negócio da interface
 
-- O username, email, telefone e documento não podem repetir-se; emails, telefones e palavras-passe são validados no registo.
+- O username, email, telefone e, quando submetido, documento não podem repetir-se; emails, telefones e palavras-passe são validados no registo.
 - Um grupo exige nome entre 3 e 80 caracteres, descrição até 150 caracteres, quota positiva, dia de pagamento entre 1 e 31 e frequência válida. O criador entra automaticamente como primeiro membro.
-- Só o criador pode adicionar membros, reordenar a fila ou eliminar o grupo. Não se adicionam/removem membros nem se elimina um grupo depois de começar o histórico de ciclos.
+- Só criadores/admins podem convidar membros, abrir ciclos e reordenar a fila. Chefes de grupo nomeados pelo administrador podem privatizar/publicar, remover membros e eliminar grupos. Não se adicionam/removem membros nem se elimina um grupo depois de começar o histórico de ciclos.
 - Um ciclo exige pelo menos dois membros e não pode ser aberto enquanto outro estiver em andamento. A rotação reinicia depois de todos os membros receberem.
 - Cada membro pode pagar uma única quota por ciclo; o valor deve ser pelo menos a quota do grupo e a data deve estar entre o início do ciclo e o dia atual. O ciclo conclui quando todos os membros pagam.
 - Um grupo com ciclos iniciados não pode ser eliminado, para preservar o histórico financeiro.
+
+### Verificação, perfis e moderação
+
+- Uma conta nova pode ser criada sem BI/NUIT e começa como `USER`, ativa para participar, mas não verificada. A criação de grupos só fica disponível depois de enviar o número do BI/NUIT e duas fotografias (documento e fotografia de confirmação) e um administrador aprovar o KYC.
+- As fotografias são armazenadas como dados binários na base de dados, não como caminhos locais. Cada ficheiro pode ter no máximo 8 MB.
+- Os perfis suportados são `ADMINISTRATOR`, `USER` e `GROUP_LEADER`. Um utilizador verificado pode pedir ao administrador a nomeação como chefe; a solicitação tem de ser aprovada.
+- Convites ficam pendentes até o destinatário os aceitar ou recusar nas notificações. Uma conta não verificada pode aceitar convites e participar; grupos públicos também aparecem para adesão.
+- Membros podem denunciar outros participantes do mesmo grupo. O administrador analisa denúncias, aplica strikes, desativa contas, aprova KYC e analisa pedidos de chefia. Pagamentos realizados até à data limite somam 10 pontos de pontualidade ao utilizador.
+- O painel de administração apresenta contagens, gráficos, pagamentos e montantes, revisão KYC, denúncias e gestão de contas.
+
+#### Configuração do primeiro administrador
+
+O sistema não cria automaticamente uma conta administrativa nem permite que o registo público escolha esse perfil. Depois de criar a conta inicial e confirmar o seu ID na base de dados, atribua o papel por um canal administrativo seguro, por exemplo:
+
+```sql
+UPDATE users SET user_role = 'ADMINISTRATOR' WHERE id = <ID_DA_CONTA_INICIAL>;
+```
+
+Substitua `<ID_DA_CONTA_INICIAL>` pelo ID confirmado. As novas colunas e tabelas são adicionadas pelo Hibernate em `update`; faça uma cópia de segurança da base de dados antes de atualizar uma instalação existente.
 
 Tecnologias Utilizadas
 Java            Desenvolvimento da lógica da aplicação.                

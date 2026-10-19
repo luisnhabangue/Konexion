@@ -12,6 +12,7 @@ import io.github.palexdev.materialfx.controls.MFXTextField;
 import model.User;
 import service.AuthService;
 import util.SessionContext;
+import util.StyledDialogs;
 
 import java.io.IOException;
 
@@ -59,7 +60,7 @@ public class LoginController {
         alert.setTitle(type == Alert.AlertType.ERROR ? "Falha no login" : "Login");
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.showAndWait();
+        StyledDialogs.showAndWait(alert);
     }
 
     @FXML

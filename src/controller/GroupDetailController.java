@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -23,6 +24,7 @@ import service.GroupService;
 import util.Navigator;
 import util.SessionContext;
 import util.UiFormatting;
+import util.StyledDialogs;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -35,12 +37,14 @@ public class GroupDetailController {
     private Group group;
     private Cycle currentCycle;
     private boolean owner;
+    private boolean manager;
 
     @FXML private Button btnBack;
     @FXML private Button btnAddMember;
     @FXML private Button btnNewCycle;
     @FXML private Button btnReorderTop;
     @FXML private Button btnDeleteGroup;
+    @FXML private Button btnToggleVisibility;
     @FXML private Button btnReorder;
     @FXML private Button btnRegisterPayment;
     @FXML private Label lblGroupName;
@@ -80,22 +84,31 @@ public class GroupDetailController {
                 throw new IllegalArgumentException("Grupo não encontrado.");
             }
             owner = group.getCreatedBy().getId().equals(SessionContext.getCurrentUser().getId());
-            btnAddMember.setVisible(owner);
-            btnAddMember.setManaged(owner);
-            btnNewCycle.setVisible(owner);
-            btnNewCycle.setManaged(owner);
-            btnReorderTop.setVisible(owner);
-            btnReorderTop.setManaged(owner);
-            btnReorder.setVisible(owner);
-            btnReorder.setManaged(owner);
-            btnDeleteGroup.setVisible(owner);
-            btnDeleteGroup.setManaged(owner);
+            manager = owner || SessionContext.getCurrentUser().getUserRole() != null
+                    && SessionContext.getCurrentUser().getUserRole().isAdministrator();
+            btnAddMember.setVisible(manager);
+            btnAddMember.setManaged(manager);
+            btnNewCycle.setVisible(manager);
+            btnNewCycle.setManaged(manager);
+            btnReorderTop.setVisible(manager);
+            btnReorderTop.setManaged(manager);
+            btnReorder.setVisible(manager);
+            btnReorder.setManaged(manager);
+            boolean canManageGroup = owner || SessionContext.getCurrentUser().getUserRole() != null
+                    && (SessionContext.getCurrentUser().getUserRole().isAdministrator()
+                    || SessionContext.getCurrentUser().getUserRole().isGroupLeader());
+            btnDeleteGroup.setVisible(canManageGroup);
+            btnDeleteGroup.setManaged(canManageGroup);
+            btnToggleVisibility.setVisible(canManageGroup);
+            btnToggleVisibility.setManaged(canManageGroup);
+            btnToggleVisibility.setText(group.isPrivateGroup() ? "Tornar público" : "Tornar privado");
             btnBack.setOnAction(event -> Navigator.go(Page.GROUPS));
             btnAddMember.setOnAction(event -> showMemberDialog());
             btnNewCycle.setOnAction(event -> startCycle());
             btnReorderTop.setOnAction(event -> reorder());
             btnReorder.setOnAction(event -> reorder());
             btnDeleteGroup.setOnAction(event -> deleteGroup());
+            btnToggleVisibility.setOnAction(event -> toggleVisibility());
             btnRegisterPayment.setOnAction(event -> showPaymentDialog());
             render();
         } catch (RuntimeException e) {
@@ -128,16 +141,26 @@ public class GroupDetailController {
             Label avatar = styled(UiFormatting.initials(member.getUser()), "avatar", "avatar-sm");
             VBox identity = new VBox(4,
                     styled(UiFormatting.fullName(member.getUser()), "member-name"),
-                    styled(member.getUser().getPhoneNumber() == null ? "—" : member.getUser().getPhoneNumber(), "member-phone"));
+                    styled(member.getUser().getPhoneNumber() == null ? "—" : member.getUser().getPhoneNumber(), "member-phone"),
+                    styled(member.getUser().isVerified() ? "Identidade verificada" : "Ainda não verificado",
+                            "member-verification", member.getUser().isVerified() ? "verified" : "unverified"));
             HBox.setHgrow(identity, javafx.scene.layout.Priority.ALWAYS);
             String status = member.isReceived() ? "Já recebeu" : isBeneficiary(member) ? "Nesta rodada" : "Aguardando";
             String badgeStyle = member.isReceived() ? "badge-success" : isBeneficiary(member) ? "badge-brand" : "badge-neutral";
             row.getChildren().addAll(order, avatar, identity, styled(status, "badge", badgeStyle));
-            if (owner && !member.getUser().getId().equals(SessionContext.getCurrentUser().getId())
+            if ((manager || SessionContext.getCurrentUser().getUserRole() != null
+                    && SessionContext.getCurrentUser().getUserRole().isGroupLeader())
+                    && !member.getUser().getId().equals(SessionContext.getCurrentUser().getId())
                     && groupService.findCycles(group.getGroupId()).isEmpty()) {
                 Button remove = new Button("Remover");
                 remove.setOnAction(event -> removeMember(member));
                 row.getChildren().add(remove);
+            }
+            if (!member.getUser().getId().equals(SessionContext.getCurrentUser().getId())) {
+                Button report = new Button("Denunciar");
+                report.getStyleClass().add("btn-ghost");
+                report.setOnAction(event -> reportMember(member));
+                row.getChildren().add(report);
             }
             memberQueue.getChildren().add(row);
         }
@@ -222,7 +245,8 @@ public class GroupDetailController {
         dialog.showAndWait().ifPresent(name -> {
             UserGroup beneficiary = choices.get(names.indexOf(name));
             try {
-                groupService.addNewCycleToGroup(group.getGroupId(), beneficiary.getUser().getId());
+                groupService.addNewCycleToGroup(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        beneficiary.getUser().getId());
                 render();
             } catch (RuntimeException e) {
                 showError(e.getMessage());
@@ -244,7 +268,8 @@ public class GroupDetailController {
         dialog.showAndWait().ifPresent(name -> {
             UserGroup target = members.get(names.indexOf(name));
             try {
-                groupService.setFirstReceiver(group.getGroupId(), target.getUser().getId());
+                groupService.setFirstReceiver(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        target.getUser().getId());
                 render();
             } catch (RuntimeException e) {
                 showError(e.getMessage());
@@ -256,9 +281,10 @@ public class GroupDetailController {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
                 "Remover " + UiFormatting.fullName(member.getUser()) + " deste grupo?");
         confirmation.setHeaderText("Confirmar remoção");
-        confirmation.showAndWait().filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
+        StyledDialogs.showAndWait(confirmation).filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
             try {
-                groupService.removeMemberFromGroup(group.getGroupId(), member.getUser().getId());
+                groupService.removeMemberFromGroup(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        member.getUser().getId());
                 render();
             } catch (RuntimeException e) {
                 showError(e.getMessage());
@@ -270,12 +296,41 @@ public class GroupDetailController {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
                 "O grupo será removido definitivamente. Esta ação só é permitida antes de iniciar ciclos.");
         confirmation.setHeaderText("Eliminar " + group.getGroupName() + "?");
-        confirmation.showAndWait().filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
+        StyledDialogs.showAndWait(confirmation).filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
             try {
                 groupService.deleteGroup(group.getGroupId(), SessionContext.getCurrentUser().getId());
                 Navigator.go(Page.GROUPS);
             } catch (RuntimeException e) {
                 showError(e.getMessage());
+            }
+        });
+    }
+
+    private void toggleVisibility() {
+                try {
+                    groupService.setGroupPrivate(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                            !group.isPrivateGroup());
+                    group = groupService.findByIdForUser(group.getGroupId(), SessionContext.getCurrentUser().getId());
+                    btnToggleVisibility.setText(group.isPrivateGroup() ? "Tornar público" : "Tornar privado");
+                } catch (RuntimeException exception) {
+                    showError(exception.getMessage());
+                }
+    }
+
+    private void reportMember(UserGroup member) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Denunciar membro");
+        dialog.setHeaderText("Denúncia sobre " + UiFormatting.fullName(member.getUser()));
+        dialog.setContentText("Descreva a conduta (mínimo 10 caracteres):");
+        dialog.getEditor().setPromptText("Motivo da denúncia");
+        StyledDialogs.showAndWait(dialog).ifPresent(reason -> {
+            try {
+                groupService.reportMember(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        member.getUser().getId(), reason);
+                StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
+                        "A denúncia foi enviada ao administrador."));
+            } catch (RuntimeException exception) {
+                showError(exception.getMessage());
             }
         });
     }
@@ -353,6 +408,6 @@ public class GroupDetailController {
     }
 
     private void showError(String message) {
-        new Alert(Alert.AlertType.ERROR, message).showAndWait();
+        StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, message));
     }
 }

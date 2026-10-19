@@ -49,6 +49,9 @@ public class Group {
     /** Frequência da contribuição em dias. */
     private int frequency;
 
+    @Column(name = "is_private", nullable = false)
+    private boolean privateGroup = true;
+
     /** Membros pertencentes a este grupo. */
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserGroup> members = new ArrayList<>();
@@ -145,6 +148,9 @@ public class Group {
 
     public int getFrequency() { return frequency; }
     public void setFrequency(int frequency) { this.frequency = frequency; }
+
+    public boolean isPrivateGroup() { return privateGroup; }
+    public void setPrivateGroup(boolean privateGroup) { this.privateGroup = privateGroup; }
 
     public List<UserGroup> getMembers() { return members; }
     public void setMembers(List<UserGroup> members) { this.members = members; }

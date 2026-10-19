@@ -12,6 +12,7 @@ import model.UserGroup;
 import model.enums.PaymentMethod;
 import service.GroupService;
 import util.SessionContext;
+import util.StyledDialogs;
 import util.UiFormatting;
 
 import java.time.LocalDate;
@@ -103,7 +104,7 @@ public class PaymentController {
     }
 
     private void showError(String message) {
-        new Alert(Alert.AlertType.ERROR, message).showAndWait();
+        StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, message));
     }
 
     private void close() {

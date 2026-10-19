@@ -14,6 +14,7 @@ import javafx.scene.control.Hyperlink;
 import model.User;
 import model.enums.Gender;
 import service.AuthService;
+import util.StyledDialogs;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,8 +53,7 @@ public class RegisterController {
         if (cmbGenero != null) {
             cmbGenero.getItems().setAll(
                     Gender.M,
-                    Gender.F,
-                    Gender.NOT_SPECIFIED
+                    Gender.F
             );
         }
 
@@ -77,18 +77,18 @@ public class RegisterController {
     private void continueRegistration(Object source) {
         if (isBlank(txtPrimeirosNomes.getText())
                 || isBlank(txtApelidos.getText())
-                || isBlank(txtDocumento.getText())
                 || isBlank(txtTelefone.getText())
                 || cmbGenero.getValue() == null
                 || dpDataNascimento.getValue() == null) {
             showAlert(Alert.AlertType.WARNING,
-                    "Preencha todos os dados pessoais antes de continuar.");
+                    "Preencha os dados pessoais obrigatórios antes de continuar. O BI/NUIT pode ser enviado depois, na verificação KYC.");
             return;
         }
 
         firstName = txtPrimeirosNomes.getText().trim();
         lastName = txtApelidos.getText().trim();
-        documentId = txtDocumento.getText().trim();
+        documentId = txtDocumento.getText() == null || txtDocumento.getText().isBlank()
+                ? null : txtDocumento.getText().trim();
         gender = cmbGenero.getValue();
         birthDate = dpDataNascimento.getValue();
         phone = txtTelefone.getText().trim();
@@ -126,7 +126,7 @@ public class RegisterController {
 
             authService.register(user, txtConfirmPassword.getText());
             showAlert(Alert.AlertType.INFORMATION,
-                    "A conta foi criada com sucesso. Entre com o seu username e senha.");
+                    "A conta foi criada com sucesso e está por verificar. Pode participar em grupos; para criar grupos, submeta o BI/NUIT e as fotografias para aprovação do administrador.");
             showLogin(source);
         } catch (RuntimeException exception) {
             showAlert(Alert.AlertType.ERROR, exception.getMessage());
@@ -185,7 +185,7 @@ public class RegisterController {
     }
 
     private void showAlert(Alert.AlertType type, String message) {
-        new Alert(type, message == null ? "Ocorreu um erro inesperado." : message)
-                .showAndWait();
+        StyledDialogs.showAndWait(new Alert(type, message == null
+                ? "Ocorreu um erro inesperado." : message));
     }
 }

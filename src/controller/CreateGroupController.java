@@ -11,6 +11,7 @@ import model.Group;
 import service.GroupService;
 import util.SessionContext;
 import util.UiFormatting;
+import util.StyledDialogs;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class CreateGroupController {
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
         alert.setHeaderText("Não foi possível criar o grupo");
-        alert.showAndWait();
+        StyledDialogs.showAndWait(alert);
     }
 
     private void close() {

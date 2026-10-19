@@ -10,6 +10,7 @@ import javafx.stage.FileChooser;
 import model.Contribution;
 import service.GroupService;
 import util.SessionContext;
+import util.StyledDialogs;
 import util.UiFormatting;
 
 import java.io.IOException;
@@ -66,7 +67,8 @@ public class HistoryController {
         try {
             Files.write(file.toPath(), lines, java.nio.charset.StandardCharsets.UTF_8);
         } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Não foi possível exportar o histórico: " + e.getMessage()).showAndWait();
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR,
+                    "Não foi possível exportar o histórico: " + e.getMessage()));
         }
     }
 

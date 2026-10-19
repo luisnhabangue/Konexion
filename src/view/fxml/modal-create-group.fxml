@@ -9,6 +9,7 @@
   Modal "Criar novo grupo". Mostre num Stage próprio (UNDECORATED/TRANSPARENT)
   ou dentro de um StackPane com a classe .modal-backdrop por cima do conteúdo.
 -->
+<?import java.lang.String?>
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       styleClass="modal" stylesheets="@app.css" fx:controller="controller.CreateGroupController">
 

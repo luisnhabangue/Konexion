@@ -53,6 +53,7 @@
 
         <!-- ================= AÇÕES ================= -->
         <HBox alignment="CENTER_LEFT" spacing="8">
+            <Button fx:id="btnToggleVisibility" text="Tornar público" styleClass="btn, btn-secondary"/>
             <Button fx:id="btnAddMember" text="Adicionar membro" styleClass="btn, btn-primary">
                 <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-btn" content="M16,21 L16,19 A4,4 0 0 0 12,15 L5,15 A4,4 0 0 0 1,19 L1,21 M4.5,7 A4,4 0 1 0 12.5,7 A4,4 0 1 0 4.5,7 M18,8 L18,14 M15,11 L21,11"/></StackPane></graphic>
             </Button>

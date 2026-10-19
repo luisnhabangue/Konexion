@@ -18,7 +18,7 @@
 <?import javafx.scene.shape.Circle?>
 
 <AnchorPane prefHeight="768.0" prefWidth="1366.0"
-            minHeight="600.0" minWidth="900.0"
+            minHeight="540.0" minWidth="720.0"
             stylesheets="@../css/style.css"
             xmlns="http://javafx.com/javafx/26"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -33,7 +33,7 @@
             <!-- PAINEL LATERAL -->
             <left>
                 <StackPane prefWidth="480.0"
-                           minWidth="400.0"
+                           minWidth="280.0"
                            styleClass="auth-visual"
                            BorderPane.alignment="CENTER">
 
@@ -325,17 +325,20 @@
                                 <!-- DOCUMENTO -->
                                 <VBox spacing="6.0">
                                     <children>
-                                        <Label text="NUIT / BI"
+                                        <Label text="NUIT / BI (opcional)"
                                                style="-fx-font-size: 12px;
                                                       -fx-font-weight: bold;
                                                       -fx-text-fill: #182426;"/>
 
                                         <MFXTextField fx:id="txtDocumento"
-                                                      promptText="Introduza o número do documento"
+                                                      promptText="Pode preencher depois para verificar a conta"
                                                       floatMode="DISABLED"
                                                       prefHeight="43.0"
                                                       maxWidth="Infinity"
                                                       styleClass="mfx-text-field"/>
+                                        <Label text="A verificação KYC será necessária para criar grupos."
+                                               wrapText="true"
+                                               style="-fx-font-size: 10px; -fx-text-fill: #69787B;"/>
                                     </children>
                                 </VBox>
 

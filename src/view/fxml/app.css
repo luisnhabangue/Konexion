@@ -164,7 +164,7 @@
     -fx-border-radius: 11;
     -fx-padding: 0 13 0 13;
     -fx-min-height: 40; -fx-pref-height: 40;
-    -fx-pref-width: 390; -fx-max-width: 390;
+    -fx-min-width: 150; -fx-pref-width: 280; -fx-max-width: 390;
     -icon: -muted-2;
 }
 .search-input, .search-input:focused {
@@ -473,13 +473,14 @@
 .t-row {
     -fx-border-color: -line-soft;
     -fx-border-width: 0 0 1 0;
-    -fx-padding: 11 13 11 13;
+    -fx-padding: 14 16 14 16;
     -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 14;
 }
 .t-row-last { -fx-border-width: 0; }
-.t-td { -fx-font-size: 11px; -fx-text-fill: -muted; }
-.t-name { -fx-font-size: 11px; -fx-font-weight: 600; -fx-text-fill: -ink; }
-.t-amount { -fx-font-size: 11px; -fx-font-weight: 600; -fx-text-fill: -ink; }
+.t-td { -fx-font-size: 12px; -fx-text-fill: -muted; }
+.t-name { -fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: -ink; }
+.t-amount { -fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: -ink; }
 
 .c-w40  { -fx-min-width: 40;  -fx-pref-width: 40;  -fx-max-width: 40; }
 .c-w90  { -fx-min-width: 90;  -fx-pref-width: 90;  -fx-max-width: 90; }
@@ -556,8 +557,8 @@
 .banner-stat {
     -fx-border-color: rgba(255,255,255,0.14);
     -fx-border-width: 0 0 0 1;
-    -fx-padding: 8 20 8 20;
-    -fx-min-width: 125;
+    -fx-padding: 8 10 8 10;
+    -fx-min-width: 80;
 }
 .banner-stat-label { -fx-font-size: 9px; -fx-text-fill: rgba(255,255,255,0.62); }
 .banner-stat-value { -fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: white; }
@@ -614,6 +615,9 @@
 .member-order { -fx-font-size: 10px; -fx-font-weight: 700; -fx-text-fill: -muted; -fx-min-width: 22; }
 .member-name { -fx-font-size: 11px; -fx-font-weight: 600; }
 .member-phone { -fx-font-size: 9px; -fx-text-fill: -muted; }
+.member-verification { -fx-font-size: 9px; }
+.member-verification.verified { -fx-text-fill: -success; }
+.member-verification.unverified { -fx-text-fill: -muted-2; }
 
 /* ---------------------------------------------------------------------
    PERFIL
@@ -638,6 +642,20 @@
     -fx-border-width: 1 0 0 0;
     -fx-padding: 16 24 16 24;
 }
+.kyc-card { -fx-padding: 20; }
+.admin-metric { -fx-padding: 18; }
+.admin-chart { -fx-padding: 16; -fx-min-width: 220; }
+.admin-section { -fx-padding: 18; }
+.admin-row {
+    -fx-background-color: #fbfcfc;
+    -fx-border-color: -line-soft;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 8;
+}
+.metric-value { -fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: -primary; }
 .info-label { -fx-font-size: 9px; -fx-text-fill: -muted; }
 .info-value { -fx-font-size: 11px; -fx-font-weight: 700; }
 
@@ -734,9 +752,47 @@
 .modal {
     -fx-background-color: -surface;
     -fx-background-radius: 18;
-    -fx-min-width: 520; -fx-pref-width: 520; -fx-max-width: 520;
+    -fx-min-width: 360; -fx-pref-width: 520; -fx-max-width: 760;
     -fx-effect: dropshadow(gaussian, rgba(9,36,39,0.22), 60, 0, 0, 24);
 }
+
+.app-dialog {
+    -fx-background-color: -surface;
+    -fx-padding: 18;
+    -fx-border-color: -line;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+}
+.app-dialog > .header-panel { -fx-background-color: -surface; }
+.app-dialog > .header-panel > .label {
+    -fx-text-fill: -ink;
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+.app-dialog > .content.label { -fx-text-fill: -muted; -fx-font-size: 12px; }
+.app-dialog .button {
+    -fx-background-color: -primary;
+    -fx-background-radius: 9;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-padding: 8 16 8 16;
+}
+.app-dialog .button:hover { -fx-background-color: -primary-hover; }
+
+/* Keep primary content usable on shorter and narrower desktop windows. */
+.page-scroll { -fx-fit-to-width: true; }
+.page { -fx-padding: 24; }
+.content-area { -fx-min-width: 0; -fx-min-height: 0; }
+.sidebar { -fx-min-width: 190; -fx-pref-width: 220; -fx-max-width: 246; }
+.topbar { -fx-padding: 12 18 12 18; -fx-spacing: 10; }
+.search { -fx-pref-width: 280; -fx-max-width: 390; }
+.profile-info { -fx-hgap: 16; -fx-vgap: 14; }
+.profile-info > .label { -fx-wrap-text: true; }
+.table-card > .t-head, .table-card > VBox > .t-row { -fx-spacing: 16; }
+.t-row > .label { -fx-wrap-text: true; }
+.group-banner { -fx-spacing: 14; }
+
+.app-shell { -fx-min-width: 760; -fx-min-height: 540; }
 .modal-head {
     -fx-border-color: -line-soft;
     -fx-border-width: 0 0 1 0;

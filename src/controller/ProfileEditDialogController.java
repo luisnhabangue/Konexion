@@ -8,6 +8,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import model.User;
 import service.AuthService;
+import util.StyledDialogs;
 
 public class ProfileEditDialogController {
 
@@ -42,7 +43,7 @@ public class ProfileEditDialogController {
         txtPhone.setText(user.getPhoneNumber());
         lblEmail.setText(user.getEmail());
         lblUsername.setText("@" + user.getUsername());
-        lblDocument.setText(user.getDocumentId());
+        lblDocument.setText(user.getDocumentId() == null ? "Não submetido" : user.getDocumentId());
     }
 
     private void save() {
@@ -57,12 +58,12 @@ public class ProfileEditDialogController {
             onSaved.run();
             dialog.close();
         } catch (RuntimeException exception) {
-            new Alert(
+            StyledDialogs.showAndWait(new Alert(
                     Alert.AlertType.ERROR,
                     exception.getMessage() == null
                             ? "Não foi possível atualizar o perfil."
                             : exception.getMessage()
-            ).showAndWait();
+            ));
         }
     }
 }

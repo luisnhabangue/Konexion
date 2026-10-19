@@ -35,7 +35,7 @@ public abstract class Person {
     /**
      * Número do documento de identificação (ex.: BI, Passaporte).
      */
-    @Column(nullable = false, unique = true, name = "documentId")
+    @Column(nullable = true, unique = true, name = "documentId")
     private String documentId;
 
     /**

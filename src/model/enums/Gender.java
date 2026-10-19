@@ -12,9 +12,5 @@ public enum Gender {
     M,
 
     /** Género feminino. */
-    F,
-
-    MALE,
-    /** Género não especificado ou não informado. */
-    NOT_SPECIFIED
+    F
 }
