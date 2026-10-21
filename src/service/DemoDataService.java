@@ -28,6 +28,9 @@ public class DemoDataService {
 
     public String seedForCurrentUser() {
         User currentUser = SessionContext.getCurrentUser();
+        if (!currentUser.isVerified()) {
+            throw new IllegalStateException("Apenas contas verificadas podem criar grupos, incluindo grupos de demonstração.");
+        }
         String groupName = "Demo Xitique " + currentUser.getUsername();
         if (groupDao.findByName(groupName) != null) {
             return "Os dados de demonstração já foram carregados para esta conta.";
@@ -101,7 +104,7 @@ public class DemoDataService {
             digits = String.format("%07d", (int) (Math.random() * 10_000_000));
         }
         return new User(null, "Membro", "Demonstração " + number,
-                "DEMO-" + token.toUpperCase(), Gender.NOT_SPECIFIED,
+                "DEMO-" + token.toUpperCase(), Gender.M,
                 username, PasswordUtil.createHashPassword(UUID.randomUUID().toString()),
                 email, "84" + digits);
     }

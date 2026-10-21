@@ -16,15 +16,41 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Serviço de aplicação que coordena o processamento de transações e a integração com carteiras móveis[cite: 119].
+ * <p>
+ * Garante o controlo de simultaneidade de pagamentos por utilizador/grupo e regista o resultado na BD[cite: 119].
+ * </p>
+ *
+ * @author Sistema iXitique
+ * @version 1.0
+ * @since 1.0
+ */
 public class PaymentService {
 
+    /** Conjunto concorrente para evitar múltiplas tentativas simultâneas de pagamento do mesmo utilizador[cite: 119]. */
     private static final Set<String> IN_FLIGHT = ConcurrentHashMap.newKeySet();
 
+    /** Serviço de grupos[cite: 119]. */
     private final GroupService groupService = new GroupService();
+
+    /** Registo de gateways de pagamento integrados[cite: 119]. */
     private final PaymentGatewayRegistry registry = new PaymentGatewayRegistry();
+
+    /** DAO de transações financeiras[cite: 119]. */
     private final PaymentTransactionDao transactionDao =
             new PaymentTransactionDao(EntityManagerFactoryUtil.getEntityManagerFactory());
 
+    /**
+     * Efetua o pagamento de uma contribuição através do método pretendido (M-Pesa, E-Mola, Numerário)[cite: 119].
+     *
+     * @param groupId ID do grupo[cite: 119].
+     * @param userId ID do utilizador[cite: 119].
+     * @param method Método de pagamento {@link PaymentMethod}[cite: 119].
+     * @param account Número de conta/telefone pagador[cite: 119].
+     * @return Resposta contendo o estado do pagamento {@link PaymentResponse}[cite: 119].
+     * @throws IllegalStateException Se já existir uma transação em curso para o mesmo utilizador e grupo[cite: 119].
+     */
     public PaymentResponse payContribution(Long groupId, Long userId,
                                            PaymentMethod method, String account) {
         if (groupId == null || userId == null || method == null) {
@@ -42,6 +68,9 @@ public class PaymentService {
         }
     }
 
+    /**
+     * Executa a cobrança no gateway simulado e regista a contribuição na base de dados[cite: 119].
+     */
     private PaymentResponse doPayContribution(Long groupId, Long userId,
                                               PaymentMethod method, String account) {
         Group group = groupService.findById(groupId);
@@ -51,18 +80,15 @@ public class PaymentService {
         BigDecimal amount = group.getAmountPerUser();
         LocalDate today = LocalDate.now();
 
-        // 1. Validar ANTES de cobrar (lança exceção se algo estiver errado)
         groupService.validateContribution(groupId, userId, amount, today);
         Cycle cycle = groupService.findActiveCycle(groupId);
 
-        // Dinheiro vivo: não há provedor, regista-se como antes
         if (method == PaymentMethod.CASH) {
             groupService.addContributionToCycle(groupId, userId, amount, method, today);
             return new PaymentResponse(true, "CASH", "INS-0",
                     "Pagamento em numerário registado.", LocalDateTime.now());
         }
 
-        // 2. Cobrar no provedor simulado
         String cleanAccount = account == null ? null
                 : account.replaceAll("\\s+", "").replaceFirst("^\\+258", "");
         PaymentResponse resp = registry.get(method).charge(new PaymentRequest(
@@ -70,7 +96,6 @@ public class PaymentService {
                 "XQ-" + cycle.getId() + "-" + userId,
                 "Contribuição Xitique - " + group.getGroupName()));
 
-        // 3. Guardar a tentativa (sucesso ou falha)
         PaymentTransaction t = new PaymentTransaction();
         t.setGroupId(groupId);
         t.setUserId(userId);
@@ -84,7 +109,6 @@ public class PaymentService {
         t.setMessage(resp.message());
         transactionDao.save(t);
 
-        // 4. Se foi cobrado, usar a lógica que já existe para registar a contribuição
         if (resp.success()) {
             try {
                 groupService.addContributionToCycle(groupId, userId, amount, method, today);

@@ -15,6 +15,11 @@ import java.util.List;
  */
 @Entity
 @Table(name = "users")
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class User extends Person {
 
     /** Nome de utilizador para autenticação. */
@@ -31,7 +36,7 @@ public class User extends Person {
 
     /** Papel ou nível de acesso do utilizador. */
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole userRole = UserRole.USER;
 
     /** Número de telefone do utilizador. */
     @Column(unique = true)
@@ -39,6 +44,26 @@ public class User extends Person {
 
     /** Estado da conta do utilizador (ativo ou inativo). */
     private boolean active = true;
+
+    @Column(nullable = false)
+    private boolean verified;
+
+    @Column(name = "kyc_status", nullable = false, length = 20)
+    private String kycStatus = "NOT_SUBMITTED";
+
+    @Lob
+    @Column(name = "identity_document_image", columnDefinition = "LONGBLOB")
+    private byte[] identityDocumentImage;
+
+    @Lob
+    @Column(name = "identity_selfie_image", columnDefinition = "LONGBLOB")
+    private byte[] identitySelfieImage;
+
+    @Column(name = "punctuality_points", nullable = false)
+    private int punctualityPoints;
+
+    @Column(name = "strike_count", nullable = false)
+    private int strikeCount;
 
     /** Lista de associações do utilizador a grupos. */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -72,7 +97,7 @@ public class User extends Person {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.userRole = UserRole.base;
+        this.userRole = UserRole.USER;
         this.phoneNumber = phoneNumber;
     }
 
@@ -105,6 +130,26 @@ public class User extends Person {
     public boolean isActive() { return active; }
     /** @param active O novo estado ativo/inativo */
     public void setActive(boolean active) { this.active = active; }
+
+    public boolean isVerified() { return verified; }
+    public void setVerified(boolean verified) { this.verified = verified; }
+    public String getKycStatus() { return kycStatus; }
+    public void setKycStatus(String kycStatus) { this.kycStatus = kycStatus; }
+    public boolean isKycPending() {
+        return "PENDING".equals(kycStatus) && !verified;
+    }
+
+    public byte[] getIdentityDocumentImage() { return identityDocumentImage; }
+    public void setIdentityDocumentImage(byte[] identityDocumentImage) { this.identityDocumentImage = identityDocumentImage; }
+
+    public byte[] getIdentitySelfieImage() { return identitySelfieImage; }
+    public void setIdentitySelfieImage(byte[] identitySelfieImage) { this.identitySelfieImage = identitySelfieImage; }
+
+    public int getPunctualityPoints() { return punctualityPoints; }
+    public void setPunctualityPoints(int punctualityPoints) { this.punctualityPoints = punctualityPoints; }
+
+    public int getStrikeCount() { return strikeCount; }
+    public void setStrikeCount(int strikeCount) { this.strikeCount = strikeCount; }
 
     /** @return A lista de vínculos com grupos */
     public List<UserGroup> getUserGroups() { return userGroups; }

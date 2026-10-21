@@ -5,6 +5,8 @@
 <?import javafx.scene.shape.*?>
 
 <!-- Modal "Registrar contribuição" -->
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       styleClass="modal" stylesheets="@app.css" fx:controller="controller.PaymentController">
 

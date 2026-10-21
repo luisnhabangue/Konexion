@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -22,6 +23,7 @@ import model.enums.Page;
 import service.GroupService;
 import util.Navigator;
 import util.SessionContext;
+import util.StyledDialogs;
 import util.UiFormatting;
 
 import java.io.IOException;
@@ -30,17 +32,30 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+/**
+ * Controlador JavaFX para a vista detalhada de um grupo de Xitique.
+ * <p>
+ * Gere as operações do grupo, tais como consulta da fila de ordem de recebimento,
+ * abertura de novos ciclos, alteração da ordem dos membros, submissão de denúncias,
+ * registo de pagamentos e remoção ou eliminação de grupos.
+ * </p>
+
+ * @since 1.0
+ */
 public class GroupDetailController {
+
     private final GroupService groupService = new GroupService();
     private Group group;
     private Cycle currentCycle;
     private boolean owner;
+    private boolean manager;
 
     @FXML private Button btnBack;
     @FXML private Button btnAddMember;
     @FXML private Button btnNewCycle;
     @FXML private Button btnReorderTop;
     @FXML private Button btnDeleteGroup;
+    @FXML private Button btnToggleVisibility;
     @FXML private Button btnReorder;
     @FXML private Button btnRegisterPayment;
     @FXML private Label lblGroupName;
@@ -65,6 +80,10 @@ public class GroupDetailController {
     @FXML private VBox memberQueue;
     @FXML private VBox contributionRows;
 
+    /**
+     * Inicializa a vista obtendo o grupo selecionado na navegação e ajusta a visibilidade dos controlos
+     * conforme as permissões do utilizador (criador, líder de grupo ou administrador).
+     */
     @FXML
     private void initialize() {
         btnBack.setOnAction(event -> Navigator.go(Page.GROUPS));
@@ -80,22 +99,31 @@ public class GroupDetailController {
                 throw new IllegalArgumentException("Grupo não encontrado.");
             }
             owner = group.getCreatedBy().getId().equals(SessionContext.getCurrentUser().getId());
-            btnAddMember.setVisible(owner);
-            btnAddMember.setManaged(owner);
-            btnNewCycle.setVisible(owner);
-            btnNewCycle.setManaged(owner);
-            btnReorderTop.setVisible(owner);
-            btnReorderTop.setManaged(owner);
-            btnReorder.setVisible(owner);
-            btnReorder.setManaged(owner);
-            btnDeleteGroup.setVisible(owner);
-            btnDeleteGroup.setManaged(owner);
+            manager = owner || SessionContext.getCurrentUser().getUserRole() != null
+                    && SessionContext.getCurrentUser().getUserRole().isAdministrator();
+            btnAddMember.setVisible(manager);
+            btnAddMember.setManaged(manager);
+            btnNewCycle.setVisible(manager);
+            btnNewCycle.setManaged(manager);
+            btnReorderTop.setVisible(manager);
+            btnReorderTop.setManaged(manager);
+            btnReorder.setVisible(manager);
+            btnReorder.setManaged(manager);
+            boolean canManageGroup = owner || SessionContext.getCurrentUser().getUserRole() != null
+                    && (SessionContext.getCurrentUser().getUserRole().isAdministrator()
+                    || SessionContext.getCurrentUser().getUserRole().isGroupLeader());
+            btnDeleteGroup.setVisible(canManageGroup);
+            btnDeleteGroup.setManaged(canManageGroup);
+            btnToggleVisibility.setVisible(canManageGroup);
+            btnToggleVisibility.setManaged(canManageGroup);
+            btnToggleVisibility.setText(group.isPrivateGroup() ? "Tornar público" : "Tornar privado");
             btnBack.setOnAction(event -> Navigator.go(Page.GROUPS));
             btnAddMember.setOnAction(event -> showMemberDialog());
             btnNewCycle.setOnAction(event -> startCycle());
             btnReorderTop.setOnAction(event -> reorder());
             btnReorder.setOnAction(event -> reorder());
             btnDeleteGroup.setOnAction(event -> deleteGroup());
+            btnToggleVisibility.setOnAction(event -> toggleVisibility());
             btnRegisterPayment.setOnAction(event -> showPaymentDialog());
             render();
         } catch (RuntimeException e) {
@@ -104,6 +132,9 @@ public class GroupDetailController {
         }
     }
 
+    /**
+     * Atualiza todas as informações apresentadas no ecrã de detalhe do grupo.
+     */
     private void render() {
         List<UserGroup> members = groupService.findMembers(group.getGroupId());
         List<Cycle> cycles = groupService.findCycles(group.getGroupId());
@@ -119,6 +150,11 @@ public class GroupDetailController {
         renderCycle(members, cycles);
     }
 
+    /**
+     * Renderiza a fila ordenada de membros do grupo.
+     *
+     * @param members Lista de membros da associação grupo-utilizador.
+     */
     private void renderQueue(List<UserGroup> members) {
         memberQueue.getChildren().clear();
         for (UserGroup member : members) {
@@ -128,16 +164,26 @@ public class GroupDetailController {
             Label avatar = styled(UiFormatting.initials(member.getUser()), "avatar", "avatar-sm");
             VBox identity = new VBox(4,
                     styled(UiFormatting.fullName(member.getUser()), "member-name"),
-                    styled(member.getUser().getPhoneNumber() == null ? "—" : member.getUser().getPhoneNumber(), "member-phone"));
+                    styled(member.getUser().getPhoneNumber() == null ? "—" : member.getUser().getPhoneNumber(), "member-phone"),
+                    styled(member.getUser().isVerified() ? "Identidade verificada" : "Ainda não verificado",
+                            "member-verification", member.getUser().isVerified() ? "verified" : "unverified"));
             HBox.setHgrow(identity, javafx.scene.layout.Priority.ALWAYS);
             String status = member.isReceived() ? "Já recebeu" : isBeneficiary(member) ? "Nesta rodada" : "Aguardando";
             String badgeStyle = member.isReceived() ? "badge-success" : isBeneficiary(member) ? "badge-brand" : "badge-neutral";
             row.getChildren().addAll(order, avatar, identity, styled(status, "badge", badgeStyle));
-            if (owner && !member.getUser().getId().equals(SessionContext.getCurrentUser().getId())
+            if ((manager || SessionContext.getCurrentUser().getUserRole() != null
+                    && SessionContext.getCurrentUser().getUserRole().isGroupLeader())
+                    && !member.getUser().getId().equals(SessionContext.getCurrentUser().getId())
                     && groupService.findCycles(group.getGroupId()).isEmpty()) {
                 Button remove = new Button("Remover");
                 remove.setOnAction(event -> removeMember(member));
                 row.getChildren().add(remove);
+            }
+            if (!member.getUser().getId().equals(SessionContext.getCurrentUser().getId())) {
+                Button report = new Button("Denunciar");
+                report.getStyleClass().add("btn-ghost");
+                report.setOnAction(event -> reportMember(member));
+                row.getChildren().add(report);
             }
             memberQueue.getChildren().add(row);
         }
@@ -146,6 +192,12 @@ public class GroupDetailController {
         }
     }
 
+    /**
+     * Renderiza os dados do ciclo em curso ou concluído e a barra de progresso do fundo coletado.
+     *
+     * @param members Lista de membros do grupo.
+     * @param cycles  Lista de ciclos registados.
+     */
     private void renderCycle(List<UserGroup> members, List<Cycle> cycles) {
         Cycle displayedCycle = currentCycle == null && !cycles.isEmpty()
                 ? cycles.get(cycles.size() - 1) : currentCycle;
@@ -177,6 +229,12 @@ public class GroupDetailController {
         renderContributions(members, contributions);
     }
 
+    /**
+     * Renderiza o estado das contribuições individuais dos membros para o ciclo ativo.
+     *
+     * @param members       Lista de membros do grupo.
+     * @param contributions Contribuições já efetuadas.
+     */
     private void renderContributions(List<UserGroup> members, List<Contribution> contributions) {
         contributionRows.getChildren().clear();
         for (UserGroup member : members) {
@@ -202,6 +260,9 @@ public class GroupDetailController {
         }
     }
 
+    /**
+     * Inicia um novo ciclo de rotação permitindo a seleção do beneficiário elegível.
+     */
     private void startCycle() {
         List<UserGroup> members = groupService.findMembers(group.getGroupId());
         if (members.size() < 2) {
@@ -222,7 +283,8 @@ public class GroupDetailController {
         dialog.showAndWait().ifPresent(name -> {
             UserGroup beneficiary = choices.get(names.indexOf(name));
             try {
-                groupService.addNewCycleToGroup(group.getGroupId(), beneficiary.getUser().getId());
+                groupService.addNewCycleToGroup(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        beneficiary.getUser().getId());
                 render();
             } catch (RuntimeException e) {
                 showError(e.getMessage());
@@ -230,6 +292,9 @@ public class GroupDetailController {
         });
     }
 
+    /**
+     * Reordena a fila de rotação, promovendo um membro selecionado para a primeira posição.
+     */
     private void reorder() {
         List<UserGroup> members = groupService.findMembers(group.getGroupId());
         List<String> names = members.stream().map(member -> member.getUserReceivingOrder() + "º — "
@@ -244,7 +309,8 @@ public class GroupDetailController {
         dialog.showAndWait().ifPresent(name -> {
             UserGroup target = members.get(names.indexOf(name));
             try {
-                groupService.setFirstReceiver(group.getGroupId(), target.getUser().getId());
+                groupService.setFirstReceiver(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        target.getUser().getId());
                 render();
             } catch (RuntimeException e) {
                 showError(e.getMessage());
@@ -252,13 +318,19 @@ public class GroupDetailController {
         });
     }
 
+    /**
+     * Remove um determinado membro do grupo mediante confirmação.
+     *
+     * @param member Instância do membro a remover.
+     */
     private void removeMember(UserGroup member) {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
                 "Remover " + UiFormatting.fullName(member.getUser()) + " deste grupo?");
         confirmation.setHeaderText("Confirmar remoção");
-        confirmation.showAndWait().filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
+        StyledDialogs.showAndWait(confirmation).filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
             try {
-                groupService.removeMemberFromGroup(group.getGroupId(), member.getUser().getId());
+                groupService.removeMemberFromGroup(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        member.getUser().getId());
                 render();
             } catch (RuntimeException e) {
                 showError(e.getMessage());
@@ -266,11 +338,14 @@ public class GroupDetailController {
         });
     }
 
+    /**
+     * Elimina permanentemente o grupo de Xitique (apenas permitido caso não existam ciclos iniciados).
+     */
     private void deleteGroup() {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
                 "O grupo será removido definitivamente. Esta ação só é permitida antes de iniciar ciclos.");
         confirmation.setHeaderText("Eliminar " + group.getGroupName() + "?");
-        confirmation.showAndWait().filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
+        StyledDialogs.showAndWait(confirmation).filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
             try {
                 groupService.deleteGroup(group.getGroupId(), SessionContext.getCurrentUser().getId());
                 Navigator.go(Page.GROUPS);
@@ -280,20 +355,75 @@ public class GroupDetailController {
         });
     }
 
+    /**
+     * Alterna a visibilidade do grupo entre público e privado.
+     */
+    private void toggleVisibility() {
+        try {
+            groupService.setGroupPrivate(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                    !group.isPrivateGroup());
+            group = groupService.findByIdForUser(group.getGroupId(), SessionContext.getCurrentUser().getId());
+            btnToggleVisibility.setText(group.isPrivateGroup() ? "Tornar público" : "Tornar privado");
+        } catch (RuntimeException exception) {
+            showError(exception.getMessage());
+        }
+    }
+
+    /**
+     * Abre uma caixa de diálogo para que um membro do grupo possa ser denunciado à administração.
+     *
+     * @param member Membro a ser denunciado.
+     */
+    private void reportMember(UserGroup member) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Denunciar membro");
+        dialog.setHeaderText("Denúncia sobre " + UiFormatting.fullName(member.getUser()));
+        dialog.setContentText("Descreva a conduta (mínimo 10 caracteres):");
+        dialog.getEditor().setPromptText("Motivo da denúncia");
+        StyledDialogs.showAndWait(dialog).ifPresent(reason -> {
+            try {
+                groupService.reportMember(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                        member.getUser().getId(), reason);
+                StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
+                        "A denúncia foi enviada ao administrador."));
+            } catch (RuntimeException exception) {
+                showError(exception.getMessage());
+            }
+        });
+    }
+
+    /** Exibe o modal para convite de novos membros. */
     private void showMemberDialog() {
         showModal("/view/fxml/modal-member.fxml", (controller, stage) ->
                 ((AddMemberController) controller).configure(group.getGroupId(), stage, this::render));
     }
 
+    /** Exibe o modal de pagamento de quotas para o ciclo ativo. */
     private void showPaymentDialog() {
         if (currentCycle == null) {
             showError("Abra um ciclo antes de registrar pagamentos.");
             return;
         }
-        showModal("/view/fxml/modal-payment.fxml", (controller, stage) ->
-                ((PaymentController) controller).configure(group.getGroupId(), stage, this::render));
+        try {
+            boolean paid = PaymentDialogController.show(
+                    memberQueue.getScene().getWindow(),
+                    group,
+                    SessionContext.getCurrentUser()
+            );
+            if (paid) {
+                render();
+            }
+        } catch (RuntimeException e) {
+            showError(e.getMessage());
+        }
     }
 
+    /**
+     * Carrega e abre uma janela modal FXML genérica.
+     *
+     * @param resource  Caminho do recurso FXML.
+     * @param configure Consumer para configuração do controlador e do stage.
+     */
     private void showModal(String resource, java.util.function.BiConsumer<Object, Stage> configure) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(resource));
@@ -309,10 +439,22 @@ public class GroupDetailController {
         }
     }
 
+    /**
+     * Verifica se determinado membro é o beneficiário do ciclo em andamento.
+     *
+     * @param member Membro a avaliar.
+     * @return {@code true} se for o beneficiário atual.
+     */
     private boolean isBeneficiary(UserGroup member) {
         return currentCycle != null && currentCycle.getBeneficiary().getId().equals(member.getId());
     }
 
+    /**
+     * Traduz o método de pagamento para uma representação amigável.
+     *
+     * @param contribution Entidade da contribuição.
+     * @return Nome legível do método de pagamento.
+     */
     private String paymentName(Contribution contribution) {
         return switch (contribution.getPaymentMethod()) {
             case MPESA -> "M-Pesa";
@@ -322,6 +464,12 @@ public class GroupDetailController {
         };
     }
 
+    /**
+     * Converte o intervalo de dias na designação da frequência.
+     *
+     * @param days Frequência em dias.
+     * @return Nome da frequência.
+     */
     private String frequencyName(int days) {
         return switch (days) {
             case 7 -> "Semanal";
@@ -331,18 +479,32 @@ public class GroupDetailController {
         };
     }
 
+    /**
+     * Calcula o texto da contagem decrescente em dias até ao limite do pagamento.
+     *
+     * @param endDate Data limite.
+     * @return Texto informativo dos dias restantes.
+     */
     private String countdown(LocalDate endDate) {
         long days = ChronoUnit.DAYS.between(LocalDate.now(), endDate);
         return days < 0 ? "Atrasado " + Math.abs(days) + " dias" : days + " dias";
     }
 
+    /**
+     * Instancia um {@link Label} com estilos CSS aplicados.
+     *
+     * @param text    Texto a apresentar.
+     * @param classes Nomes das classes CSS.
+     * @return Rótulo configurado.
+     */
     private Label styled(String text, String... classes) {
         Label label = new Label(text);
         label.getStyleClass().addAll(classes);
         return label;
     }
 
+    /** Apresenta um alerta de erro estilizado. */
     private void showError(String message) {
-        new Alert(Alert.AlertType.ERROR, message).showAndWait();
+        StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, message));
     }
 }

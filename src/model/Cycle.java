@@ -22,6 +22,11 @@ import java.util.List;
                 )
         }
 )
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class Cycle {
 
     /** Identificador único do ciclo. */

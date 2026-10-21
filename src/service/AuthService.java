@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 /**
  * Serviço responsável pelo registo, autenticação e gestão
- * dos dados pessoais dos utilizadores do sistema Konexion.
+ * dos dados pessoais dos utilizadores do sistema iXitique.
  *
  * Aplica as regras de negócio relacionadas com contas,
  * credenciais e validação dos dados.
@@ -89,23 +89,22 @@ public class AuthService {
         }
 
         UserValidator.validateRequiredFields(
-                user.getUsername(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getPassword(),
-                user.getDocumentId(),
-                confirmPassword
+                user.getUsername(), user.getEmail(), user.getPhoneNumber(),
+                user.getPassword(), confirmPassword
         );
 
         String username = normalizeUsername(user.getUsername());
         String email = normalizeEmail(user.getEmail());
         String phoneNumber = normalizePhoneNumber(user.getPhoneNumber());
-        String documentId = normalizeDocumentId(user.getDocumentId());
+        String documentId = user.getDocumentId() == null || user.getDocumentId().isBlank()
+                ? null : normalizeDocumentId(user.getDocumentId());
 
         validateUsername(username);
         UserValidator.validateEmail(email);
         validatePhoneNumber(phoneNumber);
-        validateDocumentId(documentId);
+        if (documentId != null) {
+            validateDocumentId(documentId);
+        }
         validateStrongPassword(user.getPassword());
 
         UserValidator.validatePasswordConfirmation(
@@ -131,7 +130,7 @@ public class AuthService {
             );
         }
 
-        if (userDao.findByDocumentId(documentId) != null) {
+        if (documentId != null && userDao.findByDocumentId(documentId) != null) {
             throw new UserAlreadyExistsException(
                     "Este documento já está registado."
             );
@@ -150,10 +149,11 @@ public class AuthService {
         );
 
         // O registo não permite criar uma conta de administrador.
-        user.setUserRole(UserRole.base);
+        user.setUserRole(UserRole.USER);
 
-        // O registo ativa imediatamente a conta.
+        // Accounts are active for participation but require administrator KYC approval to create groups.
         user.setActive(true);
+        user.setVerified(false);
 
         userDao.createUser(user);
     }
@@ -229,6 +229,51 @@ public class AuthService {
         }
 
         return userDao.findById(id);
+    }
+
+    public void submitKyc(Long userId, String documentId, byte[] documentImage, byte[] selfieImage) {
+        if (userId == null) {
+            throw new IllegalArgumentException("A conta a verificar é inválida.");
+        }
+        String normalizedDocument = normalizeDocumentId(documentId == null ? "" : documentId);
+        validateDocumentId(normalizedDocument);
+        if (documentImage == null || documentImage.length == 0
+                || selfieImage == null || selfieImage.length == 0) {
+            throw new IllegalArgumentException("Anexe uma foto do BI/NUIT e uma fotografia de confirmação.");
+        }
+        if (documentImage.length > 8 * 1024 * 1024 || selfieImage.length > 8 * 1024 * 1024) {
+            throw new IllegalArgumentException("Cada fotografia deve ter no máximo 8 MB.");
+        }
+        User storedUser = userDao.findById(userId);
+        if (storedUser == null) {
+            throw new UserNotFoundException("Não foi possível encontrar a conta.");
+        }
+        User documentOwner = userDao.findByDocumentId(normalizedDocument);
+        if (documentOwner != null && !documentOwner.getId().equals(userId)) {
+            throw new UserAlreadyExistsException("Este documento já está associado a outra conta.");
+        }
+        storedUser.setDocumentId(normalizedDocument);
+        storedUser.setIdentityDocumentImage(documentImage);
+        storedUser.setIdentitySelfieImage(selfieImage);
+        storedUser.setVerified(false);
+        storedUser.setKycStatus("PENDING");
+        userDao.updateUser(storedUser);
+    }
+
+    public void reviewKyc(Long administratorId, Long userId, boolean approved) {
+        User administrator = userDao.findById(administratorId);
+        User reviewedUser = userDao.findById(userId);
+        if (administrator == null || administrator.getUserRole() == null
+                || !administrator.getUserRole().isAdministrator()) {
+            throw new SecurityException("Apenas um administrador pode rever a verificação KYC.");
+        }
+        if (reviewedUser == null || reviewedUser.getIdentityDocumentImage() == null
+                || reviewedUser.getIdentitySelfieImage() == null) {
+            throw new IllegalArgumentException("O utilizador ainda não submeteu os documentos KYC.");
+        }
+        reviewedUser.setVerified(approved);
+        reviewedUser.setKycStatus(approved ? "VERIFIED" : "REJECTED");
+        userDao.updateUser(reviewedUser);
     }
 
     /**
@@ -339,6 +384,11 @@ public class AuthService {
         storedUser.setPhoneNumber(normalizedPhone);
 
         userDao.updateUser(storedUser);
+
+        user.setFirstName(storedUser.getFirstName());
+        user.setLastName(storedUser.getLastName());
+        user.setEmail(storedUser.getEmail());
+        user.setPhoneNumber(storedUser.getPhoneNumber());
     }
 
     /**

@@ -10,10 +10,28 @@ import util.UiFormatting;
 
 import java.util.function.Consumer;
 
+/**
+ * Fábrica utilitária para a criação dinâmica de componentes visuais (cartões) representativos de grupos de Xitique.
+ *
+
+ * @since 1.0
+ */
 final class GroupCards {
+
+    /** Construtor privado para impedir a instanciação direta desta classe utilitária. */
     private GroupCards() {
     }
 
+    /**
+     * Cria e devolve um painel {@link VBox} formatado como cartão de grupo para ser inserido na interface JavaFX.
+     *
+     * @param group       Entidade do grupo a ser apresentado.
+     * @param members     Total de membros participantes no grupo.
+     * @param cycleNumber Número do ciclo ativo ou mais recente (0 se não houver).
+     * @param paid        Quantidade de quotas pagas no ciclo atual.
+     * @param onOpen      Callback invocado quando o utilizador clica sobre o cartão.
+     * @return Componente {@link VBox} estilizado como cartão do grupo.
+     */
     static VBox create(Group group, int members, int cycleNumber, int paid, Consumer<Group> onOpen) {
         VBox card = new VBox(10);
         card.getStyleClass().add("group-card");
@@ -43,6 +61,13 @@ final class GroupCards {
         return card;
     }
 
+    /**
+     * Cria um rótulo com texto e classe de estilo CSS especificada.
+     *
+     * @param text  Texto do rótulo.
+     * @param style Nome da classe CSS de estilo.
+     * @return Rótulo {@link Label} instanciado.
+     */
     private static Label styledLabel(String text, String style) {
         Label label = new Label(text);
         label.getStyleClass().add(style);

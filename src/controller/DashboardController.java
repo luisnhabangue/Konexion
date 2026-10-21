@@ -19,7 +19,18 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controlador JavaFX da vista principal (Dashboard/Visão Geral) do utilizador.
+ * <p>
+ * Exibe resumos financeiros pessoais (total investido, estimativa de próximo recebimento),
+ * cartões de acesso rápido aos grupos ativos e histórico recente de pagamentos.
+ * </p>
+
+ * @since 1.0
+ */
 public class DashboardController {
+
+    /** Serviço responsável pelo acesso a dados de grupos e contribuições. */
     private final GroupService groupService = new GroupService();
 
     @FXML private Label lblGreeting;
@@ -32,6 +43,9 @@ public class DashboardController {
     @FXML private VBox cardGroup1;
     @FXML private HBox activityList;
 
+    /**
+     * Inicializa a vista do painel principal calculando os acumulados de pagamentos e prevendo recebimentos.
+     */
     @FXML
     private void initialize() {
         model.User user = SessionContext.getCurrentUser();
@@ -78,6 +92,11 @@ public class DashboardController {
         renderRecentActivity(groupService.findContributionsForUser(user.getId()));
     }
 
+    /**
+     * Renderiza a lista horizontal de atividades/contribuições recentes do utilizador.
+     *
+     * @param contributions Lista de contribuições do utilizador.
+     */
     private void renderRecentActivity(List<Contribution> contributions) {
         activityList.getChildren().clear();
         for (Contribution contribution : contributions.stream().limit(4).toList()) {

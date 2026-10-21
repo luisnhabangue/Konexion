@@ -19,6 +19,9 @@
         <class>model.User</class>
         <class>model.UserGroup</class>
         <class>model.PaymentTransaction</class>
+        <class>model.MembershipInvitation</class>
+        <class>model.UserReport</class>
+        <class>model.LeadershipRequest</class>
 
         <properties>
 
@@ -33,10 +36,10 @@
                       value="jdbc:mysql://localhost:3306/ixitique?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=Africa/Maputo"/>
 
             <property name="jakarta.persistence.jdbc.user"
-                      value="root"/>
+                      value="ixitique"/>
 
             <property name="jakarta.persistence.jdbc.password"
-                      value="alteza77"/>
+                      value="deumaoito"/>
 
 
             <!-- ============================= -->

@@ -20,6 +20,11 @@ import java.time.LocalDate;
                 columnNames = {"user_group_id", "cycle_id"}
         )
 )
+/**
+ * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
+ *
+ * @since 1.0
+ */
 public class Contribution {
 
     /** Identificador único da contribuição. */

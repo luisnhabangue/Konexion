@@ -135,5 +135,12 @@
                 </HBox>
             </VBox>
         </GridPane>
+
+        <VBox styleClass="card, admin-section" spacing="10">
+            <Label text="Grupos públicos" styleClass="section-title"/>
+            <Label text="Pode participar em grupos públicos, mesmo que a sua conta ainda não esteja verificada."
+                   styleClass="section-sub" wrapText="true"/>
+            <VBox fx:id="publicGroupRows" spacing="8"/>
+        </VBox>
     </VBox>
 </ScrollPane>

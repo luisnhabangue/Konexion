@@ -3,6 +3,11 @@ package test;
 
 import jakarta.persistence.EntityManagerFactory;
 import util.EntityManagerFactoryUtil;
+/**
+ * Componente de apoio à aplicação, responsável pela funcionalidade indicada pelo nome da classe.
+ *
+ * @since 1.0
+ */
 
 public class TestarHibernate {
 
