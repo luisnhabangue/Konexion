@@ -90,7 +90,11 @@ public class ProfileController {
      */
     @FXML
     private void initialize() {
-        User user = SessionContext.getCurrentUser();
+        User user = authService.findById(SessionContext.getCurrentUser().getId());
+        if (user == null) {
+            throw new IllegalStateException("Não foi possível carregar os dados da conta.");
+        }
+        SessionContext.setCurrentUser(user);
         lblProfileName.setText(UiFormatting.fullName(user));
         lblProfileInitials.setText(UiFormatting.initials(user));
         lblUsername.setText("@" + user.getUsername());

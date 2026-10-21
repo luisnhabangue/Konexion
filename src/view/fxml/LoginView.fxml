@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXCheckbox?>
 <?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
@@ -16,6 +15,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Circle?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
@@ -108,7 +108,10 @@
                         </Label>
                         <MFXTextField fx:id="tfUsername" floatMode="DISABLED" prefHeight="42.0" prefWidth="400.0" promptText="nome@exemplo.com" styleClass="mfx-text-field">
                            <leadingIcon>
-                              <MFXFontIcon description="fas-envelope" size="16.0" style="-fx-fill: #69787B;" />
+                              <MFXFontIcon description="fas-envelope" size="16.0" style="-fx-fill: #69787B;" text="">
+                                 <color>
+                                    <Color red="0.05882352963089943" green="0.32156863808631897" blue="0.34117648005485535" />
+                                 </color></MFXFontIcon>
                            </leadingIcon>
                         </MFXTextField>
 
@@ -120,7 +123,10 @@
                         </Label>
                         <MFXPasswordField fx:id="pfPassword" floatMode="DISABLED" onAction="#btnEntrar" prefHeight="42.0" prefWidth="400.0" promptText="Introduza a sua senha" styleClass="mfx-password-field">
                         <leadingIcon>
-                           <MFXFontIcon description="fas-lock" size="16.0" style="-fx-fill: #69787B;" />
+                           <MFXFontIcon description="fas-lock" size="16.0" style="-fx-fill: #69787B;">
+                                 <color>
+                                    <Color red="0.05882352963089943" green="0.32156863808631897" blue="0.34117648005485535" />
+                                 </color></MFXFontIcon>
                         </leadingIcon>
                      </MFXPasswordField>
                         <!-- Linha Dupla: Checkbox (Lembrar-me) + Hyperlink (Esqueceu a senha?) -->
@@ -129,9 +135,8 @@
                               <Insets bottom="10.0" top="5.0" />
                            </VBox.margin>
                            <children>
-                              <io.github.palexdev.materialfx.controls.MFXCheckbox style="-fx-font-size: 11px; -fx-text-fill: #69787B;" text="Lembrar-me" />
                               <Region HBox.hgrow="ALWAYS" />
-                              <Hyperlink style="-fx-text-fill: #0F5257; -fx-font-size: 11px; -fx-font-weight: bold;" text="Esqueceu a senha?" />
+                              <Hyperlink fx:id="linkForgotPassword" style="-fx-text-fill: #0F5257; -fx-font-size: 11px; -fx-font-weight: bold;" text="Esqueceu a senha?" />
                            </children>
                         </HBox>
 

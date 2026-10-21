@@ -17,6 +17,8 @@ module iXitique {
     requires MaterialFX;
     // Segurança
     requires jbcrypt;
+    requires jakarta.mail;
+    requires java.naming;
 
 
     // JavaFX / FXML

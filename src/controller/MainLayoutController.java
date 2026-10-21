@@ -9,7 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import model.MembershipInvitation;
+import model.User;
 import model.enums.Page;
+import service.AuthService;
 import service.GroupService;
 import util.ModalDialogs;
 import util.Navigator;
@@ -77,6 +79,7 @@ public class MainLayoutController {
 
     /** Serviço responsável pelas operações de grupos e gestão de convites[cite: 110]. */
     private final GroupService groupService = new GroupService();
+    private final AuthService authService = new AuthService();
 
     /**
      * Inicializa os botões de navegação, ajusta o papel do utilizador (administrador vs regular)
@@ -84,6 +87,7 @@ public class MainLayoutController {
      */
     @FXML
     private void initialize() {
+        refreshCurrentUser();
         navigation.put(Page.DASHBOARD, navDashboard);
         navigation.put(Page.ADMIN, navDashboard);
         navigation.put(Page.GROUPS, navGroups);
@@ -112,10 +116,6 @@ public class MainLayoutController {
         refreshInvitationCount();
         Navigator.init(contentArea, this::updateNavigation);
         navigate(administrator ? Page.ADMIN : Page.DASHBOARD);
-        if (!SessionContext.getCurrentUser().isVerified() && !administrator) {
-            btnCreateGroup.setText("Verificar conta");
-            btnCreateGroup.setOnAction(event -> navigate(Page.PROFILE));
-        }
     }
 
     /**
@@ -149,7 +149,28 @@ public class MainLayoutController {
      * Abre a caixa de diálogo modal para criação de um novo grupo de Xitique[cite: 110].
      */
     private void openCreateGroup() {
+        refreshCurrentUser();
+        User currentUser = SessionContext.getCurrentUser();
+        boolean administrator = currentUser.getUserRole() != null
+                && currentUser.getUserRole().isAdministrator();
+        if (!currentUser.isVerified() && !administrator) {
+            btnCreateGroup.setText("Verificar conta");
+            navigate(Page.PROFILE);
+            return;
+        }
+        btnCreateGroup.setText("Criar grupo");
         ModalDialogs.showCreateGroup(contentArea.getScene().getWindow(), () -> navigate(currentPage));
+    }
+
+    private void refreshCurrentUser() {
+        var refreshedUser = authService.findById(SessionContext.getCurrentUser().getId());
+        if (refreshedUser != null) {
+            SessionContext.setCurrentUser(refreshedUser);
+            boolean administrator = refreshedUser.getUserRole() != null
+                    && refreshedUser.getUserRole().isAdministrator();
+            btnCreateGroup.setText(refreshedUser.isVerified() || administrator
+                    ? "Criar grupo" : "Verificar conta");
+        }
     }
 
     /**

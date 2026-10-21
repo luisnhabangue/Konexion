@@ -1,51 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
 <!-- Modal "Adicionar membro" -->
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      styleClass="modal" stylesheets="@app.css" fx:controller="controller.AddMemberController">
 
-    <HBox styleClass="modal-head" alignment="TOP_LEFT">
+<VBox prefHeight="453.0" prefWidth="715.0" styleClass="modal" stylesheets="@app.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AddMemberController">
+
+    <HBox alignment="TOP_LEFT" styleClass="modal-head">
         <VBox spacing="5" HBox.hgrow="ALWAYS">
-            <Label text="Adicionar membro" styleClass="modal-title"/>
-            <Label text="Procure um utilizador e adicione-o ao grupo." styleClass="modal-sub"/>
+            <Label styleClass="modal-title" text="Adicionar membro" />
+            <Label styleClass="modal-sub" text="Procure um utilizador e adicione-o ao grupo." />
         </VBox>
         <Button fx:id="btnClose" styleClass="icon-button">
-            <graphic><StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M6,6 L18,18 M18,6 L6,18"/></StackPane></graphic>
+            <graphic><StackPane styleClass="ico-box"><SVGPath content="M6,6 L18,18 M18,6 L6,18" styleClass="ico" /></StackPane></graphic>
         </Button>
     </HBox>
+   <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="440.0" style="-fx-background-color: transparent;" styleClass="scroll-bar" VBox.vgrow="ALWAYS">
+     <content>
+       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="300.0" prefWidth="524.0" style="-fx-background-color: white;">
+            <children>
+            
+                <VBox layoutX="-121.0" layoutY="4.0" prefHeight="296.0" prefWidth="524.0" spacing="15" styleClass="modal-body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <VBox spacing="7">
+                        <Label styleClass="field-label" text="Pesquisar por NUIT ou username" />
+                        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="field-control">
+                            <StackPane styleClass="ico-box">
+                           <SVGPath content="M4,11 A7,7 0 1 0 18,11 A7,7 0 1 0 4,11 M20,20 L16,16" styleClass="ico" />
+                        </StackPane>
+                            <TextField fx:id="txtSearchUser" promptText="Digite para pesquisar..." styleClass="field-input" HBox.hgrow="ALWAYS" />
+                        </HBox>
+                    </VBox>
+            
+                    <!-- Resultado da pesquisa (o controller pode mostrar/esconder com visible/managed) -->
+                    <HBox fx:id="searchResult" alignment="CENTER_LEFT" spacing="10" styleClass="search-result">
+                        <StackPane styleClass="avatar, avatar-md">
+                        <Label text="LC" />
+                     </StackPane>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label fx:id="lblResultName" styleClass="search-result-name" text="Lúcia Chongo" />
+                            <Label fx:id="lblResultInfo" styleClass="search-result-sub" text="@luciachongo · +258 84 221 1090" />
+                        </VBox>
+                        <StackPane styleClass="ico-box">
+                        <SVGPath content="M5,12 L9,16 L19,6" styleClass="ico" />
+                     </StackPane>
+                    </HBox>
+            
+                    <VBox spacing="6" styleClass="position-preview">
+                        <Label styleClass="cell-sub" text="Posição atribuída na fila" />
+                        <Label fx:id="lblPosition" styleClass="position-title" text="8ª posição" />
+                        <Label styleClass="member-phone" text="O novo membro será adicionado ao final da ordem atual." />
+                    </VBox>
+                </VBox>
+            </children>
+         </AnchorPane>
+     </content>
+   </ScrollPane>
 
-    <VBox styleClass="modal-body" spacing="15">
-        <VBox spacing="7">
-            <Label text="Pesquisar por NUIT ou username" styleClass="field-label"/>
-            <HBox styleClass="field-control" alignment="CENTER_LEFT" spacing="8">
-                <StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M4,11 A7,7 0 1 0 18,11 A7,7 0 1 0 4,11 M20,20 L16,16"/></StackPane>
-                <TextField fx:id="txtSearchUser" styleClass="field-input" promptText="Digite para pesquisar..." HBox.hgrow="ALWAYS"/>
-            </HBox>
-        </VBox>
-
-        <!-- Resultado da pesquisa (o controller pode mostrar/esconder com visible/managed) -->
-        <HBox fx:id="searchResult" styleClass="search-result" alignment="CENTER_LEFT" spacing="10">
-            <StackPane styleClass="avatar, avatar-md"><Label text="LC"/></StackPane>
-            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                <Label fx:id="lblResultName" text="Lúcia Chongo" styleClass="search-result-name"/>
-                <Label fx:id="lblResultInfo" text="@luciachongo · +258 84 221 1090" styleClass="search-result-sub"/>
-            </VBox>
-            <StackPane styleClass="ico-box"><SVGPath styleClass="ico" content="M5,12 L9,16 L19,6"/></StackPane>
-        </HBox>
-
-        <VBox styleClass="position-preview" spacing="6">
-            <Label text="Posição atribuída na fila" styleClass="cell-sub"/>
-            <Label fx:id="lblPosition" text="8ª posição" styleClass="position-title"/>
-            <Label text="O novo membro será adicionado ao final da ordem atual." styleClass="member-phone"/>
-        </VBox>
-    </VBox>
-
-    <HBox styleClass="modal-footer" alignment="CENTER_RIGHT" spacing="9">
-        <Button fx:id="btnCancel" text="Cancelar" styleClass="btn, btn-ghost"/>
-        <Button fx:id="btnConfirm" text="Adicionar membro" styleClass="btn, btn-primary"/>
+    <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="520.0" spacing="9" styleClass="modal-footer">
+        <Button fx:id="btnCancel" styleClass="btn, btn-ghost" text="Cancelar" />
+        <Button fx:id="btnConfirm" styleClass="btn, btn-primary" text="Adicionar membro" />
     </HBox>
 </VBox>

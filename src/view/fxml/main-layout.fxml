@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -18,7 +19,7 @@
   tratar da navegação no controller.
 -->
 
-<BorderPane prefHeight="800" prefWidth="1280" minHeight="540" minWidth="760" styleClass="app-shell" stylesheets="@app.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainLayoutController">
+<BorderPane minHeight="540" minWidth="760" prefHeight="800" prefWidth="1280" styleClass="app-shell" stylesheets="@app.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainLayoutController">
 
     <!-- ================= SIDEBAR ================= -->
     <left>
@@ -111,8 +112,14 @@
 
                     <HBox alignment="CENTER_LEFT" spacing="10" styleClass="user-card">
                         <StackPane styleClass="avatar, avatar-sm"><Label fx:id="lblUserInitials" text="?" /></StackPane>
+                  <Separator orientation="VERTICAL" prefHeight="200.0">
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Separator>
                         <VBox alignment="CENTER" spacing="3">
                             <Label fx:id="lblUserName" styleClass="user-name" text="João Silva" />
+                     <Label text="User Role" />
                         </VBox>
                     </HBox>
                 </HBox>
@@ -120,7 +127,9 @@
 
             <center>
                 <StackPane fx:id="contentArea" styleClass="content-area">
-                </StackPane>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin></StackPane>
             </center>
         </BorderPane>
     </center>

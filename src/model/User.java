@@ -52,11 +52,11 @@ public class User extends Person {
     private String kycStatus = "NOT_SUBMITTED";
 
     @Lob
-    @Column(name = "identity_document_image")
+    @Column(name = "identity_document_image", columnDefinition = "LONGBLOB")
     private byte[] identityDocumentImage;
 
     @Lob
-    @Column(name = "identity_selfie_image")
+    @Column(name = "identity_selfie_image", columnDefinition = "LONGBLOB")
     private byte[] identitySelfieImage;
 
     @Column(name = "punctuality_points", nullable = false)

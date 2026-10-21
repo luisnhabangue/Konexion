@@ -39,6 +39,10 @@ As principais telas da aplicação já usam os dados persistidos: o utilizador p
 4. Abra um ciclo com pelo menos dois membros e registe as contribuições na tela de detalhes. O histórico, o painel inicial e o perfil apresentam os registos da base de dados, sem depender dos exemplos visuais antigos.
 5. Para experimentar sem inserir manualmente vários registos, use **Carregar dados de demonstração** na tela de grupos. A operação é explícita e idempotente por conta; adiciona um grupo, dois membros fictícios, um ciclo e duas contribuições à base de dados.
 
+### Recuperação de senha por código
+
+O link **Esqueceu a senha?** envia um código de seis dígitos para o email cadastrado. O código expira em 10 minutos e fica guardado apenas na memória da aplicação; reiniciar a aplicação invalida códigos pendentes. Configure o SMTP antes de executar, definindo `IXITIQUE_SMTP_HOST`, `IXITIQUE_SMTP_PORT` (por exemplo, `587`), `IXITIQUE_SMTP_USER`, `IXITIQUE_SMTP_PASSWORD` e, opcionalmente, `IXITIQUE_SMTP_FROM`. Para Gmail, use uma senha de aplicação. Não coloque credenciais no código nem as envie no chat.
+
 ### Regras de negócio da interface
 
 - O username, email, telefone e, quando submetido, documento não podem repetir-se; emails, telefones e palavras-passe são validados no registo.
