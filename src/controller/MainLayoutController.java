@@ -1,16 +1,26 @@
 package controller;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 import model.MembershipInvitation;
 import model.User;
+import model.UserNotification;
 import model.enums.Page;
+import service.ContributionDeadlineService;
 import service.AuthService;
 import service.GroupService;
 import util.ModalDialogs;
@@ -34,6 +44,8 @@ import java.util.Map;
  * @since 1.0
  */
 public class MainLayoutController {
+    private static final KeyCodeCombination SEARCH_SHORTCUT =
+            new KeyCodeCombination(KeyCode.K, KeyCombination.SHORTCUT_DOWN);
 
     /** Contentor de pilha onde as páginas da aplicação são carregadas dinamicamente[cite: 110]. */
     @FXML private StackPane contentArea;
@@ -65,6 +77,9 @@ public class MainLayoutController {
     /** Rótulo com o primeiro nome do utilizador autenticado[cite: 110]. */
     @FXML private Label lblUserName;
 
+    /** Rótulo com o tipo de utilizador autenticado[cite: 110]. */
+    @FXML private Label lblUserRole;
+
     /** Rótulo com as iniciais do utilizador para exibição no avatar[cite: 110]. */
     @FXML private Label lblUserInitials;
 
@@ -80,6 +95,9 @@ public class MainLayoutController {
     /** Serviço responsável pelas operações de grupos e gestão de convites[cite: 110]. */
     private final GroupService groupService = new GroupService();
     private final AuthService authService = new AuthService();
+    private final ContributionDeadlineService deadlineService = new ContributionDeadlineService();
+    private Timeline deadlineMonitor;
+    private Scene shortcutScene;
 
     /**
      * Inicializa os botões de navegação, ajusta o papel do utilizador (administrador vs regular)
@@ -102,20 +120,25 @@ public class MainLayoutController {
         navHistory.setOnAction(event -> navigate(Page.HISTORY));
         navProfile.setOnAction(event -> navigate(Page.PROFILE));
         btnCreateGroup.setOnAction(event -> openCreateGroup());
-        btnNotifications.setOnAction(event -> showInvitations());
+        btnNotifications.setOnAction(event -> showNotifications());
         btnLogout.setOnAction(event -> logout());
         searchField.setOnAction(event -> {
             GroupsController groups = navigate(Page.GROUPS);
             groups.search(searchField.getText());
         });
+        contentArea.sceneProperty().addListener((observable, oldScene, newScene) ->
+                registerSearchShortcut(newScene));
 
-        lblUserName.setText(SessionContext.getCurrentUser().getFirstName());
-        lblUserInitials.setText(util.UiFormatting.initials(SessionContext.getCurrentUser()));
+        updateUserInfo();
         lblNotificationCount.setText("0");
         lblNotificationCount.setVisible(false);
         refreshInvitationCount();
         Navigator.init(contentArea, this::updateNavigation);
         navigate(administrator ? Page.ADMIN : Page.DASHBOARD);
+        deadlineMonitor = new Timeline(new KeyFrame(Duration.minutes(15),
+                event -> refreshNotificationCount()));
+        deadlineMonitor.setCycleCount(Animation.INDEFINITE);
+        deadlineMonitor.play();
     }
 
     /**
@@ -130,19 +153,36 @@ public class MainLayoutController {
         return Navigator.go(page);
     }
 
+    private void registerSearchShortcut(Scene scene) {
+        if (shortcutScene != null) {
+            shortcutScene.getAccelerators().remove(SEARCH_SHORTCUT);
+        }
+        shortcutScene = scene;
+        if (shortcutScene != null) {
+            shortcutScene.getAccelerators().put(SEARCH_SHORTCUT, searchField::requestFocus);
+        }
+    }
+
     /**
      * Atualiza a indicação visual do menu de navegação, atribuindo a classe ativa ao botão selecionado[cite: 110].
      *
      * @param page A página {@link Page} em exibição.
      */
     private void updateNavigation(Page page) {
-        lblUserName.setText(SessionContext.getCurrentUser().getFirstName());
-        lblUserInitials.setText(util.UiFormatting.initials(SessionContext.getCurrentUser()));
+        updateUserInfo();
         navigation.values().forEach(button -> button.getStyleClass().remove("active"));
         Button selected = navigation.get(page);
         if (selected != null && !selected.getStyleClass().contains("active")) {
             selected.getStyleClass().add("active");
         }
+    }
+
+    private void updateUserInfo() {
+        User currentUser = SessionContext.getCurrentUser();
+        lblUserName.setText(currentUser.getFirstName());
+        lblUserInitials.setText(util.UiFormatting.initials(currentUser));
+        lblUserRole.setText(currentUser.getUserRole() != null
+                && currentUser.getUserRole().isAdministrator() ? "Administrador" : "");
     }
 
     /**
@@ -177,6 +217,10 @@ public class MainLayoutController {
      * Encerra a sessão atual do utilizador, limpa o contexto da sessão e redireciona para o ecrã de login[cite: 110].
      */
     private void logout() {
+        if (deadlineMonitor != null) {
+            deadlineMonitor.stop();
+        }
+        registerSearchShortcut(null);
         try {
             SessionContext.clear();
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
@@ -192,13 +236,25 @@ public class MainLayoutController {
     /**
      * Exibe sequencialmente em caixas de diálogo os convites de grupos pendentes, permitindo aceitá-los ou recusá-los[cite: 110].
      */
-    private void showInvitations() {
+    private void showNotifications() {
         try {
+            Long userId = SessionContext.getCurrentUser().getId();
+            List<UserNotification> notifications = deadlineService.findUnread(userId);
+            for (UserNotification notification : notifications) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Notificação de contribuição");
+                alert.setHeaderText(notification.getUserGroup().getGroup().getGroupName()
+                        + " · Ciclo " + notification.getCycle().getNumero());
+                alert.setContentText(notification.getMessage());
+                StyledDialogs.showAndWait(alert);
+                deadlineService.markRead(userId, notification.getId());
+            }
+
             List<MembershipInvitation> invitations = groupService.findPendingInvitations(
-                    SessionContext.getCurrentUser().getId());
-            if (invitations.isEmpty()) {
+                    userId);
+            if (invitations.isEmpty() && notifications.isEmpty()) {
                 StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
-                        "Não tem convites pendentes."));
+                        "Não tem notificações nem convites pendentes."));
                 return;
             }
             for (MembershipInvitation invitation : invitations) {
@@ -216,7 +272,7 @@ public class MainLayoutController {
                             SessionContext.getCurrentUser().getId(), response.get() == accept);
                 }
             }
-            refreshInvitationCount();
+            refreshNotificationCount();
         } catch (RuntimeException exception) {
             StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
         }
@@ -226,8 +282,20 @@ public class MainLayoutController {
      * Atualiza o contador de convites pendentes e altera a visibilidade do badge de notificação[cite: 110].
      */
     private void refreshInvitationCount() {
-        int pending = groupService.findPendingInvitations(SessionContext.getCurrentUser().getId()).size();
-        lblNotificationCount.setText(Integer.toString(pending));
-        lblNotificationCount.setVisible(pending > 0);
+        refreshNotificationCount();
+    }
+
+    private void refreshNotificationCount() {
+        try {
+            Long userId = SessionContext.getCurrentUser().getId();
+            deadlineService.processDeadlines();
+            int pending = groupService.findPendingInvitations(userId).size()
+                    + deadlineService.countUnread(userId);
+            lblNotificationCount.setText(Integer.toString(pending));
+            lblNotificationCount.setVisible(pending > 0);
+        } catch (RuntimeException exception) {
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR,
+                    "Não foi possível verificar notificações de prazos: " + exception.getMessage()));
+        }
     }
 }

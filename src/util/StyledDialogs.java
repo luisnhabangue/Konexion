@@ -3,6 +3,7 @@ package util;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.stage.StageStyle;
 
 import java.util.Optional;
 
@@ -28,6 +29,7 @@ public final class StyledDialogs {
      * @throws IllegalStateException Se o ficheiro de estilos {@code app.css} não for encontrado.
      */
     public static <R> Optional<R> showAndWait(Dialog<R> dialog) {
+        dialog.initStyle(StageStyle.UNDECORATED);
         var stylesheet = StyledDialogs.class.getResource("/view/fxml/app.css");
         if (stylesheet == null) {
             throw new IllegalStateException("A folha de estilos dos diálogos não foi encontrada.");

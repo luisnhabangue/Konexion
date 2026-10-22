@@ -1,6 +1,7 @@
 package controller;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -42,15 +43,19 @@ public class HistoryController {
         btnExportCsv.setOnAction(event -> exportCsv());
         activityRows.getChildren().clear();
         for (Contribution contribution : contributions) {
-            HBox row = new HBox(18);
+            HBox row = new HBox(16);
             row.getStyleClass().add("t-row");
             Label date = styled(UiFormatting.date(contribution.getPaymentDate()), "t-td", "c-w150");
             Label group = styled(contribution.getUserGroup().getGroup().getGroupName(), "t-name");
+            group.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(group, javafx.scene.layout.Priority.ALWAYS);
             Label amount = styled(UiFormatting.money(contribution.getAmount()), "t-amount", "c-w130");
             Label status = styled(contribution.getStatus().toString(), "badge",
                     contribution.getStatus() == model.enums.ContributionStatus.PAID ? "badge-success" : "badge-warning");
-            row.getChildren().addAll(date, group, amount, status);
+            HBox statusCell = new HBox(status);
+            statusCell.getStyleClass().add("c-w110");
+            statusCell.setAlignment(Pos.CENTER_LEFT);
+            row.getChildren().addAll(date, group, amount, statusCell);
             activityRows.getChildren().add(row);
         }
         if (contributions.isEmpty()) {

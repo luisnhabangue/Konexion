@@ -69,7 +69,20 @@
         </VBox>
         <VBox styleClass="card, admin-section" spacing="10">
             <Label text="Gestão de utilizadores" styleClass="section-title"/>
-            <VBox fx:id="userRows" spacing="8"/>
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED"
+                        pannable="true" styleClass="table-scroll" vbarPolicy="NEVER">
+                <VBox minWidth="920.0">
+                    <HBox alignment="CENTER_LEFT" styleClass="t-head">
+                        <Label maxWidth="Infinity" styleClass="t-th" text="UTILIZADOR" HBox.hgrow="ALWAYS"/>
+                        <Label styleClass="t-th, admin-user-role" text="PERFIL"/>
+                        <Label styleClass="t-th, admin-user-state" text="ESTADO"/>
+                        <Label styleClass="t-th, admin-user-stat" text="STRIKES"/>
+                        <Label styleClass="t-th, admin-user-stat" text="PONTOS"/>
+                        <Label styleClass="t-th, admin-user-actions" text="AÇÕES"/>
+                    </HBox>
+                    <VBox fx:id="userRows"/>
+                </VBox>
+            </ScrollPane>
         </VBox>
     </VBox>
 </ScrollPane>

@@ -7,6 +7,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.AdminUserSummary;
 import model.LeadershipRequest;
 import model.User;
@@ -220,21 +222,55 @@ public class AdminDashboardController {
         for (AdminUserSummary user : users) {
             boolean administrator = user.userRole() != null && user.userRole().isAdministrator();
             HBox row = new HBox(10);
-            row.getStyleClass().add("admin-row");
-            Label identity = new Label(user.firstName() + " " + user.lastName()
-                    + " · @" + user.username() + " · strikes: " + user.strikeCount()
-                    + " · pontos: " + user.punctualityPoints());
-            identity.getStyleClass().add("t-name");
+            row.getStyleClass().add("admin-user-row");
+
+            VBox identity = new VBox(3);
+            identity.getStyleClass().add("admin-user-name");
+            Label name = new Label(user.firstName() + " " + user.lastName());
+            name.getStyleClass().add("t-name");
+            Label username = new Label("@" + user.username());
+            username.getStyleClass().add("section-sub");
+            identity.getChildren().addAll(name, username);
+            identity.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(identity, javafx.scene.layout.Priority.ALWAYS);
-            row.getChildren().add(identity);
-            if (!administrator && user.active()) {
-                Button disable = new Button("Desativar");
-                disable.getStyleClass().addAll("btn", "btn-danger");
-                disable.setOnAction(event -> disableUser(user.id(), user.username()));
-                row.getChildren().add(disable);
+
+            Label role = new Label(user.userRole() == null ? "Utilizador" : user.userRole().toString());
+            role.getStyleClass().addAll("t-td", "admin-user-role");
+            Label status = new Label(user.active() ? "ATIVA" : "INATIVA");
+            status.getStyleClass().addAll("badge", user.active() ? "badge-success" : "badge-neutral",
+                    "admin-user-state");
+            Label strikes = new Label(Integer.toString(user.strikeCount()));
+            strikes.getStyleClass().addAll("t-td", "admin-user-stat");
+            Label points = new Label(Integer.toString(user.punctualityPoints()));
+            points.getStyleClass().addAll("t-td", "admin-user-stat");
+
+            HBox actions = new HBox(8);
+            actions.getStyleClass().add("admin-user-actions");
+            if (!administrator) {
+                Button toggleActive = new Button(user.active() ? "Desativar" : "Reativar");
+                toggleActive.getStyleClass().addAll("btn", user.active() ? "btn-danger" : "btn-secondary",
+                        "admin-action");
+                if (!user.active()) {
+                    toggleActive.getStyleClass().add("admin-reactivate");
+                }
+                toggleActive.setOnAction(event -> {
+                    if (user.active()) {
+                        disableUser(user.id(), user.username());
+                    } else {
+                        reactivateUser(user.id(), user.username());
+                    }
+                });
+
+                Button delete = new Button("Apagar definitivamente");
+                delete.getStyleClass().addAll("btn", "btn-danger", "admin-action", "admin-delete");
+                delete.setOnAction(event -> deleteUser(user.id(), user.username()));
+                actions.getChildren().addAll(toggleActive, delete);
             }
+
+            row.getChildren().addAll(identity, role, status, strikes, points, actions);
             userRows.getChildren().add(row);
         }
+        addEmptyMessage(userRows, users.isEmpty(), "Não existem utilizadores registados.");
     }
 
     /**
@@ -249,6 +285,7 @@ public class AdminDashboardController {
             HBox images = new HBox(14, document, selfie);
             images.setStyle("-fx-padding: 18; -fx-alignment: center;");
             Stage dialog = new Stage();
+            dialog.initStyle(StageStyle.UNDECORATED);
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(kycRows.getScene().getWindow());
             dialog.setTitle("Documentos KYC · " + user.getUsername());
@@ -325,8 +362,40 @@ public class AdminDashboardController {
         if (StyledDialogs.showAndWait(confirmation).orElse(null) != javafx.scene.control.ButtonType.OK) {
             return;
         }
+
         try {
             adminService.disableUser(administratorId, userId);
+            refresh();
+        } catch (RuntimeException exception) {
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
+        }
+    }
+
+    private void reactivateUser(Long userId, String username) {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
+                "Reativar @" + username + "? A conta poderá voltar a iniciar sessão.");
+        confirmation.setHeaderText("Confirmar reativação");
+        if (StyledDialogs.showAndWait(confirmation).orElse(null) != ButtonType.OK) {
+            return;
+        }
+        try {
+            adminService.reactivateUser(administratorId, userId);
+            refresh();
+        } catch (RuntimeException exception) {
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
+        }
+    }
+
+    private void deleteUser(Long userId, String username) {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
+                "Apagar @" + username + " permanentemente? Esta ação não pode ser desfeita. " +
+                        "Contas associadas a grupos não podem ser apagadas para preservar o histórico financeiro.");
+        confirmation.setHeaderText("Apagar utilizador definitivamente");
+        if (StyledDialogs.showAndWait(confirmation).orElse(null) != ButtonType.OK) {
+            return;
+        }
+        try {
+            adminService.deleteUser(administratorId, userId);
             refresh();
         } catch (RuntimeException exception) {
             StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));

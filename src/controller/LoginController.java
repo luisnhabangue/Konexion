@@ -10,10 +10,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Label;
+import javafx.stage.Stage;
 import model.User;
 import service.AuthService;
 import service.PasswordRecoveryService;
@@ -21,6 +23,7 @@ import util.SessionContext;
 import util.StyledDialogs;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 /**
  * Controlador JavaFX do ecrã de início de sessão (Login) da aplicação.
@@ -41,6 +44,10 @@ public class LoginController {
     @FXML private MFXPasswordField pfPassword;
     @FXML private javafx.scene.control.Hyperlink linkCreateAccount;
     @FXML private javafx.scene.control.Hyperlink linkForgotPassword;
+    @FXML private javafx.scene.control.Button btnMinimize;
+    @FXML private javafx.scene.control.Button btnExit;
+    @FXML private Label lblUsernameError;
+    @FXML private Label lblPasswordError;
 
     /** Construtor padrão da classe do controlador. */
     public LoginController() {
@@ -49,8 +56,14 @@ public class LoginController {
     /** Inicializa o evento do link para criar uma nova conta. */
     @FXML
     private void initialize() {
+        bindValidation(tfUsername, lblUsernameError,
+                value -> value == null || value.isBlank() ? "Introduza o username ou e-mail." : null);
+        bindValidation(pfPassword, lblPasswordError,
+                value -> value == null || value.isBlank() ? "Introduza a palavra-passe." : null);
         linkCreateAccount.setOnAction(this::createAccount);
         linkForgotPassword.setOnAction(event -> showPasswordRecoveryInfo());
+        btnMinimize.setOnAction(event -> windowFrom(event.getSource()).setIconified(true));
+        btnExit.setOnAction(event -> windowFrom(event.getSource()).close());
     }
 
     /** Mostra a informação de recuperação usando o tema centralizado dos diálogos. */
@@ -60,14 +73,14 @@ public class LoginController {
         emailDialog.setTitle("Recuperar senha");
         emailDialog.setHeaderText("Receber código por email");
         emailDialog.setContentText("Email cadastrado:");
-        emailDialog.showAndWait().ifPresent(email -> {
+        StyledDialogs.showAndWait(emailDialog).ifPresent(email -> {
             try {
                 passwordRecoveryService.sendCode(email);
                 TextInputDialog codeDialog = new TextInputDialog();
                 codeDialog.setTitle("Verificar código");
                 codeDialog.setHeaderText("Enviámos um código de 6 dígitos para o seu email");
                 codeDialog.setContentText("Código:");
-                codeDialog.showAndWait().ifPresent(code -> promptNewPassword(email, code));
+                StyledDialogs.showAndWait(codeDialog).ifPresent(code -> promptNewPassword(email, code));
             } catch (RuntimeException exception) {
                 showAlert(Alert.AlertType.ERROR, exception.getMessage());
             }
@@ -90,7 +103,7 @@ public class LoginController {
         form.addRow(0, new Label("Nova senha:"), password);
         form.addRow(1, new Label("Confirmar:"), confirmation);
         dialog.getDialogPane().setContent(form);
-        dialog.showAndWait().filter(save::equals).ifPresent(result -> {
+        StyledDialogs.showAndWait(dialog).filter(save::equals).ifPresent(result -> {
             if (!password.getText().equals(confirmation.getText())) {
                 showAlert(Alert.AlertType.ERROR, "As senhas não coincidem.");
                 return;
@@ -104,6 +117,10 @@ public class LoginController {
         });
     }
 
+    private Stage windowFrom(Object source) {
+        return (Stage) ((Node) source).getScene().getWindow();
+    }
+
     /**
      * Autentica o utilizador com o username e palavra-passe fornecidos.
      *
@@ -111,6 +128,13 @@ public class LoginController {
      */
     @FXML
     public void btnEntrar(ActionEvent actionEvent) {
+        boolean usernameValid = validateField(tfUsername, lblUsernameError, value ->
+                value == null || value.isBlank() ? "Introduza o username ou e-mail." : null, true);
+        boolean passwordValid = validateField(pfPassword, lblPasswordError, value ->
+                value == null || value.isBlank() ? "Introduza a palavra-passe." : null, true);
+        if (!usernameValid || !passwordValid) {
+            return;
+        }
         String username = tfUsername.getText();
         String password = pfPassword.getText();
 
@@ -124,6 +148,37 @@ public class LoginController {
         } catch (RuntimeException exception) {
             showAlert(Alert.AlertType.ERROR, exception.getMessage());
         }
+    }
+
+    private void bindValidation(TextInputControl field, Label errorLabel,
+                                Function<String, String> validator) {
+        if (field == null || errorLabel == null) {
+            return;
+        }
+        field.textProperty().addListener((observable, oldValue, newValue) -> {
+            field.getProperties().put("validationTouched", true);
+            validateField(field, errorLabel, validator, false);
+        });
+    }
+
+    private boolean validateField(TextInputControl field, Label errorLabel,
+                                  Function<String, String> validator, boolean force) {
+        if (force) {
+            field.getProperties().put("validationTouched", true);
+        }
+        if (!force && !Boolean.TRUE.equals(field.getProperties().get("validationTouched"))) {
+            return true;
+        }
+        String error = validator.apply(field.getText());
+        boolean valid = error == null;
+        errorLabel.setText(valid ? "" : error);
+        errorLabel.setVisible(!valid);
+        errorLabel.setManaged(!valid);
+        field.getStyleClass().remove("field-invalid");
+        if (!valid) {
+            field.getStyleClass().add("field-invalid");
+        }
+        return valid;
     }
 
     /** Apresenta um diálogo de alerta de erro ou aviso na autenticação. */

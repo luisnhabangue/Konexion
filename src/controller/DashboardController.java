@@ -3,8 +3,10 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import model.Contribution;
 import model.Cycle;
@@ -99,21 +101,37 @@ public class DashboardController {
      */
     private void renderRecentActivity(List<Contribution> contributions) {
         activityList.getChildren().clear();
+        VBox rows = new VBox();
+        rows.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(rows, Priority.ALWAYS);
         for (Contribution contribution : contributions.stream().limit(4).toList()) {
-            VBox item = new VBox(4);
-            item.getStyleClass().add("activity-item");
+            HBox row = new HBox(16);
+            row.getStyleClass().add("t-row");
+            Label date = new Label(UiFormatting.date(contribution.getPaymentDate()));
+            date.getStyleClass().addAll("t-td", "c-w150");
             Label groupName = new Label(contribution.getUserGroup().getGroup().getGroupName());
             groupName.getStyleClass().add("t-name");
-            Label details = new Label(UiFormatting.date(contribution.getPaymentDate()) + " · "
-                    + UiFormatting.money(contribution.getAmount()));
-            details.getStyleClass().add("t-td");
-            item.getChildren().addAll(groupName, details);
-            activityList.getChildren().add(item);
+            groupName.setMaxWidth(Double.MAX_VALUE);
+            HBox.setHgrow(groupName, Priority.ALWAYS);
+            Label amount = new Label(UiFormatting.money(contribution.getAmount()));
+            amount.getStyleClass().addAll("t-amount", "c-w130");
+            Label status = new Label(contribution.getStatus().toString());
+            status.getStyleClass().addAll("badge",
+                    contribution.getStatus() == model.enums.ContributionStatus.PAID
+                            ? "badge-success" : "badge-warning");
+            HBox statusCell = new HBox(status);
+            statusCell.getStyleClass().add("c-w110");
+            statusCell.setAlignment(Pos.CENTER_LEFT);
+            HBox actionCell = new HBox();
+            actionCell.getStyleClass().add("c-w40");
+            row.getChildren().addAll(date, groupName, amount, statusCell, actionCell);
+            rows.getChildren().add(row);
         }
         if (contributions.isEmpty()) {
             Label empty = new Label("Ainda não existem contribuições registadas.");
             empty.getStyleClass().add("section-sub");
-            activityList.getChildren().add(empty);
+            rows.getChildren().add(empty);
         }
+        activityList.getChildren().add(rows);
     }
 }

@@ -119,7 +119,7 @@
                   </Separator>
                         <VBox alignment="CENTER" spacing="3">
                             <Label fx:id="lblUserName" styleClass="user-name" text="João Silva" />
-                     <Label text="User Role" />
+                         <Label fx:id="lblUserRole" styleClass="user-role" />
                         </VBox>
                     </HBox>
                 </HBox>

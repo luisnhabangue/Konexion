@@ -1,115 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
-            fx:controller="controller.ProfileController">
-    <fx:define>
-        <ToggleGroup fx:id="profileTabs"/>
-    </fx:define>
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="page-scroll" stylesheets="@app.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ProfileController">
 
-    <VBox styleClass="page" spacing="22">
+    <VBox spacing="22" styleClass="page">
 
         <VBox spacing="6">
-            <Label text="Meu perfil" styleClass="page-title"/>
-            <Label text="Consulte os seus dados, histórico e preferências." styleClass="page-sub"/>
+            <Label styleClass="page-title" text="Meu perfil" />
+            <Label styleClass="page-sub" text="Consulte os seus dados, histórico e preferências." />
         </VBox>
 
         <!-- ================= CARTÃO DE PERFIL ================= -->
         <VBox styleClass="profile-card">
-            <Region styleClass="profile-cover"/>
+            <Region styleClass="profile-cover" />
 
-            <HBox styleClass="profile-main" spacing="15" alignment="TOP_LEFT">
-                <StackPane styleClass="avatar, avatar-xl, avatar-bordered" translateY="-31" minWidth="60">
-                    <Label fx:id="lblProfileInitials" text="?"/>
+            <HBox alignment="TOP_LEFT" spacing="15" styleClass="profile-main">
+                <StackPane minWidth="60" styleClass="avatar, avatar-xl, avatar-bordered" translateY="-31">
+                    <Label fx:id="lblProfileInitials" text="?" />
                 </StackPane>
                 <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label fx:id="lblProfileName" text="João Silva" styleClass="profile-name"/>
-                    <Label text="Dados pessoais da sua conta" styleClass="profile-since"/>
-                    <HBox spacing="6" alignment="CENTER_LEFT">
-                        <Label text="CONTA ATIVA" styleClass="badge, badge-success"/>
-                        <Label fx:id="lblVerificationStatus" text="POR VERIFICAR" styleClass="badge, badge-warning"/>
-                        <VBox.margin><Insets top="4"/></VBox.margin>
+                    <Label fx:id="lblProfileName" styleClass="profile-name" text="João Silva" />
+                    <Label styleClass="profile-since" text="Dados pessoais da sua conta" />
+                    <HBox alignment="CENTER_LEFT" spacing="6">
+                        <Label styleClass="badge, badge-success" text="CONTA ATIVA" />
+                        <Label fx:id="lblVerificationStatus" styleClass="badge, badge-warning" text="POR VERIFICAR" />
+                        <VBox.margin><Insets top="4" /></VBox.margin>
                     </HBox>
                 </VBox>
-                <Button fx:id="btnEditProfile" text="Editar perfil" styleClass="btn, btn-secondary">
-                    <HBox.margin><Insets top="16"/></HBox.margin>
+                <Button fx:id="btnEditProfile" styleClass="btn, btn-secondary" text="Editar perfil">
+                    <HBox.margin><Insets top="16" /></HBox.margin>
                 </Button>
             </HBox>
 
-            <GridPane fx:id="profileInfo" styleClass="profile-info" hgap="12">
+            <GridPane fx:id="profileInfo" hgap="12" styleClass="profile-info">
                 <columnConstraints>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
-                    <ColumnConstraints percentWidth="25"/>
+                    <ColumnConstraints percentWidth="25" />
+                    <ColumnConstraints percentWidth="25" />
+                    <ColumnConstraints percentWidth="25" />
+                    <ColumnConstraints percentWidth="25" />
                 </columnConstraints>
-                <VBox spacing="6" GridPane.columnIndex="0"><Label text="Username" styleClass="info-label"/><Label fx:id="lblUsername" text="@joaosilva" styleClass="info-value"/></VBox>
-                <VBox spacing="6" GridPane.columnIndex="1"><Label text="Telefone" styleClass="info-label"/><Label fx:id="lblPhone" text="+258 85 643 2210" styleClass="info-value"/></VBox>
-                <VBox spacing="6" GridPane.columnIndex="2"><Label text="Email" styleClass="info-label"/><Label fx:id="lblEmail" text="joao.silva@email.co.mz" styleClass="info-value"/></VBox>
-                <VBox spacing="6" GridPane.columnIndex="3"><Label text="NUIT / BI" styleClass="info-label"/><Label fx:id="lblDocument" text="1104•••••" styleClass="info-value"/></VBox>
+                <VBox spacing="6" GridPane.columnIndex="0"><Label styleClass="info-label" text="Username" /><Label fx:id="lblUsername" styleClass="info-value" text="\@jao" /></VBox>
+                <VBox spacing="6" GridPane.columnIndex="1"><Label styleClass="info-label" text="Telefone" /><Label fx:id="lblPhone" styleClass="info-value" text="+258 85 643 2210" /></VBox>
+                <VBox spacing="6" GridPane.columnIndex="2"><Label styleClass="info-label" text="Email" /><Label fx:id="lblEmail" styleClass="info-value" text="joao.silva@email.co.mz" /></VBox>
+                <VBox spacing="6" GridPane.columnIndex="3"><Label styleClass="info-label" text="NUIT / BI" /><Label fx:id="lblDocument" styleClass="info-value" text="1104•••••" /></VBox>
+            <rowConstraints>
+               <RowConstraints />
+            </rowConstraints>
             </GridPane>
         </VBox>
 
-        <VBox fx:id="kycSection" styleClass="card, kyc-card" spacing="12">
-            <Label text="Verificação de identidade (KYC)" styleClass="section-title"/>
-            <Label text="Submeta o BI ou NUIT e fotografias para o administrador rever. A conta continua apta a participar em grupos enquanto aguarda."
-                   styleClass="section-sub" wrapText="true"/>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="txtKycDocument" promptText="Número do BI ou NUIT" styleClass="field-input"
-                           HBox.hgrow="ALWAYS"/>
-                <Button fx:id="btnChooseDocumentPhoto" text="Foto do documento" styleClass="btn, btn-secondary"/>
+        <VBox fx:id="kycSection" spacing="12" styleClass="card, kyc-card">
+            <Label styleClass="section-title" text="Verificação de identidade (KYC)" />
+            <Label styleClass="section-sub" text="Submeta o BI ou NUIT e fotografias para o administrador rever. A conta continua apta a participar em grupos enquanto aguarda." wrapText="true" />
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <TextField fx:id="txtKycDocument" promptText="Número do BI ou NUIT" styleClass="field-input" HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnChooseDocumentPhoto" styleClass="btn, btn-secondary" text="Foto do documento" />
             </HBox>
-            <Label fx:id="lblDocumentPhoto" text="Nenhuma foto do documento selecionada" styleClass="section-sub"
-                   wrapText="true"/>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button fx:id="btnChooseSelfie" text="Selecionar fotografia" styleClass="btn, btn-secondary"/>
-                <Label fx:id="lblSelfiePhoto" text="Nenhuma fotografia selecionada" styleClass="section-sub"
-                       wrapText="true" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="btnSubmitKyc" text="Enviar para aprovação" styleClass="btn, btn-primary"/>
-            </HBox>
-        </VBox>
-        <VBox fx:id="leadershipSection" styleClass="card, kyc-card" spacing="10">
-            <Label text="Pedir nomeação como chefe de grupo" styleClass="section-title"/>
-            <Label text="O administrador analisa os pedidos. A nomeação dá acesso às ferramentas de gestão de grupos."
-                   styleClass="section-sub" wrapText="true"/>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="txtLeadershipReason" promptText="Explique por que deseja ser chefe de grupo"
-                           styleClass="field-input" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="btnRequestLeadership" text="Enviar pedido" styleClass="btn, btn-secondary"/>
+            <Label fx:id="lblDocumentPhoto" styleClass="section-sub" text="Nenhuma foto do documento selecionada" wrapText="true" />
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Button fx:id="btnChooseSelfie" styleClass="btn, btn-secondary" text="Selecionar fotografia" />
+                <Label fx:id="lblSelfiePhoto" styleClass="section-sub" text="Nenhuma fotografia selecionada" wrapText="true" HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnSubmitKyc" styleClass="btn, btn-primary" text="Enviar para aprovação" />
             </HBox>
         </VBox>
 
         <!-- ================= TABS ================= -->
-        <HBox styleClass="tabs" spacing="25">
-            <ToggleButton fx:id="tabContributions" text="Histórico de contribuições" styleClass="tab-btn" toggleGroup="$profileTabs" selected="true"/>
-            <ToggleButton fx:id="tabFinished" text="Xitiques finalizados" styleClass="tab-btn" toggleGroup="$profileTabs"/>
+        <HBox spacing="25" styleClass="tabs">
+            <ToggleButton fx:id="tabContributions" selected="true" styleClass="tab-btn" text="Histórico de contribuições">
+                <toggleGroup>
+                    <ToggleGroup fx:id="profileTabs" />
+                </toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="tabFinished" styleClass="tab-btn" text="Xitiques finalizados" toggleGroup="$profileTabs" />
         </HBox>
-
+    <VBox fx:id="leadershipSection" spacing="10" styleClass="card, kyc-card">
+    <Label styleClass="section-title" text="Pedir nomeação como chefe de grupo" />
+    <Label styleClass="section-sub" text="O administrador analisa os pedidos. A nomeação dá acesso às ferramentas de gestão de grupos." wrapText="true" />
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <TextField fx:id="txtLeadershipReason" promptText="Explique por que deseja ser chefe de grupo" styleClass="field-input" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnRequestLeadership" styleClass="btn, btn-secondary" text="Enviar pedido" />
+    </HBox>
+</VBox>
         <!-- Painéis: o controller alterna visible/managed conforme o tab selecionado -->
         <StackPane>
             <!-- 1) Histórico -->
             <VBox fx:id="paneContributions" styleClass="card, table-card">
                 <HBox styleClass="t-head">
-                    <Label text="DATA" styleClass="t-th, c-w110"/>
-                    <Label text="GRUPO" styleClass="t-th" HBox.hgrow="ALWAYS"/>
-                    <Label text="VALOR" styleClass="t-th, c-w130"/>
-                    <Label text="ESTADO" styleClass="t-th, c-w110"/>
+                    <Label styleClass="t-th, c-w150" text="DATA" />
+                    <Label styleClass="t-th" text="GRUPO" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                    <Label styleClass="t-th, c-w130" text="VALOR" />
+                    <Label styleClass="t-th, c-w110" text="ESTADO" />
                 </HBox>
-                <VBox fx:id="profileActivityRows"/>
+                <VBox fx:id="profileActivityRows" />
             </VBox>
 
             <!-- 2) Finalizados (estado vazio) -->
-            <VBox fx:id="paneFinished" styleClass="card, empty-card" alignment="CENTER" spacing="8" visible="false" managed="false">
+            <VBox fx:id="paneFinished" alignment="CENTER" managed="false" spacing="8" styleClass="card, empty-card" visible="false">
                 <StackPane styleClass="empty-icon">
-                    <StackPane styleClass="ico-box"><SVGPath styleClass="ico, ico-lg" content="M5,12 L9,16 L19,6"/></StackPane>
+                    <StackPane styleClass="ico-box"><SVGPath content="M5,12 L9,16 L19,6" styleClass="ico, ico-lg" /></StackPane>
                 </StackPane>
-                <Label text="Ainda não há xitiques finalizados" styleClass="section-title"/>
-                <Label text="Os grupos concluídos serão apresentados aqui." styleClass="section-sub"/>
+                <Label styleClass="section-title" text="Ainda não há xitiques finalizados" />
+                <Label styleClass="section-sub" text="Os grupos concluídos serão apresentados aqui." />
             </VBox>
 
         </StackPane>

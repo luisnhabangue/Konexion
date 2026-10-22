@@ -56,6 +56,7 @@
             <ComboBox fx:id="cmbFrequency" styleClass="field-select" maxWidth="Infinity" value="Mensal (30 dias)">
                 <items>
                     <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Diário (1 dia)"/>
                         <String fx:value="Semanal (7 dias)"/>
                         <String fx:value="Quinzenal (15 dias)"/>
                         <String fx:value="Mensal (30 dias)"/>

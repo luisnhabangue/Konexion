@@ -90,6 +90,18 @@
     -mfx-main: #0F5257; /* Cor da borda ao focar */
     -fx-background-radius: 10px;
 }
+.mfx-text-field.field-invalid, .mfx-password-field.field-invalid {
+    -mfx-main: #C62828;
+    -fx-border-color: #C62828;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 10px;
+    -fx-background-color: #FFF8F8;
+}
+.field-error {
+    -fx-text-fill: #C62828;
+    -fx-font-size: 10px;
+    -fx-wrap-text: true;
+}
 .label, .text, .mfx-button, .mfx-text-field, .mfx-password-field {
     -fx-font-family: "Inter", sans-serif;
 }

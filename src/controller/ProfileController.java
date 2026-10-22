@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.Contribution;
 import model.Cycle;
 import model.Group;
@@ -230,21 +231,24 @@ public class ProfileController {
     private void renderContributions(List<Contribution> contributions) {
         profileActivityRows.getChildren().clear();
         for (Contribution contribution : contributions) {
-            javafx.scene.layout.HBox row = new javafx.scene.layout.HBox(14);
+            javafx.scene.layout.HBox row = new javafx.scene.layout.HBox(16);
             row.getStyleClass().add("t-row");
             Label date = new Label(UiFormatting.date(contribution.getPaymentDate()));
-            date.getStyleClass().addAll("t-td", "c-w110");
+            date.getStyleClass().addAll("t-td", "c-w150");
             Label group = new Label(contribution.getUserGroup().getGroup().getGroupName());
             group.getStyleClass().add("t-name");
             group.setWrapText(true);
+            group.setMaxWidth(Double.MAX_VALUE);
             javafx.scene.layout.HBox.setHgrow(group, javafx.scene.layout.Priority.ALWAYS);
             Label amount = new Label(UiFormatting.money(contribution.getAmount()));
             amount.getStyleClass().addAll("t-amount", "c-w130");
             Label status = new Label(contribution.getStatus().toString());
             status.getStyleClass().addAll("badge",
                     contribution.getStatus() == model.enums.ContributionStatus.PAID ? "badge-success" : "badge-warning");
-            status.setMinWidth(90);
-            row.getChildren().addAll(date, group, amount, status);
+            javafx.scene.layout.HBox statusCell = new javafx.scene.layout.HBox(status);
+            statusCell.getStyleClass().add("c-w110");
+            statusCell.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            row.getChildren().addAll(date, group, amount, statusCell);
             profileActivityRows.getChildren().add(row);
         }
         if (contributions.isEmpty()) {
@@ -302,6 +306,7 @@ public class ProfileController {
             FXMLLoader loader = new FXMLLoader(editDialogUrl);
             Parent content = loader.load();
             Stage dialog = new Stage();
+            dialog.initStyle(StageStyle.UNDECORATED);
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(btnEditProfile.getScene().getWindow());
             dialog.setTitle("Editar perfil");

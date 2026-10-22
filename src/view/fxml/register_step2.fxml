@@ -165,6 +165,7 @@
                                         <Label style="-fx-font-size: 12px;                                                       -fx-font-weight: bold;                                                       -fx-text-fill: #182426;" text="Nome de utilizador" />
 
                                         <MFXTextField fx:id="txtUsername" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Ex.: joaosilva" styleClass="mfx-text-field" />
+                                        <Label fx:id="lblUsernameError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                     </children>
                                 </VBox>
 
@@ -174,6 +175,7 @@
                                         <Label style="-fx-font-size: 12px;                                                       -fx-font-weight: bold;                                                       -fx-text-fill: #182426;" text="Email" />
 
                                         <MFXTextField fx:id="txtEmail" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="nome@exemplo.com" styleClass="mfx-text-field" />
+                                        <Label fx:id="lblEmailError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                     </children>
                                 </VBox>
 
@@ -185,6 +187,7 @@
                                                 <Label style="-fx-font-size: 12px;                                                               -fx-font-weight: bold;                                                               -fx-text-fill: #182426;" text="Senha" />
 
                                                 <MFXPasswordField fx:id="txtPassword" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Introduza a senha" styleClass="mfx-password-field" />
+                                                <Label fx:id="lblNewPasswordError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                             </children>
                                         </VBox>
 
@@ -193,6 +196,7 @@
                                                 <Label style="-fx-font-size: 12px;                                                               -fx-font-weight: bold;                                                               -fx-text-fill: #182426;" text="Confirmar senha" />
 
                                                 <MFXPasswordField fx:id="txtConfirmPassword" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Repita a senha" styleClass="mfx-password-field" />
+                                                <Label fx:id="lblConfirmPasswordError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                             </children>
                                         </VBox>
                                     </children>

@@ -35,9 +35,7 @@
 .app-shell { -fx-background-color: -canvas; }
 .content-area { -fx-background-color: -canvas; }
 
-/* ---------------------------------------------------------------------
-   ÍCONES
-   --------------------------------------------------------------------- */
+
 .ico {
     -fx-fill: transparent;
     -fx-stroke: -icon;
@@ -60,9 +58,7 @@
     -fx-min-height: 14; -fx-pref-height: 14; -fx-max-height: 14;
 }
 
-/* ---------------------------------------------------------------------
-   SIDEBAR
-   --------------------------------------------------------------------- */
+
 .sidebar {
     -fx-background-color: -surface;
     -fx-border-color: -line-soft;
@@ -147,9 +143,7 @@
 }
 .logout:hover { -fx-text-fill: -danger; -icon: -danger; }
 
-/* ---------------------------------------------------------------------
-   TOPBAR
-   --------------------------------------------------------------------- */
+
 .topbar {
     -fx-background-color: rgba(255,255,255,0.96);
     -fx-border-color: -line-soft;
@@ -237,9 +231,7 @@
 .user-name { -fx-font-size: 12px; -fx-font-weight: 700; }
 .user-role { -fx-font-size: 10px; -fx-text-fill: -muted; }
 
-/* ---------------------------------------------------------------------
-   BOTÕES
-   --------------------------------------------------------------------- */
+
 .btn {
     -fx-background-insets: 0;
     -fx-background-radius: 10;
@@ -297,14 +289,13 @@
 }
 .back-link:hover { -fx-text-fill: -primary; -icon: -primary; }
 
-/* ---------------------------------------------------------------------
-   AVATAR
-   --------------------------------------------------------------------- */
 .avatar {
     -fx-background-color: -primary-soft;
     -fx-background-radius: 100;
+    -fx-alignment: CENTER;
 }
 .avatar .label { -fx-text-fill: -primary; -fx-font-weight: 700; }
+.avatar-initials { -fx-text-fill: -primary; -fx-font-weight: 700; }
 .avatar-blue { -fx-background-color: -blue-soft; }
 .avatar-blue .label { -fx-text-fill: #096889; }
 .avatar-amber { -fx-background-color: -amber-soft; }
@@ -336,9 +327,7 @@
 .avatar-xl .label { -fx-font-size: 17px; }
 .avatar-bordered { -fx-border-color: white; -fx-border-width: 4; -fx-border-radius: 100; }
 
-/* ---------------------------------------------------------------------
-   BADGES
-   --------------------------------------------------------------------- */
+
 .badge {
     -fx-padding: 3 9 3 9;
     -fx-background-radius: 20;
@@ -356,9 +345,7 @@
 .badge-neutral { -fx-text-fill: -muted; -fx-background-color: #f0f3f3; }
 .badge-on-dark { -fx-text-fill: #c7f5dc; -fx-background-color: rgba(80,210,143,0.15); }
 
-/* ---------------------------------------------------------------------
-   PÁGINA / TÍTULOS
-   --------------------------------------------------------------------- */
+
 .page-scroll {
     -fx-background-color: transparent;
     -fx-background: transparent;
@@ -375,9 +362,7 @@
 .section-sub { -fx-font-size: 11px; -fx-text-fill: -muted; }
 .section-heading { -fx-padding: 7 0 0 0; }
 
-/* ---------------------------------------------------------------------
-   CARDS / SUMMARY
-   --------------------------------------------------------------------- */
+
 .card {
     -fx-background-color: -surface;
     -fx-background-radius: 15;
@@ -401,9 +386,7 @@
 .summary-blue  { -fx-background-color: -blue-soft; -icon: #087d9a; }
 .summary-amber { -fx-background-color: -amber-soft; -icon: #a37200; }
 
-/* ---------------------------------------------------------------------
-   GROUP CARD + PROGRESS
-   --------------------------------------------------------------------- */
+
 .group-card {
     -fx-background-color: -surface;
     -fx-background-radius: 15;
@@ -461,36 +444,40 @@
 /* ---------------------------------------------------------------------
    TABELAS (HBox + larguras fixas por coluna)
    --------------------------------------------------------------------- */
-.table-card { -fx-padding: 0 20 7 20; }
+.table-card { -fx-padding: 0 12 7 12; }
 .table-toolbar { -fx-min-height: 73; -fx-pref-height: 73; }
 .t-head {
     -fx-background-color: #fafbfb;
     -fx-border-color: -line-soft;
     -fx-border-width: 1 0 1 0;
-    -fx-padding: 11 13 11 13;
+    -fx-padding: 11 12 11 12;
+    -fx-spacing: 10;
 }
-.t-th { -fx-font-size: 9px; -fx-font-weight: 600; -fx-text-fill: -muted-2; }
+.t-th { -fx-font-size: 9px; -fx-font-weight: 700; -fx-text-fill: -muted-2; }
 .t-row {
+    -fx-background-color: -surface;
     -fx-border-color: -line-soft;
     -fx-border-width: 0 0 1 0;
-    -fx-padding: 14 16 14 16;
+    -fx-padding: 12 12 12 12;
     -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 14;
+    -fx-spacing: 10;
+    -fx-min-height: 48;
 }
+.t-row:hover { -fx-background-color: #f8fbfb; }
 .t-row-last { -fx-border-width: 0; }
 .t-td { -fx-font-size: 12px; -fx-text-fill: -muted; }
 .t-name { -fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: -ink; }
 .t-amount { -fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: -ink; }
 
-.c-w40  { -fx-min-width: 40;  -fx-pref-width: 40;  -fx-max-width: 40; }
-.c-w90  { -fx-min-width: 90;  -fx-pref-width: 90;  -fx-max-width: 90; }
-.c-w110 { -fx-min-width: 110; -fx-pref-width: 110; -fx-max-width: 110; }
-.c-w130 { -fx-min-width: 130; -fx-pref-width: 130; -fx-max-width: 130; }
-.c-w150 { -fx-min-width: 150; -fx-pref-width: 150; -fx-max-width: 150; }
+.c-w40  { -fx-min-width: 32;  -fx-pref-width: 32;  -fx-max-width: 32; }
+.c-w90  { -fx-min-width: 80;  -fx-pref-width: 80;  -fx-max-width: 80; }
+.c-w110 { -fx-min-width: 96;  -fx-pref-width: 96;  -fx-max-width: 96; }
+.c-w130 { -fx-min-width: 110; -fx-pref-width: 110; -fx-max-width: 110; }
+.c-w150 { -fx-min-width: 120; -fx-pref-width: 120; -fx-max-width: 120; }
+.table-scroll { -fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0; }
+.table-scroll > .viewport { -fx-background-color: transparent; }
 
-/* ---------------------------------------------------------------------
-   FILTROS / SEGMENTOS / TABS
-   --------------------------------------------------------------------- */
+
 .segments {
     -fx-background-color: #e9eeee;
     -fx-background-radius: 11;
@@ -540,9 +527,7 @@
 }
 .tab-btn:selected { -fx-text-fill: -primary; -fx-border-color: -primary; }
 
-/* ---------------------------------------------------------------------
-   DETALHE DO GRUPO
-   --------------------------------------------------------------------- */
+
 .group-banner {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0b4247, #11656a);
     -fx-background-radius: 18;
@@ -605,6 +590,12 @@
     -fx-alignment: CENTER_LEFT;
     -icon: #b5bfc0;
 }
+.member-action {
+    -fx-min-height: 32;
+    -fx-pref-height: 32;
+    -fx-padding: 0 8 0 8;
+    -fx-font-size: 10px;
+}
 .member-row-current {
     -fx-background-color: #f5fbfa;
     -fx-background-radius: 10;
@@ -619,9 +610,7 @@
 .member-verification.verified { -fx-text-fill: -success; }
 .member-verification.unverified { -fx-text-fill: -muted-2; }
 
-/* ---------------------------------------------------------------------
-   PERFIL
-   --------------------------------------------------------------------- */
+
 .profile-card {
     -fx-background-color: -surface;
     -fx-background-radius: 16;
@@ -655,6 +644,31 @@
     -fx-alignment: CENTER_LEFT;
     -fx-spacing: 8;
 }
+.admin-user-row {
+    -fx-background-color: -surface;
+    -fx-border-color: -line-soft;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 12 10 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10;
+    -fx-min-height: 62;
+}
+.admin-user-row:hover { -fx-background-color: #f8fbfb; }
+.admin-user-name { -fx-min-width: 220; }
+.admin-user-name > .label { -fx-wrap-text: false; }
+.admin-user-role { -fx-min-width: 110; -fx-pref-width: 110; -fx-max-width: 110; }
+.admin-user-state { -fx-min-width: 95; -fx-pref-width: 95; -fx-max-width: 95; }
+.admin-user-stat { -fx-min-width: 70; -fx-pref-width: 70; -fx-max-width: 70; }
+.admin-user-actions { -fx-min-width: 246; -fx-pref-width: 246; -fx-max-width: 246; }
+.admin-action {
+    -fx-min-height: 34;
+    -fx-pref-height: 34;
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 11px;
+}
+.admin-reactivate { -fx-text-fill: -success; -fx-border-color: #cce8d7; }
+.admin-reactivate:hover { -fx-background-color: -success-soft; }
+.admin-delete { -fx-padding: 0 9 0 9; }
 .metric-value { -fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: -primary; }
 .info-label { -fx-font-size: 9px; -fx-text-fill: -muted; }
 .info-value { -fx-font-size: 11px; -fx-font-weight: 700; }
@@ -679,9 +693,7 @@
 .check-box:selected > .box { -fx-background-color: -primary; -fx-border-color: -primary; }
 .check-box:selected > .box > .mark { -fx-background-color: white; }
 
-/* ---------------------------------------------------------------------
-   FORMULÁRIOS
-   --------------------------------------------------------------------- */
+
 .field-label { -fx-font-size: 10px; -fx-font-weight: 600; -fx-text-fill: #38494b; }
 .field-control {
     -fx-background-color: #fbfcfc;
@@ -743,11 +755,7 @@
 .position-preview { -fx-background-color: -canvas; -fx-background-radius: 10; -fx-padding: 14; }
 .position-title { -fx-font-size: 17px; -fx-font-weight: 700; }
 
-/* ---------------------------------------------------------------------
-   MODAIS
-   Use .modal-backdrop em um StackPane por cima do conteúdo para a versão
-   "overlay", ou mostre o .modal num Stage próprio.
-   --------------------------------------------------------------------- */
+
 .modal-backdrop { -fx-background-color: rgba(10,29,31,0.52); -fx-padding: 20; }
 .modal {
     -fx-background-color: -surface;
@@ -779,7 +787,7 @@
 }
 .app-dialog .button:hover { -fx-background-color: -primary-hover; }
 
-/* Keep primary content usable on shorter and narrower desktop windows. */
+
 .page-scroll { -fx-fit-to-width: true; }
 .page { -fx-padding: 24; }
 .content-area { -fx-min-width: 0; -fx-min-height: 0; }
@@ -788,8 +796,12 @@
 .search { -fx-pref-width: 280; -fx-max-width: 390; }
 .profile-info { -fx-hgap: 16; -fx-vgap: 14; }
 .profile-info > .label { -fx-wrap-text: true; }
-.table-card > .t-head, .table-card > VBox > .t-row { -fx-spacing: 16; }
 .t-row > .label { -fx-wrap-text: true; }
+.t-row > .t-td.c-w90,
+.t-row > .t-td.c-w110,
+.t-row > .t-td.c-w130,
+.t-row > .t-td.c-w150,
+.t-row > .t-amount { -fx-wrap-text: false; }
 .group-banner { -fx-spacing: 14; }
 
 .app-shell { -fx-min-width: 760; -fx-min-height: 540; }
@@ -807,9 +819,6 @@
     -fx-padding: 15 22 15 22;
 }
 
-/* ---------------------------------------------------------------------
-   SCROLLBAR FINA
-   --------------------------------------------------------------------- */
 .scroll-bar:vertical { -fx-background-color: transparent; -fx-pref-width: 10; }
 .scroll-bar > .track { -fx-background-color: transparent; }
 .scroll-bar > .thumb { -fx-background-color: #cdd7d8; -fx-background-radius: 10; -fx-background-insets: 2; }

@@ -53,6 +53,9 @@ public class AddMemberController {
     /** Rótulo para apresentação do username e contacto do utilizador encontrado. */
     @FXML private Label lblResultInfo;
 
+    /** Rótulo que apresenta a pontuação de assiduidade do utilizador encontrado. */
+    @FXML private Label lblResultScore;
+
     /** Rótulo que exibe a posição em que o novo membro ficará na fila do grupo. */
     @FXML private Label lblPosition;
 
@@ -114,9 +117,11 @@ public class AddMemberController {
         if (selectedUser == null) {
             lblResultName.setText("Nenhum utilizador disponível com esse username ou documento.");
             lblResultInfo.setText("Confirme os dados e tente novamente.");
+            lblResultScore.setText("");
         } else {
             lblResultName.setText(UiFormatting.fullName(selectedUser));
             lblResultInfo.setText("@" + selectedUser.getUsername() + " · " + selectedUser.getPhoneNumber());
+            lblResultScore.setText("Pontuação: " + selectedUser.getPunctualityPoints() + " pontos");
         }
         searchResult.setVisible(true);
         searchResult.setManaged(true);

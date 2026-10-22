@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ public final class ModalDialogs {
             FXMLLoader loader = new FXMLLoader(ModalDialogs.class.getResource("/view/fxml/modal-create-group.fxml"));
             Parent content = loader.load();
             Stage dialog = new Stage();
+            dialog.initStyle(StageStyle.UNDECORATED);
             dialog.initModality(Modality.APPLICATION_MODAL);
             if (owner != null) {
                 dialog.initOwner(owner);

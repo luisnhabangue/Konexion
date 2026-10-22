@@ -9,6 +9,7 @@ import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 
 import java.io.IOException;
@@ -23,6 +24,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        stage.initStyle(StageStyle.UNDECORATED);
+
         UserAgentBuilder.builder().themes(JavaFXThemes.MODENA)
                 .themes(MaterialFXStylesheets.forAssemble(true))
                 .setDeploy(true)
@@ -43,7 +46,6 @@ public class Main extends Application {
 
             scene.getStylesheets().add(getClass().getResource("/view/css/style.css").toExternalForm());
         }
-        stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
     }

@@ -20,7 +20,7 @@ import java.util.Map;
  * Controlador JavaFX do formulário modal de criação de novos grupos de Xitique.
  * <p>
  * Recolhe e valida a designação do grupo, descrição, valor da quota por membro,
- * dia limite de pagamento e frequência das rotações (semanal, quinzenal ou mensal).
+ * dia limite de pagamento e frequência das rotações (diária, semanal, quinzenal ou mensal).
  * </p>
 
  * @since 1.0
@@ -29,6 +29,7 @@ public class CreateGroupController {
 
     /** Mapeamento de descrições legíveis para o número correspondente de dias da frequência. */
     private static final Map<String, Integer> FREQUENCIES = Map.of(
+            "Diário (1 dia)", 1,
             "Semanal (7 dias)", 7,
             "Quinzenal (15 dias)", 15,
             "Mensal (30 dias)", 30

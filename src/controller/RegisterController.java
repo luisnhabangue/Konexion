@@ -11,6 +11,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextInputControl;
 import model.User;
 import model.enums.Gender;
 import service.AuthService;
@@ -19,6 +21,8 @@ import util.StyledDialogs;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Locale;
+import java.util.function.Function;
 /**
  * Controlador JavaFX responsável por apresentar e coordenar as interações da funcionalidade correspondente.
  *
@@ -45,6 +49,14 @@ public class RegisterController {
     @FXML private MFXButton btnCriarConta;
     @FXML private MFXButton btnVoltarPasso;
     @FXML private Hyperlink linkVoltarLogin;
+    @FXML private Label lblFirstNameError;
+    @FXML private Label lblLastNameError;
+    @FXML private Label lblDocumentError;
+    @FXML private Label lblPhoneError;
+    @FXML private Label lblUsernameError;
+    @FXML private Label lblEmailError;
+    @FXML private Label lblNewPasswordError;
+    @FXML private Label lblConfirmPasswordError;
 
     private String firstName;
     private String lastName;
@@ -55,6 +67,23 @@ public class RegisterController {
 
     @FXML
     private void initialize() {
+        bindValidation(txtPrimeirosNomes, lblFirstNameError, this::validateName);
+        bindValidation(txtApelidos, lblLastNameError, this::validateLastName);
+        bindValidation(txtDocumento, lblDocumentError, this::validateDocument);
+        bindValidation(txtTelefone, lblPhoneError, this::validatePhone);
+        bindValidation(txtUsername, lblUsernameError, this::validateUsername);
+        bindValidation(txtEmail, lblEmailError, this::validateEmail);
+        bindValidation(txtPassword, lblNewPasswordError, this::validatePassword);
+        bindValidation(txtConfirmPassword, lblConfirmPasswordError, this::validatePasswordConfirmation);
+        if (txtPassword != null && txtConfirmPassword != null && lblConfirmPasswordError != null) {
+            txtPassword.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (Boolean.TRUE.equals(txtConfirmPassword.getProperties().get("validationTouched"))) {
+                    validateField(txtConfirmPassword, lblConfirmPasswordError,
+                            this::validatePasswordConfirmation, false);
+                }
+            });
+        }
+
         if (cmbGenero != null) {
             cmbGenero.getItems().setAll(
                     Gender.M,
@@ -80,6 +109,14 @@ public class RegisterController {
     }
 
     private void continueRegistration(Object source) {
+        boolean textFieldsValid =
+                validateField(txtPrimeirosNomes, lblFirstNameError, this::validateName, true)
+                & validateField(txtApelidos, lblLastNameError, this::validateLastName, true)
+                & validateField(txtTelefone, lblPhoneError, this::validatePhone, true)
+                & validateField(txtDocumento, lblDocumentError, this::validateDocument, true);
+        if (!textFieldsValid) {
+            return;
+        }
         if (isBlank(txtPrimeirosNomes.getText())
                 || isBlank(txtApelidos.getText())
                 || isBlank(txtTelefone.getText())
@@ -102,17 +139,13 @@ public class RegisterController {
     }
 
     private void createAccount(Object source) {
-        if (isBlank(txtUsername.getText())
-                || isBlank(txtEmail.getText())
-                || isBlank(txtPassword.getText())
-                || isBlank(txtConfirmPassword.getText())) {
-            showAlert(Alert.AlertType.WARNING,
-                    "Preencha todos os campos das credenciais.");
-            return;
-        }
-
-        if (!txtPassword.getText().equals(txtConfirmPassword.getText())) {
-            showAlert(Alert.AlertType.ERROR, "As senhas não coincidem.");
+        boolean fieldsValid =
+                validateField(txtUsername, lblUsernameError, this::validateUsername, true)
+                & validateField(txtEmail, lblEmailError, this::validateEmail, true)
+                & validateField(txtPassword, lblNewPasswordError, this::validatePassword, true)
+                & validateField(txtConfirmPassword, lblConfirmPasswordError,
+                        this::validatePasswordConfirmation, true);
+        if (!fieldsValid) {
             return;
         }
 
@@ -187,6 +220,107 @@ public class RegisterController {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private void bindValidation(TextInputControl field, Label errorLabel,
+                                Function<String, String> validator) {
+        if (field == null || errorLabel == null) {
+            return;
+        }
+        field.textProperty().addListener((observable, oldValue, newValue) -> {
+            field.getProperties().put("validationTouched", true);
+            validateField(field, errorLabel, validator, false);
+        });
+    }
+
+    private boolean validateField(TextInputControl field, Label errorLabel,
+                                  Function<String, String> validator, boolean force) {
+        if (force) {
+            field.getProperties().put("validationTouched", true);
+        }
+        if (!force && !Boolean.TRUE.equals(field.getProperties().get("validationTouched"))) {
+            return true;
+        }
+        String error = validator.apply(field.getText());
+        boolean valid = error == null;
+        errorLabel.setText(valid ? "" : error);
+        errorLabel.setVisible(!valid);
+        errorLabel.setManaged(!valid);
+        field.getStyleClass().remove("field-invalid");
+        if (!valid) {
+            field.getStyleClass().add("field-invalid");
+        }
+        return valid;
+    }
+
+    private String validateName(String value) {
+        String name = value == null ? "" : value.trim();
+        if (name.length() < 2 || name.length() > 60
+                || !name.matches("^[\\p{L}]+(?:[ '-][\\p{L}]+)*$")) {
+            return "Use 2 a 60 letras; espaços, apóstrofos e hífenes são permitidos.";
+        }
+        return null;
+    }
+
+    private String validateLastName(String value) {
+        return validateName(value);
+    }
+
+    private String validateDocument(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        String document = value.trim().toUpperCase(Locale.ROOT);
+        if (!document.matches("^(?:[0-9]{12}[A-Z]|[0-9]{9})$")) {
+            return "Introduza um BI com 12 dígitos e uma letra, ou um NUIT com 9 dígitos.";
+        }
+        return null;
+    }
+
+    private String validatePhone(String value) {
+        String phoneNumber = value == null ? "" : value.replaceAll("\\s+", "");
+        if (!phoneNumber.matches("^(?:\\+258)?(?:82|83|84|85|86|87)[0-9]{7}$")) {
+            return "Introduza um número móvel moçambicano válido.";
+        }
+        return null;
+    }
+
+    private String validateUsername(String value) {
+        String username = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+        if (username.length() < 4 || username.length() > 20
+                || !username.matches("^[a-z][a-z0-9._]{2,18}[a-z0-9_]$")
+                || username.contains("..")) {
+            return "Use 4 a 20 caracteres; comece por uma letra e use letras, números, pontos ou underscores.";
+        }
+        return null;
+    }
+
+    private String validateEmail(String value) {
+        String email = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+        if (email.length() > 254
+                || !email.matches("(?=.{1,254}$)[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\\.[a-z0-9-]+)+")) {
+            return "Introduza um endereço de e-mail válido.";
+        }
+        return null;
+    }
+
+    private String validatePassword(String value) {
+        if (value == null || value.length() < 8 || value.length() > 64
+                || !value.matches(".*[A-Z].*") || !value.matches(".*[a-z].*")
+                || !value.matches(".*[0-9].*") || !value.matches(".*[^a-zA-Z0-9].*")) {
+            return "Use 8 a 64 caracteres, com maiúscula, minúscula, número e símbolo.";
+        }
+        return null;
+    }
+
+    private String validatePasswordConfirmation(String value) {
+        if (value == null || value.isBlank()) {
+            return "Confirme a palavra-passe.";
+        }
+        if (txtPassword == null || !value.equals(txtPassword.getText())) {
+            return "As palavras-passe não coincidem.";
+        }
+        return null;
     }
 
     private void showAlert(Alert.AlertType type, String message) {

@@ -300,6 +300,7 @@
                                                               maxWidth="Infinity"
                                                               styleClass="mfx-text-field"
                                                               HBox.hgrow="ALWAYS"/>
+                                                <Label fx:id="lblFirstNameError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                             </children>
                                         </VBox>
 
@@ -317,6 +318,7 @@
                                                               maxWidth="Infinity"
                                                               styleClass="mfx-text-field"
                                                               HBox.hgrow="ALWAYS"/>
+                                                <Label fx:id="lblLastNameError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                             </children>
                                         </VBox>
                                     </children>
@@ -336,6 +338,7 @@
                                                       prefHeight="43.0"
                                                       maxWidth="Infinity"
                                                       styleClass="mfx-text-field"/>
+                                        <Label fx:id="lblDocumentError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                         <Label text="A verificação KYC será necessária para criar grupos."
                                                wrapText="true"
                                                style="-fx-font-size: 10px; -fx-text-fill: #69787B;"/>
@@ -392,6 +395,7 @@
                                                       prefHeight="43.0"
                                                       maxWidth="Infinity"
                                                       styleClass="mfx-text-field"/>
+                                        <Label fx:id="lblPhoneError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
                                     </children>
                                 </VBox>
 

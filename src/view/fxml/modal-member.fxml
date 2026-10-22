@@ -47,6 +47,7 @@
                         <VBox spacing="4" HBox.hgrow="ALWAYS">
                             <Label fx:id="lblResultName" styleClass="search-result-name" text="Lúcia Chongo" />
                             <Label fx:id="lblResultInfo" styleClass="search-result-sub" text="@luciachongo · +258 84 221 1090" />
+                            <Label fx:id="lblResultScore" styleClass="search-result-sub" text="Pontuação: 0 pontos" />
                         </VBox>
                         <StackPane styleClass="ico-box">
                         <SVGPath content="M5,12 L9,16 L19,6" styleClass="ico" />

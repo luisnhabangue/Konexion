@@ -116,7 +116,9 @@ public class GroupDao implements GroupDaoInterface {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             return entityManager.createQuery(
-                            "SELECT DISTINCT g FROM Group g LEFT JOIN FETCH g.members m LEFT JOIN FETCH m.user WHERE g.groupId = :id",
+                            "SELECT DISTINCT g FROM Group g LEFT JOIN FETCH g.createdBy "
+                                    + "LEFT JOIN FETCH g.members m LEFT JOIN FETCH m.user "
+                                    + "WHERE g.groupId = :id",
                             Group.class
                     ).setParameter("id", id).getSingleResult();
         } catch (NoResultException e) {

@@ -11,9 +11,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.Contribution;
 import model.Cycle;
 import model.Group;
@@ -140,7 +142,7 @@ public class GroupDetailController {
         List<Cycle> cycles = groupService.findCycles(group.getGroupId());
         currentCycle = groupService.findActiveCycle(group.getGroupId());
         lblGroupName.setText(group.getGroupName());
-        lblGroupInitials.setText(group.getGroupName().substring(0, 1).toUpperCase());
+        lblGroupInitials.setText(UiFormatting.initialsFromName(group.getGroupName()));
         lblGroupDescription.setText(group.getGroupDescription());
         lblGroupMembers.setText(members.size() + (members.size() == 1 ? " membro" : " membros"));
         lblQuota.setText(UiFormatting.money(group.getAmountPerUser()));
@@ -161,7 +163,8 @@ public class GroupDetailController {
             HBox row = new HBox(9);
             row.getStyleClass().add("member-row");
             Label order = styled(member.getUserReceivingOrder() + "º", "member-order");
-            Label avatar = styled(UiFormatting.initials(member.getUser()), "avatar", "avatar-sm");
+            StackPane avatar = new StackPane(styled(UiFormatting.initials(member.getUser()), "avatar-initials"));
+            avatar.getStyleClass().addAll("avatar", "avatar-sm");
             VBox identity = new VBox(4,
                     styled(UiFormatting.fullName(member.getUser()), "member-name"),
                     styled(member.getUser().getPhoneNumber() == null ? "—" : member.getUser().getPhoneNumber(), "member-phone"),
@@ -181,7 +184,7 @@ public class GroupDetailController {
             }
             if (!member.getUser().getId().equals(SessionContext.getCurrentUser().getId())) {
                 Button report = new Button("Denunciar");
-                report.getStyleClass().add("btn-ghost");
+                report.getStyleClass().addAll("btn", "btn-ghost", "member-action");
                 report.setOnAction(event -> reportMember(member));
                 row.getChildren().add(report);
             }
@@ -243,15 +246,24 @@ public class GroupDetailController {
                     .findFirst().orElse(null);
             HBox row = new HBox();
             row.getStyleClass().add("t-row");
-            HBox user = new HBox(9, styled(UiFormatting.initials(member.getUser()), "avatar", "avatar-sm"),
-                    styled(UiFormatting.fullName(member.getUser()), "t-name"));
+            StackPane avatar = new StackPane(styled(UiFormatting.initials(member.getUser()), "avatar-initials"));
+            avatar.getStyleClass().addAll("avatar", "avatar-sm");
+            HBox user = new HBox(9, avatar, styled(UiFormatting.fullName(member.getUser()), "t-name"));
+            user.setMaxWidth(Double.MAX_VALUE);
             HBox.setHgrow(user, javafx.scene.layout.Priority.ALWAYS);
+            HBox statusCell = new HBox(styled(contribution == null ? "PENDENTE" : "PAGO", "badge",
+                    contribution == null ? "badge-warning" : "badge-success"));
+            statusCell.getStyleClass().add("c-w110");
+            statusCell.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            HBox actionCell = new HBox();
+            actionCell.getStyleClass().add("c-w40");
             row.getChildren().addAll(
                     user,
                     styled(UiFormatting.money(contribution == null ? group.getAmountPerUser() : contribution.getAmount()), "t-amount", "c-w110"),
                     styled(contribution == null ? "—" : UiFormatting.date(contribution.getPaymentDate()), "t-td", "c-w110"),
                     styled(contribution == null ? "—" : paymentName(contribution), "t-td", "c-w90"),
-                    styled(contribution == null ? "PENDENTE" : "PAGO", "badge", contribution == null ? "badge-warning" : "badge-success")
+                    statusCell,
+                    actionCell
             );
             contributionRows.getChildren().add(row);
         }
@@ -280,7 +292,7 @@ public class GroupDetailController {
         dialog.setTitle("Abrir ciclo");
         dialog.setHeaderText("Selecione o membro que receberá nesta rodada.");
         dialog.setContentText("Beneficiário:");
-        dialog.showAndWait().ifPresent(name -> {
+        StyledDialogs.showAndWait(dialog).ifPresent(name -> {
             UserGroup beneficiary = choices.get(names.indexOf(name));
             try {
                 groupService.addNewCycleToGroup(group.getGroupId(), SessionContext.getCurrentUser().getId(),
@@ -306,7 +318,7 @@ public class GroupDetailController {
         dialog.setTitle("Ordem de recebimento");
         dialog.setHeaderText("Selecione o membro que ficará em primeiro na fila.");
         dialog.setContentText("Novo primeiro:");
-        dialog.showAndWait().ifPresent(name -> {
+        StyledDialogs.showAndWait(dialog).ifPresent(name -> {
             UserGroup target = members.get(names.indexOf(name));
             try {
                 groupService.setFirstReceiver(group.getGroupId(), SessionContext.getCurrentUser().getId(),
@@ -429,6 +441,7 @@ public class GroupDetailController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(resource));
             Parent content = loader.load();
             Stage dialog = new Stage();
+            dialog.initStyle(StageStyle.UNDECORATED);
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(memberQueue.getScene().getWindow());
             dialog.setScene(new Scene(content));
@@ -472,6 +485,7 @@ public class GroupDetailController {
      */
     private String frequencyName(int days) {
         return switch (days) {
+            case 1 -> "Diário";
             case 7 -> "Semanal";
             case 15 -> "Quinzenal";
             case 30 -> "Mensal";

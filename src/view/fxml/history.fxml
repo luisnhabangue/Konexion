@@ -19,7 +19,7 @@
         <VBox styleClass="card, table-card">
             <HBox styleClass="t-head">
                 <Label text="DATA" styleClass="t-th, c-w150"/>
-                <Label text="GRUPO" styleClass="t-th" HBox.hgrow="ALWAYS"/>
+                <Label text="GRUPO" styleClass="t-th" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
                 <Label text="VALOR" styleClass="t-th, c-w130"/>
                 <Label text="ESTADO" styleClass="t-th, c-w110"/>
             </HBox>

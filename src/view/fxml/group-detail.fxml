@@ -164,7 +164,10 @@
                     </Button>
                 </HBox>
 
-                <VBox fx:id="memberQueue">
+                <ScrollPane fitToWidth="false" hbarPolicy="AS_NEEDED" pannable="true"
+                            maxHeight="360.0" prefViewportHeight="340.0" styleClass="table-scroll"
+                            vbarPolicy="AS_NEEDED">
+                    <VBox fx:id="memberQueue" minWidth="440.0">
                     <HBox spacing="9" styleClass="member-row">
                         <StackPane styleClass="ico-box-sm"><SVGPath content="M7,6 A1,1 0 1 0 9,6 A1,1 0 1 0 7,6 M15,6 A1,1 0 1 0 17,6 A1,1 0 1 0 15,6 M7,12 A1,1 0 1 0 9,12 A1,1 0 1 0 7,12 M15,12 A1,1 0 1 0 17,12 A1,1 0 1 0 15,12 M7,18 A1,1 0 1 0 9,18 A1,1 0 1 0 7,18 M15,18 A1,1 0 1 0 17,18 A1,1 0 1 0 15,18" styleClass="ico, ico-sm" /></StackPane>
                         <Label styleClass="member-order" text="1º" />
@@ -200,7 +203,8 @@
                         <VBox spacing="4" HBox.hgrow="ALWAYS"><Label styleClass="member-name" text="Lina Matola" /><Label styleClass="member-phone" text="+258 84 775 9341" /></VBox>
                         <Label styleClass="badge, badge-neutral" text="Aguardando" />
                     </HBox>
-                </VBox>
+                    </VBox>
+                </ScrollPane>
             </VBox>
 
             <!-- Contribuições do ciclo -->
@@ -216,16 +220,20 @@
                     </Button>
                 </HBox>
 
-                <HBox alignment="CENTER_LEFT" styleClass="t-head">
-                    <Label maxWidth="Infinity" styleClass="t-th" text="MEMBRO" HBox.hgrow="ALWAYS" />
-                    <Label styleClass="t-th, c-w110" text="QUOTA" />
-                    <Label styleClass="t-th, c-w110" text="PAGAMENTO" />
-                    <Label styleClass="t-th, c-w90" text="MÉTODO" />
-                    <Label styleClass="t-th, c-w110" text="ESTADO" />
-                    <Label styleClass="t-th, c-w40" />
-                </HBox>
+                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED"
+                            hmax="1.0" hmin="0.0" pannable="true" styleClass="table-scroll"
+                            vbarPolicy="NEVER">
+                    <VBox minWidth="572.0">
+                        <HBox alignment="CENTER_LEFT" styleClass="t-head">
+                            <Label maxWidth="Infinity" styleClass="t-th" text="MEMBRO" HBox.hgrow="ALWAYS" />
+                            <Label styleClass="t-th, c-w110" text="QUOTA" />
+                            <Label styleClass="t-th, c-w110" text="PAGAMENTO" />
+                            <Label styleClass="t-th, c-w90" text="MÉTODO" />
+                            <Label styleClass="t-th, c-w110" text="ESTADO" />
+                            <Label styleClass="t-th, c-w40" />
+                        </HBox>
 
-                <VBox fx:id="contributionRows">
+                        <VBox fx:id="contributionRows">
                     <HBox styleClass="t-row">
                         <HBox alignment="CENTER_LEFT" maxWidth="Infinity" spacing="9" HBox.hgrow="ALWAYS"><StackPane styleClass="avatar, avatar-sm"><Label text="MC" /></StackPane><Label styleClass="t-name" text="Marta Cossa" /></HBox>
                         <Label styleClass="t-amount, c-w110" text="5.000,00 MT" />
@@ -281,7 +289,9 @@
                      </Button>
                   </HBox>
                     </HBox>
-                </VBox>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
             </VBox>
          <rowConstraints>
             <RowConstraints />

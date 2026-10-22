@@ -79,6 +79,19 @@ public final class UiFormatting {
         return (first + last).toUpperCase(Locale.ROOT);
     }
 
+    public static String initialsFromName(String name) {
+        if (name == null || name.isBlank()) {
+            return "?";
+        }
+        String[] words = name.trim().split("\\s+");
+        if (words.length == 1) {
+            return words[0].substring(0, Math.min(2, words[0].length())).toUpperCase(Locale.ROOT);
+        }
+        String first = words[0].substring(0, 1);
+        String last = words[words.length - 1].substring(0, 1);
+        return (first + last).toUpperCase(Locale.ROOT);
+    }
+
     /**
      * Retorna o nome completo concatenando o primeiro e o último nome da pessoa.
      *

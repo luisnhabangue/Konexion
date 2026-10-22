@@ -16,7 +16,6 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 
 /**
@@ -285,7 +284,7 @@ public class GroupService {
                 paymentDate, paymentMethod, ContributionStatus.PAID);
         contributionDao.save(contribution);
 
-        if (!paymentDate.isAfter(paymentDueDate(ctx.group(), ctx.cycle()))) {
+        if (!paymentDate.isAfter(ContributionDeadlineService.paymentDueDate(ctx.group(), ctx.cycle()))) {
             User member = userGroup.getUser();
             member.setPunctualityPoints(member.getPunctualityPoints() + 10);
             userDao.updateUser(member);
@@ -298,13 +297,6 @@ public class GroupService {
         checkAndFinalizeCycleIfComplete(ctx.group(), ctx.cycle());
     }
 
-    private LocalDate paymentDueDate(Group group, Cycle cycle) {
-        YearMonth month = YearMonth.from(cycle.getStartDate());
-        if (cycle.getStartDate().getDayOfMonth() > group.getPayday()) {
-            month = month.plusMonths(1);
-        }
-        return month.atDay(Math.min(group.getPayday(), month.lengthOfMonth()));
-    }
     /**
      * Verifica internamente se todas as contribuições do ciclo foram concluídas e, em caso afirmativo,
      * encerra a rodada e marca o beneficiário como contemplado.

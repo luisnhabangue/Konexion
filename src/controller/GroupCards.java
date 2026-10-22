@@ -4,6 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import model.Group;
 import util.UiFormatting;
@@ -36,8 +37,9 @@ final class GroupCards {
         VBox card = new VBox(10);
         card.getStyleClass().add("group-card");
         HBox top = new HBox();
-        Label avatar = new Label(group.getGroupName().substring(0, 1).toUpperCase());
+        StackPane avatar = new StackPane();
         avatar.getStyleClass().addAll("avatar", "avatar-lg");
+        avatar.getChildren().add(new Label(UiFormatting.initialsFromName(group.getGroupName())));
         Region spacer = new Region();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
         top.getChildren().addAll(avatar, spacer);

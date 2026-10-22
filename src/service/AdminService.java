@@ -4,7 +4,6 @@ import dao.UserDao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
-import model.Group;
 import model.AdminUserSummary;
 import model.LeadershipRequest;
 import model.User;
@@ -188,6 +187,61 @@ public class AdminService {
             throw new IllegalArgumentException("Não pode desativar a própria conta de administrador.");
         }
         updateUser(userId, user -> user.setActive(false));
+    }
+
+    public void reactivateUser(Long administratorId, Long userId) {
+        requireAdministrator(administratorId);
+        if (administratorId.equals(userId)) {
+            throw new IllegalArgumentException("Não pode alterar o estado da própria conta de administrador.");
+        }
+        updateUser(userId, user -> user.setActive(true));
+    }
+
+    public void deleteUser(Long administratorId, Long userId) {
+        requireAdministrator(administratorId);
+        if (administratorId.equals(userId)) {
+            throw new IllegalArgumentException("Não pode apagar a própria conta de administrador.");
+        }
+
+        EntityManager em = factory.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            User user = em.find(User.class, userId);
+            if (user == null) {
+                throw new IllegalArgumentException("Utilizador não encontrado.");
+            }
+            if (user.getUserRole() != null && user.getUserRole().isAdministrator()) {
+                throw new IllegalArgumentException("Não é permitido apagar contas de administrador.");
+            }
+
+            long memberships = em.createQuery(
+                            "SELECT COUNT(ug) FROM UserGroup ug WHERE ug.user.id = :userId", Long.class)
+                    .setParameter("userId", userId).getSingleResult();
+            long ownedGroups = em.createQuery(
+                            "SELECT COUNT(g) FROM Group g WHERE g.createdBy.id = :userId", Long.class)
+                    .setParameter("userId", userId).getSingleResult();
+            if (memberships > 0 || ownedGroups > 0) {
+                throw new IllegalStateException(
+                        "Este utilizador está associado a grupos. Desative a conta para preservar os grupos e o histórico financeiro.");
+            }
+
+            em.createQuery("DELETE FROM UserReport r WHERE r.reporter.id = :userId OR r.reportedUser.id = :userId")
+                    .setParameter("userId", userId).executeUpdate();
+            em.createQuery("DELETE FROM MembershipInvitation i WHERE i.inviter.id = :userId OR i.invitee.id = :userId")
+                    .setParameter("userId", userId).executeUpdate();
+            em.createQuery("DELETE FROM LeadershipRequest r WHERE r.requester.id = :userId")
+                    .setParameter("userId", userId).executeUpdate();
+            em.remove(user);
+            transaction.commit();
+        } catch (RuntimeException exception) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw exception;
+        } finally {
+            em.close();
+        }
     }
 
     public void resolveReport(Long administratorId, Long reportId) {

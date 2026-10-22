@@ -22,6 +22,7 @@
         <class>model.MembershipInvitation</class>
         <class>model.UserReport</class>
         <class>model.LeadershipRequest</class>
+        <class>model.UserNotification</class>
 
         <properties>
 
