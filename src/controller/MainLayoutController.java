@@ -4,17 +4,25 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Popup;
+import javafx.stage.Screen;
+import javafx.geometry.Rectangle2D;
 import javafx.util.Duration;
 import model.MembershipInvitation;
 import model.User;
@@ -98,6 +106,7 @@ public class MainLayoutController {
     private final ContributionDeadlineService deadlineService = new ContributionDeadlineService();
     private Timeline deadlineMonitor;
     private Scene shortcutScene;
+    private Popup notificationPopup;
 
     /**
      * Inicializa os botões de navegação, ajusta o papel do utilizador (administrador vs regular)
@@ -115,6 +124,19 @@ public class MainLayoutController {
         boolean administrator = SessionContext.getCurrentUser().getUserRole() != null
                 && SessionContext.getCurrentUser().getUserRole().isAdministrator();
         navDashboard.setText(administrator ? "Painel de administração" : "Visão geral");
+        if (administrator) {
+            navGroups.setVisible(false);
+            navGroups.setManaged(false);
+            navHistory.setVisible(false);
+            navHistory.setManaged(false);
+            btnCreateGroup.setVisible(false);
+            btnCreateGroup.setManaged(false);
+            btnNotifications.setVisible(false);
+            btnNotifications.setManaged(false);
+            lblNotificationCount.setVisible(false);
+            lblNotificationCount.setManaged(false);
+            searchField.setPromptText("Pesquisar utilizadores e grupos...");
+        }
         navDashboard.setOnAction(event -> navigate(administrator ? Page.ADMIN : Page.DASHBOARD));
         navGroups.setOnAction(event -> navigate(Page.GROUPS));
         navHistory.setOnAction(event -> navigate(Page.HISTORY));
@@ -123,8 +145,13 @@ public class MainLayoutController {
         btnNotifications.setOnAction(event -> showNotifications());
         btnLogout.setOnAction(event -> logout());
         searchField.setOnAction(event -> {
-            GroupsController groups = navigate(Page.GROUPS);
-            groups.search(searchField.getText());
+            if (administrator) {
+                AdminDashboardController admin = navigate(Page.ADMIN);
+                admin.search(searchField.getText());
+            } else {
+                GroupsController groups = navigate(Page.GROUPS);
+                groups.search(searchField.getText());
+            }
         });
         contentArea.sceneProperty().addListener((observable, oldScene, newScene) ->
                 registerSearchShortcut(newScene));
@@ -193,6 +220,9 @@ public class MainLayoutController {
         User currentUser = SessionContext.getCurrentUser();
         boolean administrator = currentUser.getUserRole() != null
                 && currentUser.getUserRole().isAdministrator();
+        if (administrator) {
+            throw new SecurityException("Administradores não podem criar nem participar em grupos.");
+        }
         if (!currentUser.isVerified() && !administrator) {
             btnCreateGroup.setText("Verificar conta");
             navigate(Page.PROFILE);
@@ -208,8 +238,9 @@ public class MainLayoutController {
             SessionContext.setCurrentUser(refreshedUser);
             boolean administrator = refreshedUser.getUserRole() != null
                     && refreshedUser.getUserRole().isAdministrator();
-            btnCreateGroup.setText(refreshedUser.isVerified() || administrator
-                    ? "Criar grupo" : "Verificar conta");
+            btnCreateGroup.setVisible(!administrator);
+            btnCreateGroup.setManaged(!administrator);
+            btnCreateGroup.setText(refreshedUser.isVerified() ? "Criar grupo" : "Verificar conta");
         }
     }
 
@@ -233,49 +264,175 @@ public class MainLayoutController {
         }
     }
 
-    /**
-     * Exibe sequencialmente em caixas de diálogo os convites de grupos pendentes, permitindo aceitá-los ou recusá-los[cite: 110].
-     */
     private void showNotifications() {
+        if (notificationPopup != null && notificationPopup.isShowing()) {
+            notificationPopup.hide();
+            return;
+        }
+
         try {
             Long userId = SessionContext.getCurrentUser().getId();
-            List<UserNotification> notifications = deadlineService.findUnread(userId);
-            for (UserNotification notification : notifications) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Notificação de contribuição");
-                alert.setHeaderText(notification.getUserGroup().getGroup().getGroupName()
-                        + " · Ciclo " + notification.getCycle().getNumero());
-                alert.setContentText(notification.getMessage());
-                StyledDialogs.showAndWait(alert);
-                deadlineService.markRead(userId, notification.getId());
-            }
+            VBox cards = new VBox(10);
+            cards.getStyleClass().add("notification-list");
 
-            List<MembershipInvitation> invitations = groupService.findPendingInvitations(
-                    userId);
-            if (invitations.isEmpty() && notifications.isEmpty()) {
-                StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
-                        "Não tem notificações nem convites pendentes."));
+            VBox panel = new VBox(12);
+            panel.getStyleClass().add("notification-panel");
+            panel.getStylesheets().add(
+                    getClass().getResource("/view/fxml/app.css").toExternalForm());
+            Label title = new Label("Notificações");
+            title.getStyleClass().add("notification-panel-title");
+            ScrollPane scrollPane = new ScrollPane(cards);
+            scrollPane.setFitToWidth(true);
+            scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            scrollPane.getStyleClass().add("notification-scroll");
+            panel.getChildren().addAll(title, scrollPane);
+
+            notificationPopup = new Popup();
+            notificationPopup.setAutoFix(true);
+            notificationPopup.setAutoHide(true);
+            notificationPopup.setHideOnEscape(true);
+            notificationPopup.getContent().add(panel);
+
+            refreshNotificationCards(cards, userId);
+
+            Bounds buttonBounds = btnNotifications.localToScreen(btnNotifications.getBoundsInLocal());
+            if (buttonBounds == null) {
                 return;
             }
-            for (MembershipInvitation invitation : invitations) {
-                Alert dialog = new Alert(Alert.AlertType.CONFIRMATION);
-                dialog.setTitle("Convite para grupo");
-                dialog.setHeaderText(invitation.getGroup().getGroupName());
-                dialog.setContentText(invitation.getInviter().getFirstName()
-                        + " convidou-o para participar neste grupo.");
-                ButtonType accept = new ButtonType("Aceitar");
-                ButtonType decline = new ButtonType("Recusar");
-                dialog.getButtonTypes().setAll(accept, decline);
-                var response = StyledDialogs.showAndWait(dialog);
-                if (response.isPresent()) {
-                    groupService.respondToInvitation(invitation.getId(),
-                            SessionContext.getCurrentUser().getId(), response.get() == accept);
-                }
-            }
-            refreshNotificationCount();
+            double popupWidth = 380;
+            double x = buttonBounds.getMaxX() - popupWidth;
+            double y = buttonBounds.getMaxY() + 8;
+            Rectangle2D screenBounds = Screen.getScreensForRectangle(
+                    buttonBounds.getMinX(), buttonBounds.getMinY(),
+                    buttonBounds.getWidth(), buttonBounds.getHeight()).stream()
+                    .findFirst().orElse(Screen.getPrimary()).getVisualBounds();
+            x = Math.max(screenBounds.getMinX(),
+                    Math.min(x, screenBounds.getMaxX() - popupWidth));
+            y = Math.max(screenBounds.getMinY(),
+                    Math.min(y, screenBounds.getMaxY() - 460));
+            notificationPopup.show(btnNotifications.getScene().getWindow(), x, y);
         } catch (RuntimeException exception) {
             StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
         }
+    }
+
+    private void refreshNotificationCards(VBox cards, Long userId) {
+        refreshNotificationCount();
+        List<UserNotification> notifications = deadlineService.findUnread(userId);
+        List<MembershipInvitation> invitations = groupService.findPendingInvitations(userId);
+        cards.getChildren().clear();
+
+        for (MembershipInvitation invitation : invitations) {
+            cards.getChildren().add(createInvitationCard(invitation, cards, userId));
+        }
+        for (UserNotification notification : notifications) {
+            cards.getChildren().add(createNotificationCard(notification, cards, userId));
+        }
+        if (cards.getChildren().isEmpty()) {
+            Label empty = new Label("Não tem notificações nem convites pendentes.");
+            empty.getStyleClass().add("notification-empty");
+            empty.setWrapText(true);
+            cards.getChildren().add(empty);
+        }
+    }
+
+    private VBox createInvitationCard(MembershipInvitation invitation, VBox cards, Long userId) {
+        VBox card = createNotificationCardBase();
+        Label type = new Label("Convite para grupo");
+        type.getStyleClass().add("notification-type");
+        Label group = new Label(invitation.getGroup().getGroupName());
+        group.getStyleClass().add("notification-card-title");
+        Label message = new Label(invitation.getInviter().getFirstName()
+                + " convidou-o para participar neste grupo.");
+        message.getStyleClass().add("notification-message");
+        message.setWrapText(true);
+
+        Button accept = new Button("Aceitar");
+        accept.getStyleClass().addAll("btn", "btn-primary", "notification-action");
+        accept.setOnAction(event -> respondToInvitation(invitation, userId, true, cards));
+        Button decline = new Button("Recusar");
+        decline.getStyleClass().addAll("btn", "btn-secondary", "notification-action");
+        decline.setOnAction(event -> respondToInvitation(invitation, userId, false, cards));
+
+        HBox actions = new HBox(8, accept, decline);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+        card.getChildren().addAll(type, group, message, actions);
+        return card;
+    }
+
+    private VBox createNotificationCard(UserNotification notification, VBox cards, Long userId) {
+        VBox card = createNotificationCardBase();
+        Label type = new Label(notificationTitle(notification.getType()));
+        type.getStyleClass().add("notification-type");
+        Label group = new Label(notification.getUserGroup().getGroup().getGroupName()
+                + " · Ciclo " + notification.getCycle().getNumero());
+        group.getStyleClass().add("notification-card-title");
+        Label message = new Label(notification.getMessage());
+        message.getStyleClass().add("notification-message");
+        message.setWrapText(true);
+
+        Button openGroup = new Button(notificationAction(notification.getType()));
+        openGroup.getStyleClass().addAll("btn", "btn-primary", "notification-action");
+        openGroup.setOnAction(event -> handleNotificationAction(notification, userId, true, cards));
+        Button markRead = new Button("Marcar como lida");
+        markRead.getStyleClass().addAll("btn", "btn-secondary", "notification-action");
+        markRead.setOnAction(event -> handleNotificationAction(notification, userId, false, cards));
+
+        HBox actions = new HBox(8, markRead, openGroup);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+        card.getChildren().addAll(type, group, message, actions);
+        return card;
+    }
+
+    private VBox createNotificationCardBase() {
+        VBox card = new VBox(7);
+        card.getStyleClass().add("notification-card");
+        card.setPadding(new Insets(13));
+        return card;
+    }
+
+    private String notificationTitle(String type) {
+        return switch (type) {
+            case "OVERDUE_MEMBER" -> "Contribuição em atraso";
+            case "OVERDUE_LEADER" -> "Contribuição de membro em atraso";
+            case "CYCLE_PAYOUT" -> "Transferência recebida";
+            default -> "Notificação";
+        };
+    }
+
+    private String notificationAction(String type) {
+        return "OVERDUE_MEMBER".equals(type) ? "Pagar contribuição" : "Ver grupo";
+    }
+
+    private void handleNotificationAction(UserNotification notification, Long userId,
+                                          boolean openGroup, VBox cards) {
+        try {
+            if (openGroup) {
+                notificationPopup.hide();
+                Navigator.setSelectedGroupId(notification.getUserGroup().getGroup().getGroupId());
+                navigate(Page.GROUP_DETAIL);
+            } else {
+                deadlineService.markRead(userId, notification.getId());
+                refreshNotificationCards(cards, userId);
+            }
+        } catch (RuntimeException exception) {
+            showNotificationError(exception);
+        }
+    }
+
+    private void respondToInvitation(MembershipInvitation invitation, Long userId,
+                                     boolean accepted, VBox cards) {
+        try {
+            groupService.respondToInvitation(invitation.getId(), userId, accepted);
+            refreshNotificationCards(cards, userId);
+        } catch (RuntimeException exception) {
+            showNotificationError(exception);
+        }
+    }
+
+    private void showNotificationError(RuntimeException exception) {
+        StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
     }
 
     /**

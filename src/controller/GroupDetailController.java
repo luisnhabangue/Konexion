@@ -22,6 +22,8 @@ import model.Group;
 import model.UserGroup;
 import model.enums.ContributionStatus;
 import model.enums.Page;
+import model.enums.PaymentMethod;
+import payment.PaymentResponse;
 import service.GroupService;
 import util.Navigator;
 import util.SessionContext;
@@ -60,6 +62,7 @@ public class GroupDetailController {
     @FXML private Button btnToggleVisibility;
     @FXML private Button btnReorder;
     @FXML private Button btnRegisterPayment;
+    @FXML private Button btnTransferBalance;
     @FXML private Label lblGroupName;
     @FXML private Label lblGroupDescription;
     @FXML private Label lblGroupMembers;
@@ -75,6 +78,7 @@ public class GroupDetailController {
     @FXML private Label lblBeneficiaryInitials;
     @FXML private Label lblPotAmount;
     @FXML private Label lblPotTarget;
+    @FXML private Label lblGroupBalance;
     @FXML private Label lblPayoutDate;
     @FXML private Label lblPaidCount;
     @FXML private Label lblPendingCount;
@@ -84,7 +88,7 @@ public class GroupDetailController {
 
     /**
      * Inicializa a vista obtendo o grupo selecionado na navegação e ajusta a visibilidade dos controlos
-     * conforme as permissões do utilizador (criador, líder de grupo ou administrador).
+     * conforme as permissões do utilizador (criador do grupo ou administrador).
      */
     @FXML
     private void initialize() {
@@ -111,9 +115,7 @@ public class GroupDetailController {
             btnReorderTop.setManaged(manager);
             btnReorder.setVisible(manager);
             btnReorder.setManaged(manager);
-            boolean canManageGroup = owner || SessionContext.getCurrentUser().getUserRole() != null
-                    && (SessionContext.getCurrentUser().getUserRole().isAdministrator()
-                    || SessionContext.getCurrentUser().getUserRole().isGroupLeader());
+            boolean canManageGroup = manager;
             btnDeleteGroup.setVisible(canManageGroup);
             btnDeleteGroup.setManaged(canManageGroup);
             btnToggleVisibility.setVisible(canManageGroup);
@@ -127,6 +129,7 @@ public class GroupDetailController {
             btnDeleteGroup.setOnAction(event -> deleteGroup());
             btnToggleVisibility.setOnAction(event -> toggleVisibility());
             btnRegisterPayment.setOnAction(event -> showPaymentDialog());
+            btnTransferBalance.setOnAction(event -> transferCycleBalance());
             render();
         } catch (RuntimeException e) {
             showError(e.getMessage());
@@ -138,6 +141,7 @@ public class GroupDetailController {
      * Atualiza todas as informações apresentadas no ecrã de detalhe do grupo.
      */
     private void render() {
+        group = groupService.findByIdForUser(group.getGroupId(), SessionContext.getCurrentUser().getId());
         List<UserGroup> members = groupService.findMembers(group.getGroupId());
         List<Cycle> cycles = groupService.findCycles(group.getGroupId());
         currentCycle = groupService.findActiveCycle(group.getGroupId());
@@ -174,9 +178,7 @@ public class GroupDetailController {
             String status = member.isReceived() ? "Já recebeu" : isBeneficiary(member) ? "Nesta rodada" : "Aguardando";
             String badgeStyle = member.isReceived() ? "badge-success" : isBeneficiary(member) ? "badge-brand" : "badge-neutral";
             row.getChildren().addAll(order, avatar, identity, styled(status, "badge", badgeStyle));
-            if ((manager || SessionContext.getCurrentUser().getUserRole() != null
-                    && SessionContext.getCurrentUser().getUserRole().isGroupLeader())
-                    && !member.getUser().getId().equals(SessionContext.getCurrentUser().getId())
+            if (manager && !member.getUser().getId().equals(SessionContext.getCurrentUser().getId())
                     && groupService.findCycles(group.getGroupId()).isEmpty()) {
                 Button remove = new Button("Remover");
                 remove.setOnAction(event -> removeMember(member));
@@ -223,6 +225,11 @@ public class GroupDetailController {
                 : displayedCycle.getBeneficiary().getUserReceivingOrder() + "ª posição na fila");
         lblPotAmount.setText(UiFormatting.money(total));
         lblPotTarget.setText(" de " + UiFormatting.money(target));
+        BigDecimal groupBalance = groupService.getGroupBalance(group.getGroupId());
+        lblGroupBalance.setText(UiFormatting.money(groupBalance));
+        boolean canTransfer = manager && displayedCycle != null && groupBalance.signum() > 0;
+        btnTransferBalance.setVisible(canTransfer);
+        btnTransferBalance.setManaged(canTransfer);
         lblPayoutDate.setText(displayedCycle == null ? "—" : UiFormatting.date(displayedCycle.getEndDate()));
         lblCountdown.setText(displayedCycle == null ? "—" : currentCycle == null
                 ? "Ciclo encerrado" : countdown(displayedCycle.getEndDate()));
@@ -230,6 +237,48 @@ public class GroupDetailController {
         lblPaidCount.setText(paid + " de " + members.size() + " membros contribuíram");
         lblPendingCount.setText((members.size() - paid) + " pendentes");
         renderContributions(members, contributions);
+    }
+
+    private void transferCycleBalance() {
+        List<Cycle> cycles = currentCycle == null ? groupService.findCycles(group.getGroupId()) : List.of();
+        Cycle payoutCycle = currentCycle != null ? currentCycle
+                : cycles.isEmpty() ? null : cycles.get(cycles.size() - 1);
+        if (payoutCycle == null) {
+            showError("Abra um ciclo antes de transferir o saldo.");
+            return;
+        }
+
+        UserGroup beneficiary = payoutCycle.getBeneficiary();
+        String beneficiaryPhone = beneficiary.getUser().getPhoneNumber();
+        ChoiceDialog<String> methodDialog = new ChoiceDialog<>("M-Pesa", List.of("M-Pesa", "E-Mola"));
+        methodDialog.setTitle("Transferir saldo do ciclo");
+        methodDialog.setHeaderText("Beneficiário: " + UiFormatting.fullName(beneficiary.getUser()));
+        methodDialog.setContentText("Método de pagamento:");
+        StyledDialogs.showAndWait(methodDialog).ifPresent(methodName -> {
+            TextInputDialog accountDialog = new TextInputDialog(beneficiaryPhone == null ? "" : beneficiaryPhone);
+            accountDialog.setTitle("Número do beneficiário");
+            accountDialog.setHeaderText("O saldo será enviado para o beneficiário do ciclo.");
+            accountDialog.setContentText("Número M-Pesa/E-Mola:");
+            StyledDialogs.showAndWait(accountDialog).ifPresent(account -> {
+                try {
+                    PaymentMethod method = "M-Pesa".equals(methodName)
+                            ? PaymentMethod.MPESA : PaymentMethod.EMOLA;
+                    PaymentResponse response = groupService.transferCycleBalanceToBeneficiary(
+                            group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                            payoutCycle.getId(), method, account);
+                    if (response.success()) {
+                        StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
+                                "Transferência concluída para " + UiFormatting.fullName(beneficiary.getUser())
+                                        + ". " + response.message()));
+                        render();
+                    } else {
+                        showError("Não foi possível transferir o saldo: " + response.message());
+                    }
+                } catch (RuntimeException exception) {
+                    showError(exception.getMessage());
+                }
+            });
+        });
     }
 
     /**

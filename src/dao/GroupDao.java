@@ -99,8 +99,9 @@ public class GroupDao implements GroupDaoInterface {
             return new ArrayList<>(entityManager.createQuery(
                             "SELECT DISTINCT g FROM Group g " +
                                     "LEFT JOIN FETCH g.members m LEFT JOIN FETCH m.user " +
-                                    "WHERE g.createdBy.id = :userId OR EXISTS " +
-                                    "(SELECT ug.id FROM UserGroup ug WHERE ug.group = g AND ug.user.id = :userId) " +
+                                    "WHERE (g.createdBy.id = :userId OR EXISTS " +
+                                    "(SELECT ug.id FROM UserGroup ug WHERE ug.group = g AND ug.user.id = :userId)) " +
+                                    "AND g.archived = false " +
                                     "ORDER BY g.createdAt DESC",
                             Group.class
                     ).setParameter("userId", userId).getResultList());

@@ -1,88 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true"
-            fx:controller="controller.AdminDashboardController">
-    <VBox styleClass="page" spacing="18">
+<ScrollPane fitToWidth="true" styleClass="page-scroll" stylesheets="@app.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminDashboardController">
+    <VBox spacing="18" styleClass="page">
         <VBox spacing="5">
-            <Label text="Painel de administração" styleClass="page-title"/>
-            <Label text="Indicadores do sistema, validação KYC e moderação de denúncias." styleClass="page-sub"/>
+            <Label styleClass="page-title" text="Painel de administração" />
+            <Label styleClass="page-sub" text="Saúde global da plataforma, utilizadores, grupos e relatórios consolidados." />
         </VBox>
         <GridPane hgap="12" vgap="12">
             <columnConstraints>
-                <ColumnConstraints percentWidth="33.33"/>
-                <ColumnConstraints percentWidth="33.33"/>
-                <ColumnConstraints percentWidth="33.34"/>
+                <ColumnConstraints percentWidth="25" />
+                <ColumnConstraints percentWidth="25" />
+                <ColumnConstraints percentWidth="25" />
+                <ColumnConstraints percentWidth="25" />
             </columnConstraints>
-            <VBox styleClass="card, admin-metric" spacing="5" GridPane.columnIndex="0">
-                <Label text="UTILIZADORES" styleClass="cell-label"/>
-                <Label fx:id="lblUsers" text="0" styleClass="metric-value"/>
-                <Label fx:id="lblVerified" text="0 verificados" styleClass="section-sub"/>
+            <VBox spacing="5" styleClass="card, admin-metric" GridPane.columnIndex="0">
+                <Label styleClass="cell-label" text="UTILIZADORES" />
+                <Label fx:id="lblUsers" styleClass="metric-value" text="0" />
+                <Label fx:id="lblVerified" styleClass="section-sub" text="0 verificados" />
             </VBox>
-            <VBox styleClass="card, admin-metric" spacing="5" GridPane.columnIndex="1">
-                <Label text="GRUPOS" styleClass="cell-label"/>
-                <Label fx:id="lblGroups" text="0" styleClass="metric-value"/>
-                <Label fx:id="lblContributed" text="0 MT" styleClass="section-sub"/>
+            <VBox spacing="5" styleClass="card, admin-metric" GridPane.columnIndex="1">
+                <Label styleClass="cell-label" text="GRUPOS ACTIVOS" />
+                <Label fx:id="lblGroups" styleClass="metric-value" text="0" />
+                <Label styleClass="section-sub" text="Não arquivados" />
             </VBox>
-            <VBox styleClass="card, admin-metric" spacing="5" GridPane.columnIndex="2">
-                <Label text="PAGAMENTOS / DENÚNCIAS" styleClass="cell-label"/>
-                <Label fx:id="lblPaid" text="0" styleClass="metric-value"/>
-                <Label fx:id="lblReports" text="0 denúncias abertas" styleClass="section-sub"/>
+            <VBox spacing="5" styleClass="card, admin-metric" GridPane.columnIndex="2">
+                <Label styleClass="cell-label" text="TOTAL ARRECADADO" />
+                <Label fx:id="lblContributed" styleClass="metric-value" text="0 MT" />
+                <Label fx:id="lblPaid" styleClass="section-sub" text="0 pagamentos confirmados" />
             </VBox>
+            <VBox spacing="5" styleClass="card, admin-metric" GridPane.columnIndex="3">
+                <Label styleClass="cell-label" text="VALOR EM RISCO" />
+                <Label fx:id="lblAtRisk" styleClass="metric-value" text="0 MT" />
+                <Label fx:id="lblRiskDetail" styleClass="section-sub" text="0 MT pendentes · 0 MT atrasados" />
+                <Label fx:id="lblReports" styleClass="section-sub" text="0 denúncias abertas" />
+            </VBox>
+         <rowConstraints>
+            <RowConstraints />
+         </rowConstraints>
         </GridPane>
         <HBox spacing="14">
-            <VBox styleClass="card, admin-chart" spacing="8" HBox.hgrow="ALWAYS">
-                <Label text="Estado de verificação dos utilizadores" styleClass="section-title"/>
-                <PieChart fx:id="verificationChart" prefHeight="250" legendVisible="true"/>
+            <VBox spacing="8" styleClass="card, admin-chart" HBox.hgrow="ALWAYS">
+                <Label styleClass="section-title" text="Arrecadação mensal da plataforma" />
+                <LineChart fx:id="financeChart" animated="false" legendVisible="false" prefHeight="250" styleClass="savings-chart">
+                    <xAxis><CategoryAxis label="Mês" tickLabelsVisible="true" tickMarkVisible="true" /></xAxis>
+                    <yAxis><NumberAxis fx:id="financeAmountAxis" forceZeroInRange="true" label="Montante (MT)" tickLabelsVisible="true" tickMarkVisible="true" /></yAxis>
+                </LineChart>
             </VBox>
-            <VBox styleClass="card, admin-chart" spacing="8" HBox.hgrow="ALWAYS">
-                <Label text="Resumo do sistema" styleClass="section-title"/>
-                <BarChart fx:id="activityChart" prefHeight="250" animated="false">
-                    <xAxis><CategoryAxis label="Categoria"/></xAxis>
-                    <yAxis><NumberAxis label="Total" forceZeroInRange="true"/></yAxis>
-                </BarChart>
+            <VBox spacing="8" styleClass="card, admin-chart" HBox.hgrow="ALWAYS">
+                <Label styleClass="section-title" text="Estado dos utilizadores" />
+                <PieChart fx:id="verificationChart" legendVisible="true" prefHeight="250" />
             </VBox>
         </HBox>
-        <VBox styleClass="card, admin-section" spacing="10">
-            <Label text="Verificações KYC pendentes" styleClass="section-title"/>
-            <VBox fx:id="kycRows" spacing="8"/>
+        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card, admin-section">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label styleClass="section-title" text="Relatório financeiro consolidado" />
+                <Label styleClass="section-sub" text="Exportar contribuições de todos os grupos num período." />
+            </VBox>
+            <DatePicker fx:id="reportFrom" promptText="Desde" />
+            <DatePicker fx:id="reportTo" promptText="Até" />
+            <Button fx:id="btnExportCsv" styleClass="btn, btn-primary" text="Exportar CSV" />
+            <Button fx:id="btnExportPdf" styleClass="btn, btn-secondary" text="Exportar PDF" />
+        </HBox>
+        <VBox spacing="10" styleClass="card, admin-section">
+            <Label styleClass="section-title" text="Regras globais e notificações" />
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Penalização por atraso (pontos)" />
+                <TextField fx:id="penaltyPointsField" prefWidth="72" promptText="10" />
+                <Label text="Lembrete (dias antes)" />
+                <TextField fx:id="reminderDaysField" prefWidth="72" promptText="1" />
+                <CheckBox fx:id="remindersEnabledCheck" text="Lembretes de prazo" />
+                <CheckBox fx:id="overdueNotificationsCheck" text="Aviso de atraso ao gestor" />
+                <CheckBox fx:id="latePaymentNotificationsCheck" text="Aviso de pagamento tardio" />
+                <Button fx:id="btnSaveSettings" styleClass="btn, btn-primary" text="Guardar regras" />
+            </HBox>
+            <Label styleClass="section-sub" text="A penalização aceita 0–100 pontos; o lembrete aceita 0–30 dias." />
         </VBox>
-        <VBox styleClass="card, admin-section" spacing="10">
-            <Label text="Pedidos para chefe de grupo" styleClass="section-title"/>
-            <VBox fx:id="leadershipRows" spacing="8"/>
+        <HBox spacing="14">
+            <VBox spacing="8" styleClass="card, admin-chart" HBox.hgrow="ALWAYS">
+                <Label styleClass="section-title" text="Visão de actividade" />
+                <BarChart fx:id="activityChart" animated="false" prefHeight="230">
+                    <xAxis><CategoryAxis label="Categoria" /></xAxis>
+                    <yAxis><NumberAxis forceZeroInRange="true" label="Total" /></yAxis>
+                </BarChart>
+            </VBox>
+            <VBox spacing="8" styleClass="card, admin-chart" HBox.hgrow="ALWAYS">
+                <Label styleClass="section-title" text="Membros com mais atrasos (todos os grupos)" />
+                <VBox fx:id="lateMemberRows" spacing="8" />
+            </VBox>
+        </HBox>
+        <VBox spacing="10" styleClass="card, admin-section">
+            <Label styleClass="section-title" text="Verificações KYC pendentes" />
+            <VBox fx:id="kycRows" spacing="8" />
         </VBox>
-        <VBox styleClass="card, admin-section" spacing="10">
-            <Label text="Denúncias de utilizadores" styleClass="section-title"/>
-            <VBox fx:id="reportRows" spacing="8"/>
+        <VBox spacing="10" styleClass="card, admin-section">
+            <Label styleClass="section-title" text="Denúncias de utilizadores" />
+            <VBox fx:id="reportRows" spacing="8" />
         </VBox>
-        <VBox styleClass="card, admin-section" spacing="10">
-            <Label text="Gestão de utilizadores" styleClass="section-title"/>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED"
-                        pannable="true" styleClass="table-scroll" vbarPolicy="NEVER">
-                <VBox minWidth="920.0">
+        <VBox spacing="10" styleClass="card, admin-section">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label styleClass="section-title" text="Utilizadores da plataforma" />
+                <TextField fx:id="userSearchField" promptText="Pesquisar nome ou utilizador..." HBox.hgrow="ALWAYS" />
+            </HBox>
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" pannable="true" styleClass="table-scroll" vbarPolicy="NEVER">
+                <VBox minWidth="1420.0">
                     <HBox alignment="CENTER_LEFT" styleClass="t-head">
-                        <Label maxWidth="Infinity" styleClass="t-th" text="UTILIZADOR" HBox.hgrow="ALWAYS"/>
-                        <Label styleClass="t-th, admin-user-role" text="PERFIL"/>
-                        <Label styleClass="t-th, admin-user-state" text="ESTADO"/>
-                        <Label styleClass="t-th, admin-user-stat" text="STRIKES"/>
-                        <Label styleClass="t-th, admin-user-stat" text="PONTOS"/>
-                        <Label styleClass="t-th, admin-user-actions" text="AÇÕES"/>
+                        <Label maxWidth="Infinity" styleClass="t-th" text="UTILIZADOR" HBox.hgrow="ALWAYS" />
+                        <Label styleClass="t-th, admin-user-role" text="PERFIL" />
+                        <Label styleClass="t-th, admin-user-state" text="ESTADO" />
+                        <Label styleClass="t-th, admin-user-stat" text="STRIKES" />
+                        <Label styleClass="t-th, admin-user-stat" text="PONTOS" />
+                        <Label styleClass="t-th, admin-user-actions" text="ACÇÕES" />
                     </HBox>
-                    <VBox fx:id="userRows"/>
+                    <VBox fx:id="userRows" />
                 </VBox>
             </ScrollPane>
+        </VBox>
+        <VBox spacing="10" styleClass="card, admin-section">
+            <Label styleClass="section-title" text="Grupos da plataforma" />
+            <Label styleClass="section-sub" text="Consulta administrativa" />
+            <VBox fx:id="groupRows" spacing="8" />
         </VBox>
     </VBox>
 </ScrollPane>

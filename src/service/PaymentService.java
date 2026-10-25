@@ -1,9 +1,14 @@
 package service;
 
 import dao.PaymentTransactionDao;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import model.Cycle;
 import model.Group;
 import model.PaymentTransaction;
+import model.User;
+import model.UserGroup;
+import model.UserNotification;
 import model.enums.PaymentMethod;
 import payment.PaymentGatewayRegistry;
 import payment.PaymentRequest;
@@ -40,6 +45,8 @@ public class PaymentService {
     /** DAO de transações financeiras[cite: 119]. */
     private final PaymentTransactionDao transactionDao =
             new PaymentTransactionDao(EntityManagerFactoryUtil.getEntityManagerFactory());
+
+    private final EntityManagerFactory entityManagerFactory = EntityManagerFactoryUtil.getEntityManagerFactory();
 
     /**
      * Efetua o pagamento de uma contribuição através do método pretendido (M-Pesa, E-Mola, Numerário)[cite: 119].
@@ -119,5 +126,111 @@ public class PaymentService {
             }
         }
         return resp;
+    }
+
+    public PaymentResponse payCyclePayout(Long groupId, Integer cycleId, PaymentMethod method, String account) {
+        if (groupId == null || cycleId == null || method == null) {
+            throw new IllegalArgumentException("Grupo, ciclo e método de pagamento são obrigatórios.");
+        }
+
+        Group group = groupService.findById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
+        }
+
+        Cycle cycle = groupService.findCycles(groupId).stream()
+                .filter(c -> c.getId() != null && c.getId().equals(cycleId))
+                .findFirst()
+                .orElse(null);
+        if (cycle == null) {
+            throw new IllegalArgumentException("Ciclo não encontrado para o grupo informado.");
+        }
+
+        UserGroup beneficiaryGroup = cycle.getBeneficiary();
+        if (beneficiaryGroup == null || beneficiaryGroup.getUser() == null) {
+            throw new IllegalStateException("Não foi definido um beneficiário para este ciclo.");
+        }
+
+        User beneficiary = beneficiaryGroup.getUser();
+        String recipientAccount = account == null || account.isBlank()
+                ? beneficiary.getPhoneNumber()
+                : account;
+        if (recipientAccount == null || recipientAccount.isBlank()) {
+            throw new IllegalArgumentException("É obrigatório indicar o número do beneficiário para transferir o saldo do ciclo.");
+        }
+
+        BigDecimal availableBalance = group.getGroupBalance() == null ? BigDecimal.ZERO : group.getGroupBalance();
+        if (availableBalance.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("O grupo não tem saldo disponível para transferir ao beneficiário.");
+        }
+
+        String cleanAccount = normalizeAccount(recipientAccount);
+        String transactionReference = "CYCLE-PAYOUT-" + groupId + "-" + cycleId + "-" + beneficiary.getId();
+        PaymentRequest request = new PaymentRequest(
+                cleanAccount,
+                availableBalance,
+                transactionReference,
+                "Transferência de saldo do ciclo " + cycle.getNumero() + " para " + beneficiary.getFirstName() + " " + beneficiary.getLastName()
+        );
+
+        PaymentResponse resp = registry.get(method).charge(request);
+        PaymentTransaction t = new PaymentTransaction();
+        t.setGroupId(groupId);
+        t.setUserId(beneficiary.getId());
+        t.setCycleId(cycleId);
+        t.setMethod(method);
+        t.setAccount(cleanAccount);
+        t.setAmount(availableBalance);
+        t.setStatus(resp.success() ? "SUCCESS" : "FAILED");
+        t.setTransactionRef(resp.transactionRef());
+        t.setProviderCode(resp.providerCode());
+        t.setMessage(resp.message());
+        transactionDao.save(t);
+
+        if (resp.success()) {
+            group.setGroupBalance(BigDecimal.ZERO);
+            groupService.updateGroupBalance(groupId, BigDecimal.ZERO);
+            persistPayoutNotification(beneficiary, cycle, beneficiaryGroup, availableBalance, method);
+        }
+
+        return resp;
+    }
+
+    public PaymentResponse payBeneficiary(Long groupId, Integer cycleId, PaymentMethod method, String account) {
+        return payCyclePayout(groupId, cycleId, method, account);
+    }
+
+    public PaymentResponse transferGroupBalance(Long groupId, Integer cycleId, PaymentMethod method, String account) {
+        return payCyclePayout(groupId, cycleId, method, account);
+    }
+
+    private String normalizeAccount(String account) {
+        String cleaned = account == null ? null : account.replaceAll("\\s+", "").replaceFirst("^\\+258", "");
+        return cleaned == null || cleaned.isBlank() ? null : cleaned;
+    }
+
+    private void persistPayoutNotification(User beneficiary, Cycle cycle, UserGroup beneficiaryGroup,
+                                          BigDecimal amount, PaymentMethod method) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            String message = "O saldo do ciclo " + cycle.getNumero() + " foi transferido com sucesso para si. " +
+                    "Recebeu " + amount + " via " + method + ". Já recebeu o seu bolo.";
+            UserNotification notification = new UserNotification();
+            notification.setRecipient(beneficiary);
+            notification.setCycle(cycle);
+            notification.setUserGroup(beneficiaryGroup);
+            notification.setType("CYCLE_PAYOUT");
+            notification.setMessage(message);
+            em.getTransaction().begin();
+            em.persist(notification);
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 }

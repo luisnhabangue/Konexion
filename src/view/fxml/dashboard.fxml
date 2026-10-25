@@ -2,6 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
@@ -88,6 +91,22 @@
                 </StackPane>
             </StackPane>
         </GridPane>
+
+        <VBox styleClass="card, admin-chart" spacing="8">
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <VBox spacing="4">
+                    <Label text="Evolução das minhas poupanças" styleClass="section-title"/>
+                    <Label text="Total acumulado das contribuições pagas nos últimos seis meses"
+                           styleClass="section-sub"/>
+                </VBox>
+            </HBox>
+            <LineChart fx:id="savingsChart" animated="false" createSymbols="true" prefHeight="260"
+                       legendVisible="false" styleClass="savings-chart">
+                <xAxis><CategoryAxis label="Mês" tickLabelsVisible="true" tickMarkVisible="true"/></xAxis>
+                <yAxis><NumberAxis fx:id="savingsAmountAxis" label="Poupança acumulada (MT)"
+                                   forceZeroInRange="true" tickLabelsVisible="true" tickMarkVisible="true"/></yAxis>
+            </LineChart>
+        </VBox>
 
         <!-- Cabeçalho da secção de grupos -->
         <HBox styleClass="section-heading" alignment="CENTER_LEFT">
