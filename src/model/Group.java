@@ -38,6 +38,10 @@ public class Group {
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal amountPerUser;
 
+    /** Saldo total disponível do grupo para transferência ao beneficiário do ciclo atual. */
+    @Column(name = "group_balance", nullable = false, precision = 15, scale = 2)
+    private BigDecimal groupBalance = BigDecimal.ZERO;
+
     /** Dia do mês limite para efetuar o pagamento. */
     @Column(name = "payday", nullable = false)
     private Integer payday;
@@ -56,6 +60,9 @@ public class Group {
 
     @Column(name = "is_private", nullable = false)
     private boolean privateGroup = true;
+
+    @Column(nullable = false)
+    private boolean archived;
 
     /** Membros pertencentes a este grupo. */
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -142,6 +149,14 @@ public class Group {
     public BigDecimal getAmountPerUser() { return amountPerUser; }
     public void setAmountPerUser(BigDecimal amountPerUser) { this.amountPerUser = amountPerUser; }
 
+    public BigDecimal getGroupBalance() { return groupBalance; }
+    public void setGroupBalance(BigDecimal groupBalance) {
+        this.groupBalance = groupBalance == null ? BigDecimal.ZERO : groupBalance;
+    }
+
+    public BigDecimal getBalance() { return getGroupBalance(); }
+    public void setBalance(BigDecimal balance) { setGroupBalance(balance); }
+
     public Integer getPayday() { return payday; }
     public void setPayday(Integer payday) { this.payday = payday; }
 
@@ -156,6 +171,9 @@ public class Group {
 
     public boolean isPrivateGroup() { return privateGroup; }
     public void setPrivateGroup(boolean privateGroup) { this.privateGroup = privateGroup; }
+
+    public boolean isArchived() { return archived; }
+    public void setArchived(boolean archived) { this.archived = archived; }
 
     public List<UserGroup> getMembers() { return members; }
     public void setMembers(List<UserGroup> members) { this.members = members; }

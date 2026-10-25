@@ -6,6 +6,7 @@ import jakarta.persistence.EntityTransaction;
 import model.Contribution;
 import model.Cycle;
 import model.Group;
+import model.PlatformSettings;
 import model.User;
 import model.UserGroup;
 import model.UserNotification;
@@ -39,8 +40,12 @@ public class ContributionDeadlineService {
                             Cycle.class)
                     .getResultList();
             LocalDate today = LocalDate.now();
+            PlatformSettings settings = em.find(PlatformSettings.class, 1);
+            if (settings == null) {
+                settings = new PlatformSettings();
+            }
             for (Cycle cycle : cycles) {
-                processCycle(cycle.getId(), today);
+                processCycle(cycle.getId(), today, settings);
             }
         } finally {
             em.close();
@@ -101,7 +106,7 @@ public class ContributionDeadlineService {
         }
     }
 
-    private void processCycle(Integer cycleId, LocalDate today) {
+    private void processCycle(Integer cycleId, LocalDate today, PlatformSettings settings) {
         EntityManager em = factory.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
@@ -114,7 +119,7 @@ public class ContributionDeadlineService {
                     .getSingleResult();
             Group group = cycle.getGroup();
             LocalDate dueDate = paymentDueDate(group, cycle);
-            LocalDate reminderDate = dueDate.minusDays(1);
+            LocalDate reminderDate = dueDate.minusDays(settings.getReminderDaysBefore());
             Set<Long> paidMemberIds = new HashSet<>(em.createQuery(
                             "SELECT c.userGroup.id FROM Contribution c WHERE c.cycle.id = :cycleId " +
                                     "AND c.status = :status",
@@ -135,9 +140,10 @@ public class ContributionDeadlineService {
                             .getResultStream().findFirst().orElse(null);
                     if (contribution != null && contribution.getPaymentDate() != null
                             && contribution.getPaymentDate().isAfter(dueDate)) {
-                        applyPenalty(em, cycle, member, false);
+                        applyPenalty(em, cycle, member, false, settings);
                         User leader = group.getCreatedBy();
-                        if (!leader.getId().equals(member.getUser().getId())
+                        if (settings.isLatePaymentNotificationsEnabled()
+                                && !leader.getId().equals(member.getUser().getId())
                                 && !hasNotification(em, leader.getId(), cycleId, member.getId(),
                                 OVERDUE_LEADER)
                                 && !hasNotification(em, leader.getId(), cycleId, member.getId(),
@@ -150,11 +156,14 @@ public class ContributionDeadlineService {
                     continue;
                 }
 
-                if (active && !today.isBefore(reminderDate) && !today.isAfter(dueDate)) {
-                    notifyUpcomingDeadline(em, cycle, member, dueDate);
+                if (settings.isRemindersEnabled() && active
+                        && !today.isBefore(reminderDate) && !today.isAfter(dueDate)) {
+                    notifyUpcomingDeadline(em, cycle, member, dueDate, settings);
                 } else if (today.isAfter(dueDate)) {
-                    applyPenalty(em, cycle, member, true);
-                    notifyLeaderOverdue(em, cycle, member, dueDate);
+                    applyPenalty(em, cycle, member, true, settings);
+                    if (settings.isOverdueNotificationsEnabled()) {
+                        notifyLeaderOverdue(em, cycle, member, dueDate, settings);
+                    }
                 }
             }
             transaction.commit();
@@ -168,15 +177,19 @@ public class ContributionDeadlineService {
         }
     }
 
-    private void notifyUpcomingDeadline(EntityManager em, Cycle cycle, UserGroup member, LocalDate dueDate) {
+    private void notifyUpcomingDeadline(EntityManager em, Cycle cycle, UserGroup member, LocalDate dueDate,
+                                        PlatformSettings settings) {
         Integer cycleId = cycle.getId();
         Long memberId = member.getId();
         User user = member.getUser();
         if (!hasNotification(em, user.getId(), cycleId, memberId, REMINDER_MEMBER)) {
+            String penaltyWarning = settings.getLatePenaltyPoints() > 0
+                    ? " para evitar a perda de " + settings.getLatePenaltyPoints() + " pontos."
+                    : " para evitar ficar em atraso.";
             createNotification(em, user, cycle, member, REMINDER_MEMBER,
                     "A contribuição de " + member.getGroup().getGroupName() + " no ciclo "
-                            + cycle.getNumero() + " vence em " + dueDate + ". Pague até essa data para evitar "
-                            + "a perda de " + LATE_PENALTY_POINTS + " pontos.");
+                            + cycle.getNumero() + " vence em " + dueDate + ". Pague até essa data"
+                            + penaltyWarning);
         }
         User leader = cycle.getGroup().getCreatedBy();
         if (!leader.getId().equals(user.getId())
@@ -188,18 +201,20 @@ public class ContributionDeadlineService {
         }
     }
 
-    private void notifyLeaderOverdue(EntityManager em, Cycle cycle, UserGroup member, LocalDate dueDate) {
+    private void notifyLeaderOverdue(EntityManager em, Cycle cycle, UserGroup member, LocalDate dueDate,
+                                     PlatformSettings settings) {
         User leader = cycle.getGroup().getCreatedBy();
         if (!leader.getId().equals(member.getUser().getId())
                 && !hasNotification(em, leader.getId(), cycle.getId(), member.getId(), OVERDUE_LEADER)) {
             createNotification(em, leader, cycle, member, OVERDUE_LEADER,
                     memberName(member) + " não pagou a contribuição de "
-                            + member.getGroup().getGroupName() + " até " + dueDate
-                            + ". Foram descontados " + LATE_PENALTY_POINTS + " pontos.");
+                            + member.getGroup().getGroupName() + " até " + dueDate + ". "
+                            + penaltySummary(settings.getLatePenaltyPoints()));
         }
     }
 
-    private void applyPenalty(EntityManager em, Cycle cycle, UserGroup member, boolean overdue) {
+    private void applyPenalty(EntityManager em, Cycle cycle, UserGroup member, boolean overdue,
+                              PlatformSettings settings) {
         Long userId = member.getUser().getId();
         if (hasNotification(em, userId, cycle.getId(), member.getId(), OVERDUE_MEMBER)) {
             return;
@@ -207,14 +222,14 @@ public class ContributionDeadlineService {
         UserNotification penalty = notification(em, member.getUser(), cycle, member, OVERDUE_MEMBER,
                 overdue
                         ? "O prazo da contribuição de " + member.getGroup().getGroupName() + " no ciclo "
-                        + cycle.getNumero() + " expirou sem pagamento. Foram descontados "
-                        + LATE_PENALTY_POINTS + " pontos."
+                                + cycle.getNumero() + " expirou sem pagamento. "
+                                + penaltySummary(settings.getLatePenaltyPoints())
                         : "A contribuição de " + member.getGroup().getGroupName() + " no ciclo "
-                        + cycle.getNumero() + " foi paga depois do prazo. Foram descontados "
-                        + LATE_PENALTY_POINTS + " pontos.");
+                                + cycle.getNumero() + " foi paga depois do prazo. "
+                                + penaltySummary(settings.getLatePenaltyPoints()));
         em.persist(penalty);
         member.getUser().setPunctualityPoints(
-                member.getUser().getPunctualityPoints() - LATE_PENALTY_POINTS);
+                member.getUser().getPunctualityPoints() - settings.getLatePenaltyPoints());
     }
 
     private boolean hasNotification(EntityManager em, Long recipientId, Integer cycleId,
@@ -248,6 +263,12 @@ public class ContributionDeadlineService {
 
     private String memberName(UserGroup member) {
         return member.getUser().getFirstName() + " " + member.getUser().getLastName();
+    }
+
+    private String penaltySummary(int penaltyPoints) {
+        return penaltyPoints > 0
+                ? "Foram descontados " + penaltyPoints + " pontos."
+                : "Não há penalização activa.";
     }
 
     public static LocalDate paymentDueDate(Group group, Cycle cycle) {

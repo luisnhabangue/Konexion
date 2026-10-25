@@ -9,17 +9,17 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * Registo central responsável por gerir e fornecer as instâncias de {@link PaymentGateway}[cite: 2].
+ * Registo central responsável por gerir e fornecer as instâncias de {@link PaymentGateway}.
  *
- * @since 1.0[cite: 2]
+ * @since 1.0
  */
 public class PaymentGatewayRegistry {
 
-    /** Mapa que associa cada método de pagamento à sua respetiva implementação de gateway[cite: 2]. */
+    /** Mapa que associa cada método de pagamento à sua respetiva implementação de gateway */
     private final Map<PaymentMethod, PaymentGateway> gateways = new EnumMap<>(PaymentMethod.class);
 
     /**
-     * Cria o registo e inicializa por omissão os gateways simulados de M-Pesa, e-Mola e BIM[cite: 2].
+     * Cria o registo e inicializa por omissão os gateways simulados de M-Pesa, e-Mola e BIM.
      */
     public PaymentGatewayRegistry() {
         register(new MpesaSimulatedGateway());
@@ -28,20 +28,20 @@ public class PaymentGatewayRegistry {
     }
 
     /**
-     * Regista uma nova implementação de gateway de pagamento[cite: 2].
+     * Regista uma nova implementação de gateway de pagamento.
      *
-     * @param gateway O gateway a ser registado[cite: 2].
+     * @param gateway O gateway a ser registado.
      */
     public void register(PaymentGateway gateway) {
         gateways.put(gateway.method(), gateway);
     }
 
     /**
-     * Obtém o gateway associado ao método de pagamento especificado[cite: 2].
+     * Obtém o gateway associado ao método de pagamento especificado.
      *
-     * @param method O método de pagamento pretendido[cite: 2].
-     * @return A instância de {@link PaymentGateway} correspondente[cite: 2].
-     * @throws IllegalArgumentException Se não existir nenhum gateway registado para o método[cite: 2].
+     * @param method O método de pagamento pretendido.
+     * @return A instância de {@link PaymentGateway} correspondente.
+     * @throws IllegalArgumentException Se não existir nenhum gateway registado para o método.
      */
     public PaymentGateway get(PaymentMethod method) {
         PaymentGateway gateway = gateways.get(method);

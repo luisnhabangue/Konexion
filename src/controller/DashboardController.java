@@ -4,10 +4,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.geometry.Pos;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.converter.NumberStringConverter;
 import model.Contribution;
 import model.Cycle;
 import model.Group;
@@ -19,7 +23,12 @@ import util.UiFormatting;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Controlador JavaFX da vista principal (Dashboard/Visão Geral) do utilizador.
@@ -42,6 +51,8 @@ public class DashboardController {
     @FXML private Label lblActiveGroups;
     @FXML private Button btnSeeAllGroups;
     @FXML private Button btnSeeAllActivity;
+    @FXML private LineChart<String, Number> savingsChart;
+    @FXML private NumberAxis savingsAmountAxis;
     @FXML private VBox cardGroup1;
     @FXML private HBox activityList;
 
@@ -55,12 +66,16 @@ public class DashboardController {
         lblToday.setText("Resumo dos seus Xitiques para " + UiFormatting.date(LocalDate.now()) + ".");
         btnSeeAllGroups.setOnAction(event -> Navigator.go(Page.GROUPS));
         btnSeeAllActivity.setOnAction(event -> Navigator.go(Page.HISTORY));
+        savingsAmountAxis.setTickLabelFormatter(
+                new NumberStringConverter(Locale.forLanguageTag("pt-MZ"), "#,##0 'MT'"));
 
         List<Group> groups = groupService.findAllForUser(user.getId());
-        BigDecimal invested = groupService.findContributionsForUser(user.getId()).stream()
+        List<Contribution> contributions = groupService.findContributionsForUser(user.getId());
+        BigDecimal invested = contributions.stream()
                 .filter(contribution -> contribution.getStatus() == model.enums.ContributionStatus.PAID)
                 .map(Contribution::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         lblTotalInvested.setText(UiFormatting.money(invested));
+        renderSavingsChart(contributions);
         lblActiveGroups.setText(groups.size() + (groups.size() == 1 ? " grupo" : " grupos"));
         BigDecimal expectedPayout = groups.stream()
                 .filter(group -> {
@@ -91,7 +106,39 @@ public class DashboardController {
             empty.getStyleClass().add("section-sub");
             cards.add(empty, 0, 0, 3, 1);
         }
-        renderRecentActivity(groupService.findContributionsForUser(user.getId()));
+        renderRecentActivity(contributions);
+    }
+
+    private void renderSavingsChart(List<Contribution> contributions) {
+        YearMonth firstMonth = YearMonth.now().minusMonths(5);
+        Map<YearMonth, BigDecimal> monthlyTotals = new TreeMap<>();
+        for (int month = 0; month < 6; month++) {
+            monthlyTotals.put(firstMonth.plusMonths(month), BigDecimal.ZERO);
+        }
+
+        BigDecimal totalBeforePeriod = BigDecimal.ZERO;
+        for (Contribution contribution : contributions) {
+            if (contribution.getStatus() != model.enums.ContributionStatus.PAID
+                    || contribution.getPaymentDate() == null) {
+                continue;
+            }
+            YearMonth paymentMonth = YearMonth.from(contribution.getPaymentDate());
+            if (paymentMonth.isBefore(firstMonth)) {
+                totalBeforePeriod = totalBeforePeriod.add(contribution.getAmount());
+            } else if (monthlyTotals.containsKey(paymentMonth)) {
+                monthlyTotals.merge(paymentMonth, contribution.getAmount(), BigDecimal::add);
+            }
+        }
+
+        XYChart.Series<String, Number> savings = new XYChart.Series<>();
+        savings.setName("Total poupado");
+        BigDecimal cumulative = totalBeforePeriod;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM/yy", new Locale("pt", "MZ"));
+        for (Map.Entry<YearMonth, BigDecimal> month : monthlyTotals.entrySet()) {
+            cumulative = cumulative.add(month.getValue());
+            savings.getData().add(new XYChart.Data<>(month.getKey().atDay(1).format(formatter), cumulative));
+        }
+        savingsChart.getData().setAll(savings);
     }
 
     /**

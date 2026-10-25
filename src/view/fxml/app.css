@@ -571,6 +571,11 @@
 .countdown-label { -fx-font-size: 8px; -fx-text-fill: -primary; }
 .countdown-value { -fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: -primary; }
 .cycle-content { -fx-padding: 20; }
+.group-balance-row {
+    -fx-border-color: -line-soft;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 12 20 16 20;
+}
 .cell-label { -fx-font-size: 9px; -fx-font-weight: 700; -fx-text-fill: -muted-2; }
 .cell-value { -fx-font-size: 13px; -fx-font-weight: 700; }
 .cell-sub { -fx-font-size: 10px; -fx-text-fill: -muted; }
@@ -603,6 +608,59 @@
     -fx-border-width: 1;
     -fx-border-radius: 10;
 }
+
+.notification-panel {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0;
+    -fx-background-radius: 14;
+    -fx-border-color: #dfe6e7;
+    -fx-border-radius: 14;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, rgba(20,45,47,0.18), 22, 0, 0, 7);
+    -fx-pref-width: 380;
+    -fx-max-width: 380;
+}
+.notification-panel-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+}
+.notification-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-pref-height: 390;
+    -fx-max-height: 390;
+}
+.notification-scroll > .viewport { -fx-background-color: transparent; }
+.notification-list { -fx-padding: 1 5 5 1; }
+.notification-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: #ecf0f0;
+    -fx-border-radius: 10;
+}
+.notification-type {
+    -fx-font-size: 9px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -primary;
+}
+.notification-card-title { -fx-font-size: 12px; -fx-font-weight: 700; }
+.notification-message {
+    -fx-font-size: 11px;
+    -fx-text-fill: -muted;
+}
+.notification-action {
+    -fx-min-height: 32;
+    -fx-pref-height: 32;
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 10px;
+}
+.notification-empty {
+    -fx-padding: 20 10 20 10;
+    -fx-text-fill: -muted;
+    -fx-wrap-text: true;
+}
 .member-order { -fx-font-size: 10px; -fx-font-weight: 700; -fx-text-fill: -muted; -fx-min-width: 22; }
 .member-name { -fx-font-size: 11px; -fx-font-weight: 600; }
 .member-phone { -fx-font-size: 9px; -fx-text-fill: -muted; }
@@ -634,6 +692,22 @@
 .kyc-card { -fx-padding: 20; }
 .admin-metric { -fx-padding: 18; }
 .admin-chart { -fx-padding: 16; -fx-min-width: 220; }
+.savings-chart .axis {
+    -fx-tick-label-fill: -muted;
+    -fx-tick-label-font-size: 10px;
+}
+.savings-chart .axis-label {
+    -fx-text-fill: -ink;
+    -fx-font-size: 10px;
+}
+.savings-chart .axis-tick-mark,
+.savings-chart .axis-minor-tick-mark {
+    -fx-stroke: -muted-2;
+}
+.savings-chart .chart-horizontal-grid-lines,
+.savings-chart .chart-vertical-grid-lines {
+    -fx-stroke: -line;
+}
 .admin-section { -fx-padding: 18; }
 .admin-row {
     -fx-background-color: #fbfcfc;
@@ -659,7 +733,8 @@
 .admin-user-role { -fx-min-width: 110; -fx-pref-width: 110; -fx-max-width: 110; }
 .admin-user-state { -fx-min-width: 95; -fx-pref-width: 95; -fx-max-width: 95; }
 .admin-user-stat { -fx-min-width: 70; -fx-pref-width: 70; -fx-max-width: 70; }
-.admin-user-actions { -fx-min-width: 246; -fx-pref-width: 246; -fx-max-width: 246; }
+.admin-user-actions { -fx-min-width: 620; -fx-pref-width: 620; -fx-max-width: 620; }
+.admin-role-select { -fx-pref-width: 120; -fx-min-width: 120; }
 .admin-action {
     -fx-min-height: 34;
     -fx-pref-height: 34;

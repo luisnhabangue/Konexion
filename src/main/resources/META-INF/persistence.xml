@@ -23,6 +23,8 @@
         <class>model.UserReport</class>
         <class>model.LeadershipRequest</class>
         <class>model.UserNotification</class>
+        <class>model.PlatformSettings</class>
+        <class>model.enums.UserRoleConverter</class>
 
         <properties>
 

@@ -19,7 +19,6 @@ import model.Contribution;
 import model.Cycle;
 import model.Group;
 import model.User;
-import service.AdminService;
 import service.AuthService;
 import service.GroupService;
 import util.SessionContext;
@@ -35,8 +34,8 @@ import java.util.List;
 /**
  * Controlador JavaFX para o ecrã de perfil do utilizador[cite: 113].
  * <p>
- * Permite a gestão das informações de conta, a submissão de documentos KYC de verificação de identidade,
- * a solicitação do cargo de chefe de grupo, e a consulta de contribuições e grupos concluídos[cite: 113].
+ * Permite a gestão das informações de conta, a submissão de documentos KYC de verificação de identidade
+ * e a consulta de contribuições e grupos concluídos.
  * </p>
  *
  * @author Sistema Xitique
@@ -50,9 +49,6 @@ public class ProfileController {
 
     /** Serviço responsável por atualizações de conta e submissão de KYC[cite: 113]. */
     private final AuthService authService = new AuthService();
-
-    /** Serviço responsável por pedidos administrativos[cite: 113]. */
-    private final AdminService adminService = new AdminService();
 
     /** Ficheiro contendo a imagem do documento de identidade do utilizador[cite: 113]. */
     private File documentPhoto;
@@ -75,9 +71,6 @@ public class ProfileController {
     @FXML private Button btnSubmitKyc;
     @FXML private Label lblDocumentPhoto;
     @FXML private Label lblSelfiePhoto;
-    @FXML private VBox leadershipSection;
-    @FXML private TextField txtLeadershipReason;
-    @FXML private Button btnRequestLeadership;
     @FXML private Button btnEditProfile;
     @FXML private ToggleButton tabContributions;
     @FXML private ToggleButton tabFinished;
@@ -87,7 +80,7 @@ public class ProfileController {
 
     /**
      * Carrega as informações do utilizador da sessão ativa e configura as secções
-     * de verificação KYC, pedido de liderança e histórico de contribuições[cite: 113].
+     * de verificação KYC e histórico de contribuições.
      */
     @FXML
     private void initialize() {
@@ -122,32 +115,10 @@ public class ProfileController {
         btnChooseDocumentPhoto.setOnAction(event -> choosePhoto(true));
         btnChooseSelfie.setOnAction(event -> choosePhoto(false));
         btnSubmitKyc.setOnAction(event -> submitKyc(user));
-        boolean canRequestLeadership = user.isVerified() && (user.getUserRole() == null
-                || !user.getUserRole().isAdministrator() && !user.getUserRole().isGroupLeader());
-        leadershipSection.setVisible(canRequestLeadership);
-        leadershipSection.setManaged(canRequestLeadership);
-        btnRequestLeadership.setOnAction(event -> requestLeadership(user));
         configureProfileColumns();
         profileInfo.widthProperty().addListener((observable, oldWidth, newWidth) -> configureProfileColumns());
         renderContributions(groupService.findContributionsForUser(user.getId()));
         renderFinishedGroups(groupService.findAllForUser(user.getId()));
-    }
-
-    /**
-     * Envia o pedido de atribuição da função de chefe de grupo para avaliação administrativa[cite: 113].
-     *
-     * @param user O utilizador requerente.
-     */
-    private void requestLeadership(User user) {
-        try {
-            adminService.requestGroupLeadership(user.getId(), txtLeadershipReason.getText());
-            leadershipSection.setVisible(false);
-            leadershipSection.setManaged(false);
-            StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
-                    "O pedido foi enviado ao administrador para análise."));
-        } catch (RuntimeException exception) {
-            StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
-        }
     }
 
     /**

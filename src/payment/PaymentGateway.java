@@ -3,24 +3,24 @@ package payment;
 import model.enums.PaymentMethod;
 
 /**
- * Interface que define o contrato principal para os gateways de pagamento do sistema[cite: 1].
+ * Interface que define o contrato principal para os gateways de pagamento do sistema.
  *
- * @since 1.0[cite: 1]
+ * @since 1.0
  */
 public interface PaymentGateway {
 
     /**
-     * Retorna o método de pagamento associado a este gateway[cite: 1].
+     * Retorna o método de pagamento associado a este gateway.
      *
-     * @return O {@link PaymentMethod} correspondente[cite: 1].
+     * @return O {@link PaymentMethod} correspondente.
      */
     PaymentMethod method();
 
     /**
-     * Processa a cobrança de uma transação de pagamento[cite: 1].
+     * Processa a cobrança de uma transação de pagamento.
      *
-     * @param request Dados e parâmetros da solicitação de pagamento[cite: 1].
-     * @return Um {@link PaymentResponse} contendo o resultado da transação[cite: 1].
+     * @param request Dados e parâmetros da solicitação de pagamento.
+     * @return Um {@link PaymentResponse} contendo o resultado da transação.
      */
     PaymentResponse charge(PaymentRequest request);
 }

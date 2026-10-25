@@ -18,7 +18,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Circle?>
 
-<AnchorPane minHeight="600.0" minWidth="900.0" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+<AnchorPane minHeight="600.0" minWidth="900.0" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: white;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
 
     <children>
         <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -125,7 +125,7 @@
 
                             <children>
                                 <!-- VOLTAR AO LOGIN -->
-                                <Hyperlink fx:id="linkVoltarLogin" style="-fx-text-fill: #69787B;                                                   -fx-font-size: 12px;                                                   -fx-border-color: transparent;                                                   -fx-padding: 0 0 8px 0;" text="← Voltar ao login" />
+                                <Hyperlink fx:id="linkVoltarLogin" prefHeight="24.0" prefWidth="97.0" style="-fx-text-fill: #69787B;                                                   -fx-font-size: 12px;                                                   -fx-border-color: transparent;                                                   -fx-padding: 0 0 8px 0;" text="← Voltar ao login" />
 
                                 <!-- CABEÇALHO -->
                                 <Label style="-fx-font-size: 28px;                                               -fx-font-weight: bold;                                               -fx-text-fill: #182426;" text="Criar a sua conta" />
@@ -165,7 +165,7 @@
                                         <Label style="-fx-font-size: 12px;                                                       -fx-font-weight: bold;                                                       -fx-text-fill: #182426;" text="Nome de utilizador" />
 
                                         <MFXTextField fx:id="txtUsername" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Ex.: joaosilva" styleClass="mfx-text-field" />
-                                        <Label fx:id="lblUsernameError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
+                                        <Label fx:id="lblUsernameError" managed="false" styleClass="field-error" visible="false" wrapText="true" />
                                     </children>
                                 </VBox>
 
@@ -175,7 +175,7 @@
                                         <Label style="-fx-font-size: 12px;                                                       -fx-font-weight: bold;                                                       -fx-text-fill: #182426;" text="Email" />
 
                                         <MFXTextField fx:id="txtEmail" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="nome@exemplo.com" styleClass="mfx-text-field" />
-                                        <Label fx:id="lblEmailError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
+                                        <Label fx:id="lblEmailError" managed="false" styleClass="field-error" visible="false" wrapText="true" />
                                     </children>
                                 </VBox>
 
@@ -187,7 +187,7 @@
                                                 <Label style="-fx-font-size: 12px;                                                               -fx-font-weight: bold;                                                               -fx-text-fill: #182426;" text="Senha" />
 
                                                 <MFXPasswordField fx:id="txtPassword" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Introduza a senha" styleClass="mfx-password-field" />
-                                                <Label fx:id="lblNewPasswordError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
+                                                <Label fx:id="lblNewPasswordError" managed="false" styleClass="field-error" visible="false" wrapText="true" />
                                             </children>
                                         </VBox>
 
@@ -196,21 +196,21 @@
                                                 <Label style="-fx-font-size: 12px;                                                               -fx-font-weight: bold;                                                               -fx-text-fill: #182426;" text="Confirmar senha" />
 
                                                 <MFXPasswordField fx:id="txtConfirmPassword" floatMode="DISABLED" maxWidth="Infinity" prefHeight="44.0" promptText="Repita a senha" styleClass="mfx-password-field" />
-                                                <Label fx:id="lblConfirmPasswordError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
+                                                <Label fx:id="lblConfirmPasswordError" managed="false" styleClass="field-error" visible="false" wrapText="true" />
                                             </children>
                                         </VBox>
                                     </children>
                                 </HBox>
 
                                 <!-- BOTÃO CRIAR CONTA -->
-                                <MFXButton fx:id="btnCriarConta" maxWidth="Infinity" prefHeight="46.0" styleClass="button-primary" text="Criar conta  →">
+                                <MFXButton fx:id="btnCriarConta" maxWidth="Infinity" prefHeight="46.0" styleClass="button-primary" text="Criar conta  ">
                                     <VBox.margin>
                                         <Insets top="8.0" />
                                     </VBox.margin>
                                 </MFXButton>
 
                                 <!-- VOLTAR AO PASSO ANTERIOR -->
-                                <MFXButton fx:id="btnVoltarPasso" maxWidth="Infinity" prefHeight="42.0" style="-fx-background-color: #EAF0F0;                                                   -fx-text-fill: #182426;                                                   -fx-font-weight: bold;                                                   -fx-background-radius: 8px;" text="← Voltar ao passo anterior">
+                                <MFXButton fx:id="btnVoltarPasso" maxWidth="Infinity" prefHeight="42.0" style="-fx-background-color: #EAF0F0;                                                   -fx-text-fill: #182426;                                                   -fx-font-weight: bold;                                                   -fx-background-radius: 8px;" text="Voltar ao passo anterior">
                                     <VBox.margin>
                                         <Insets top="2.0" />
                                     </VBox.margin>
@@ -222,4 +222,7 @@
             </center>
         </BorderPane>
     </children>
+   <padding>
+      <Insets bottom="50.0" left="200.0" right="200.0" top="50.0" />
+   </padding>
 </AnchorPane>

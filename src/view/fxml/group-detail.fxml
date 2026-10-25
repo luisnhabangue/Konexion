@@ -142,6 +142,14 @@
                <RowConstraints />
             </rowConstraints>
             </GridPane>
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="group-balance-row">
+                <VBox spacing="4">
+                    <Label styleClass="cell-label" text="SALDO DISPONÍVEL DO GRUPO" />
+                    <Label fx:id="lblGroupBalance" styleClass="cell-value" text="0,00 MT" />
+                </VBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnTransferBalance" styleClass="btn, btn-primary" text="Transferir saldo ao beneficiário" />
+            </HBox>
         </VBox>
 
         <!-- ================= FILA + CONTRIBUIÇÕES ================= -->

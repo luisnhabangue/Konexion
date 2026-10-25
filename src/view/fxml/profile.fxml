@@ -88,14 +88,6 @@
             </ToggleButton>
             <ToggleButton fx:id="tabFinished" styleClass="tab-btn" text="Xitiques finalizados" toggleGroup="$profileTabs" />
         </HBox>
-    <VBox fx:id="leadershipSection" spacing="10" styleClass="card, kyc-card">
-    <Label styleClass="section-title" text="Pedir nomeação como chefe de grupo" />
-    <Label styleClass="section-sub" text="O administrador analisa os pedidos. A nomeação dá acesso às ferramentas de gestão de grupos." wrapText="true" />
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <TextField fx:id="txtLeadershipReason" promptText="Explique por que deseja ser chefe de grupo" styleClass="field-input" HBox.hgrow="ALWAYS" />
-        <Button fx:id="btnRequestLeadership" styleClass="btn, btn-secondary" text="Enviar pedido" />
-    </HBox>
-</VBox>
         <!-- Painéis: o controller alterna visible/managed conforme o tab selecionado -->
         <StackPane>
             <!-- 1) Histórico -->

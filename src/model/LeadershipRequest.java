@@ -3,13 +3,9 @@ package model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/** Legacy mapping retained only to clean historical requests when an account is deleted. */
 @Entity
 @Table(name = "leadership_requests")
-/**
- * Entidade ou objeto de domínio que representa os dados e conceitos centrais da aplicação.
- *
- * @since 1.0
- */
 public class LeadershipRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

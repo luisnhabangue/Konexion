@@ -3,6 +3,7 @@ package model;
 import jakarta.persistence.*;
 import model.enums.Gender;
 import model.enums.UserRole;
+import model.enums.UserRoleConverter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class User extends Person {
     private String email;
 
     /** Papel ou nível de acesso do utilizador. */
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = UserRoleConverter.class)
     private UserRole userRole = UserRole.USER;
 
     /** Número de telefone do utilizador. */

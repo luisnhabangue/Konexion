@@ -9,6 +9,7 @@ import model.*;
 import model.enums.ContributionStatus;
 import model.enums.CycleStatus;
 import model.enums.PaymentMethod;
+import payment.PaymentResponse;
 import util.EntityManagerFactoryUtil;
 import validation.GroupValidator;
 import jakarta.persistence.EntityManager;
@@ -59,8 +60,10 @@ public class GroupService {
         if (persistedCreator == null || !persistedCreator.isActive()) {
             throw new IllegalStateException("O utilizador que cria o grupo não está ativo.");
         }
-        if (!persistedCreator.isVerified() && (persistedCreator.getUserRole() == null
-                || !persistedCreator.getUserRole().isAdministrator())) {
+        if (persistedCreator.getUserRole() != null && persistedCreator.getUserRole().isAdministrator()) {
+            throw new SecurityException("Administradores não podem criar nem participar em grupos.");
+        }
+        if (!persistedCreator.isVerified()) {
             throw new IllegalStateException("A criação de grupos requer verificação KYC aprovada por um administrador. Pode continuar a participar nos grupos existentes.");
         }
         if (groupDao.findByName(group.getGroupName()) != null) {
@@ -69,6 +72,7 @@ public class GroupService {
 
         User user = persistedCreator;
         group.setCreatedBy(user);
+        group.setGroupBalance(BigDecimal.ZERO);
         UserGroup userGroup = new UserGroup();
         userGroup.setGroup(group);
         userGroup.setUser(user);
@@ -102,6 +106,7 @@ public class GroupService {
         if (group == null) {
             throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
         }
+        ensureGroupIsNotArchived(group);
         requireOwnerOrAdministrator(group, actorId);
 
         if (!cycleDao.findByGroupId(groupId).isEmpty()) {
@@ -111,6 +116,9 @@ public class GroupService {
         User user = userDao.findById(userId);
         if (user == null || !user.isActive()) {
             throw new IllegalArgumentException("Usuário não encontrado ou está inativo.");
+        }
+        if (user.getUserRole() != null && user.getUserRole().isAdministrator()) {
+            throw new IllegalStateException("Administradores não podem participar em grupos.");
         }
 
         if (userGroupDao.isUserInGroup(userId, groupId)) {
@@ -173,6 +181,7 @@ public class GroupService {
         if (group == null) {
             throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
         }
+        ensureGroupIsNotArchived(group);
         requireOwnerOrAdministrator(group, actorId);
 
         if (userGroupDao.countMembersInGroup(groupId) < 2) {
@@ -250,6 +259,7 @@ public class GroupService {
         if (group == null) {
             throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
         }
+        ensureGroupIsNotArchived(group);
         Cycle cycle = cycleDao.findActiveCycleByGroup(groupId);
         if (cycle == null) {
             throw new IllegalStateException("Não existe nenhum ciclo em andamento para este grupo.");
@@ -293,6 +303,10 @@ public class GroupService {
         BigDecimal newBalance = (userGroup.getBalance() != null ? userGroup.getBalance() : BigDecimal.ZERO).add(amount);
         userGroup.setBalance(newBalance);
         userGroupDao.update(userGroup);
+
+        BigDecimal newGroupBalance = (ctx.group().getGroupBalance() != null ? ctx.group().getGroupBalance() : BigDecimal.ZERO).add(amount);
+        ctx.group().setGroupBalance(newGroupBalance);
+        groupDao.updateGroup(ctx.group());
 
         checkAndFinalizeCycleIfComplete(ctx.group(), ctx.cycle());
     }
@@ -369,11 +383,45 @@ public class GroupService {
      * @return Objeto {@link Group}
      * @throws IllegalArgumentException Se o ID for inválido
      */
+    public BigDecimal getGroupBalance(Long groupId) {
+        Group group = findById(groupId);
+        return group == null || group.getGroupBalance() == null ? BigDecimal.ZERO : group.getGroupBalance();
+    }
+
+    public void updateGroupBalance(Long groupId, BigDecimal balance) {
+        if (groupId == null || groupId <= 0) {
+            throw new IllegalArgumentException("ID inválido.");
+        }
+        Group group = findById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
+        }
+        group.setGroupBalance(balance == null ? BigDecimal.ZERO : balance);
+        groupDao.updateGroup(group);
+    }
+
     public Group findById(Long id) {
         if (id == null || id <= 0) {
             throw new IllegalArgumentException("ID inválido.");
         }
         return groupDao.findById(id);
+    }
+
+    public PaymentResponse transferCycleBalanceToBeneficiary(Long groupId, Long actorId, Integer cycleId,
+                                                            PaymentMethod method, String account) {
+        Group group = findById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Grupo não encontrado com o ID: " + groupId);
+        }
+        requireOwnerOrAdministrator(group, actorId);
+        Cycle cycle = findCycles(groupId).stream()
+                .filter(c -> c.getId() != null && c.getId().equals(cycleId))
+                .findFirst()
+                .orElse(null);
+        if (cycle == null) {
+            throw new IllegalArgumentException("Ciclo não encontrado para este grupo.");
+        }
+        return new PaymentService().payCyclePayout(groupId, cycleId, method, account);
     }
 
     public Group findByIdWithMembers(Long id) {
@@ -390,7 +438,7 @@ public class GroupService {
         }
         User user = userDao.findById(userId);
         boolean elevated = user != null && user.getUserRole() != null
-                && (user.getUserRole().isAdministrator() || user.getUserRole().isGroupLeader());
+                && user.getUserRole().isAdministrator();
         if (!elevated && (group.getCreatedBy() == null || !group.getCreatedBy().getId().equals(userId))) {
             if (!userGroupDao.isUserInGroup(userId, groupId)) {
                 throw new IllegalStateException("Não tem acesso a este grupo.");
@@ -408,7 +456,8 @@ public class GroupService {
         try {
             return em.createQuery("SELECT DISTINCT g FROM Group g JOIN FETCH g.createdBy " +
                             "LEFT JOIN FETCH g.members m LEFT JOIN FETCH m.user " +
-                            "WHERE g.privateGroup = false ORDER BY g.createdAt DESC", Group.class).getResultList();
+                            "WHERE g.privateGroup = false AND g.archived = false ORDER BY g.createdAt DESC",
+                            Group.class).getResultList();
         } finally {
             em.close();
         }
@@ -419,6 +468,12 @@ public class GroupService {
         User user = userDao.findById(userId);
         if (group == null || user == null || !user.isActive()) {
             throw new IllegalArgumentException("Grupo ou utilizador inválido.");
+        }
+        if (user.getUserRole() != null && user.getUserRole().isAdministrator()) {
+            throw new SecurityException("Administradores podem consultar grupos, mas não participar neles.");
+        }
+        if (group.isArchived()) {
+            throw new IllegalStateException("Este grupo está arquivado.");
         }
         if (group.isPrivateGroup()) {
             throw new IllegalStateException("Este grupo é privado e requer um convite.");
@@ -473,10 +528,11 @@ public class GroupService {
         if (group == null || inviter == null || invitee == null || !invitee.isActive()) {
             throw new IllegalArgumentException("Grupo ou utilizador inválido.");
         }
+        ensureGroupIsNotArchived(group);
         boolean manager = group.getCreatedBy().getId().equals(inviterId)
                 || inviter.getUserRole() != null && inviter.getUserRole().isAdministrator();
         if (!manager) {
-            throw new SecurityException("Apenas o responsável do grupo, um chefe de grupo ou um administrador pode convidar membros.");
+            throw new SecurityException("Apenas o responsável do grupo ou um administrador pode convidar membros.");
         }
         if (userGroupDao.isUserInGroup(inviteeId, groupId)) {
             throw new IllegalStateException("Este utilizador já participa no grupo.");
@@ -538,6 +594,14 @@ public class GroupService {
                 throw new IllegalStateException("O convite já não está disponível.");
             }
             if (accepted) {
+                User invitee = em.find(User.class, userId);
+                if (invitee != null && invitee.getUserRole() != null
+                        && invitee.getUserRole().isAdministrator()) {
+                    throw new SecurityException("Administradores podem consultar grupos, mas não participar neles.");
+                }
+                if (invitation.getGroup().isArchived()) {
+                    throw new IllegalStateException("Este grupo está arquivado.");
+                }
                 if (!cycleDao.findByGroupId(invitation.getGroup().getGroupId()).isEmpty()) {
                     throw new IllegalStateException("O grupo já iniciou ciclos e não aceita novos membros.");
                 }
@@ -642,9 +706,9 @@ public class GroupService {
         User actor = userDao.findById(actorId);
         boolean owner = group.getCreatedBy() != null && group.getCreatedBy().getId().equals(actorId);
         boolean privileged = actor != null && actor.getUserRole() != null
-                && (actor.getUserRole().isAdministrator() || actor.getUserRole().isGroupLeader());
+                && actor.getUserRole().isAdministrator();
         if (!owner && !privileged) {
-            throw new SecurityException("Esta operação requer permissões do responsável do grupo, chefe de grupo ou administrador.");
+            throw new SecurityException("Esta operação requer permissões do responsável do grupo ou de um administrador.");
         }
     }
 
@@ -668,6 +732,12 @@ public class GroupService {
             throw exception;
         } finally {
             em.close();
+        }
+    }
+
+    private void ensureGroupIsNotArchived(Group group) {
+        if (group.isArchived()) {
+            throw new IllegalStateException("Este grupo está arquivado.");
         }
     }
 }

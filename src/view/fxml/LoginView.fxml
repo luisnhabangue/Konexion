@@ -5,8 +5,8 @@
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -19,7 +19,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Circle?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: white;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
       <BorderPane prefHeight="768.0" prefWidth="1171.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
@@ -115,7 +115,7 @@
                                  </color></MFXFontIcon>
                            </leadingIcon>
                         </MFXTextField>
-                        <Label fx:id="lblUsernameError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
+                        <Label fx:id="lblUsernameError" managed="false" styleClass="field-error" visible="false" wrapText="true" />
 
                         <!-- Campo 2: Senha -->
                         <Label style="-fx-font-size: 11px; -fx-text-fill: #182426; -fx-font-weight: bold;" text="Senha">
@@ -131,7 +131,7 @@
                                  </color></MFXFontIcon>
                         </leadingIcon>
                      </MFXPasswordField>
-                     <Label fx:id="lblPasswordError" styleClass="field-error" wrapText="true" visible="false" managed="false"/>
+                     <Label fx:id="lblPasswordError" managed="false" styleClass="field-error" visible="false" wrapText="true" />
                         <!-- Linha Dupla: Checkbox (Lembrar-me) + Hyperlink (Esqueceu a senha?) -->
                         <HBox alignment="CENTER_LEFT" prefWidth="400.0">
                            <VBox.margin>
@@ -170,11 +170,12 @@
       </BorderPane>
       <HBox alignment="CENTER" spacing="8.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="14.0">
          <children>
-            <Button fx:id="btnMinimize" accessibleText="Minimizar janela" text="—"
-                    style="-fx-background-color: rgba(255,255,255,0.88); -fx-background-radius: 18; -fx-text-fill: #182426; -fx-font-size: 18px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;"/>
-            <Button fx:id="btnExit" accessibleText="Sair da aplicação" text="×"
-                    style="-fx-background-color: #D9534F; -fx-background-radius: 18; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;"/>
+            <Button fx:id="btnMinimize" accessibleText="Minimizar janela" style="-fx-background-color: rgba(255,255,255,0.88); -fx-background-radius: 18; -fx-text-fill: #0F5257; -fx-font-size: 18px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;" text="—" />
+            <Button fx:id="btnExit" accessibleText="Sair da aplicação" prefHeight="43.0" prefWidth="45.0" style="-fx-background-color: #D9534F; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;" text="×" />
          </children>
       </HBox>
    </children>
+   <padding>
+      <Insets bottom="50.0" left="200.0" right="200.0" top="50.0" />
+   </padding>
 </AnchorPane>
