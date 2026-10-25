@@ -58,11 +58,36 @@
                     </graphic>
                 </Button>
 
+                <Button fx:id="navAdminReports" managed="false" maxWidth="Infinity" styleClass="nav-item"
+                        text="Relatórios" visible="false">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath content="M4,3 L16,3 L20,7 L20,21 L4,21 Z M16,3 L16,7 L20,7 M8,12 L16,12 M8,16 L16,16" styleClass="ico" /></StackPane></graphic>
+                </Button>
+                <Button fx:id="navAdminRules" managed="false" maxWidth="Infinity" styleClass="nav-item"
+                        text="Regras globais" visible="false">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath content="M4,6 L20,6 M4,12 L20,12 M4,18 L20,18 M8,4 L8,8 M15,10 L15,14 M11,16 L11,20" styleClass="ico" /></StackPane></graphic>
+                </Button>
+                <Button fx:id="navAdminComplaints" managed="false" maxWidth="Infinity" styleClass="nav-item"
+                        text="Denúncias" visible="false">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath content="M12,3 L22,20 L2,20 Z M12,9 L12,14 M12,17 L12,17.1" styleClass="ico" /></StackPane></graphic>
+                </Button>
+                <Button fx:id="navAdminKyc" managed="false" maxWidth="Infinity" styleClass="nav-item"
+                        text="Verificação KYC" visible="false">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath content="M5,3 L19,3 L19,21 L5,21 Z M8,8 L10,10 L15,6 M8,15 L16,15" styleClass="ico" /></StackPane></graphic>
+                </Button>
+                <Button fx:id="navAdminUsers" managed="false" maxWidth="Infinity" styleClass="nav-item"
+                        text="Utilizadores" visible="false">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath content="M16,21 L16,19 A4,4 0 0 0 12,15 L6,15 A4,4 0 0 0 2,19 L2,21 M5,7 A4,4 0 1 0 13,7 A4,4 0 1 0 5,7 M22,21 L22,19 A4,4 0 0 0 19,15.2" styleClass="ico" /></StackPane></graphic>
+                </Button>
+                <Button fx:id="navAdminGroups" managed="false" maxWidth="Infinity" styleClass="nav-item"
+                        text="Grupos" visible="false">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath content="M3,7 L12,3 L21,7 L12,11 Z M3,12 L12,16 L21,12 M3,17 L12,21 L21,17" styleClass="ico" /></StackPane></graphic>
+                </Button>
+
             </VBox>
 
             <Region VBox.vgrow="ALWAYS" />
 
-            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="side-help">
+            <HBox fx:id="sideHelp" alignment="CENTER_LEFT" spacing="10" styleClass="side-help">
                 <StackPane styleClass="help-circle">
                     <Label styleClass="white-text, bold" text="?" />
                 </StackPane>
