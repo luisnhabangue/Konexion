@@ -29,10 +29,12 @@ import model.AdminUserSummary;
 import model.User;
 import model.UserReport;
 import model.enums.UserRole;
+import model.enums.Page;
 import service.AdminService;
 import util.SessionContext;
 import util.StyledDialogs;
 import util.UiFormatting;
+import util.Navigator;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -92,6 +94,7 @@ public class AdminDashboardController {
     @FXML private Button btnSaveSettings;
     private List<AdminUserSummary> allUsers = List.of();
     private List<AdminGroupSummary> allGroups = List.of();
+    private Page page;
 
     /**
      * Inicializa o controlador obtendo o ID do administrador ativo e recarregando os dados do painel.
@@ -99,17 +102,32 @@ public class AdminDashboardController {
     @FXML
     private void initialize() {
         administratorId = SessionContext.getCurrentUser().getId();
-        financeAmountAxis.setTickLabelFormatter(
-                new NumberStringConverter(Locale.forLanguageTag("pt-MZ"), "#,##0 'MT'"));
-        reportFrom.setValue(LocalDate.now().withDayOfMonth(1).minusMonths(2));
-        reportTo.setValue(LocalDate.now());
-        userSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterUsers(newValue);
-            renderGroups(allGroups);
-        });
-        btnExportCsv.setOnAction(event -> exportFinancialCsv());
-        btnExportPdf.setOnAction(event -> exportFinancialPdf());
-        btnSaveSettings.setOnAction(event -> saveGlobalSettings());
+        page = Navigator.getCurrentPage();
+        if (page == null) {
+            page = Page.ADMIN;
+        }
+        if (financeAmountAxis != null) {
+            financeAmountAxis.setTickLabelFormatter(
+                    new NumberStringConverter(Locale.forLanguageTag("pt-MZ"), "#,##0 'MT'"));
+        }
+        if (reportFrom != null) {
+            reportFrom.setValue(LocalDate.now().withDayOfMonth(1).minusMonths(2));
+            reportTo.setValue(LocalDate.now());
+            btnExportCsv.setOnAction(event -> exportFinancialCsv());
+            btnExportPdf.setOnAction(event -> exportFinancialPdf());
+        }
+        if (btnSaveSettings != null) {
+            btnSaveSettings.setOnAction(event -> saveGlobalSettings());
+        }
+        if (userSearchField != null) {
+            userSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (page == Page.ADMIN_GROUPS) {
+                    renderGroups(allGroups);
+                } else {
+                    filterUsers(newValue);
+                }
+            });
+        }
         refresh();
     }
 
@@ -118,35 +136,50 @@ public class AdminDashboardController {
      */
     private void refresh() {
         try {
-            AdminService.Metrics metrics = adminService.getMetrics(administratorId);
-            loadGlobalSettings(adminService.getGlobalSettings(administratorId));
-            lblUsers.setText(Long.toString(metrics.users()));
-            lblVerified.setText(metrics.verifiedUsers() + " verificados de " + metrics.users());
-            lblGroups.setText(metrics.groups() + " grupos · " + metrics.publicGroups() + " públicos");
-            lblPaid.setText(metrics.paidContributions() + " pagamentos confirmados");
-            lblReports.setText(metrics.openReports() + " denúncias abertas");
-            lblContributed.setText(UiFormatting.money(metrics.contributed()));
-            lblAtRisk.setText(UiFormatting.money(metrics.pendingAmount().add(metrics.overdueAmount())));
-            lblRiskDetail.setText(UiFormatting.money(metrics.pendingAmount()) + " pendentes · "
-                    + UiFormatting.money(metrics.overdueAmount()) + " atrasados");
-            renderCharts(metrics);
-            lblVerified.setText(metrics.verifiedUsers() + " verificados · "
-                    + metrics.activeUsers() + " contas ativas");
-            renderKyc(adminService.getPendingKyc(administratorId));
-            renderReports(adminService.getOpenReports(administratorId));
-            allUsers = adminService.getUsers(administratorId);
-            filterUsers(userSearchField.getText());
-            allGroups = adminService.getGroups(administratorId);
-            renderGroups(allGroups);
-            renderLateMembers(adminService.getLateMembers(administratorId));
+            switch (page) {
+                case ADMIN -> {
+                    AdminService.Metrics metrics = adminService.getMetrics(administratorId);
+                    lblUsers.setText(Long.toString(metrics.users()));
+                    lblVerified.setText(metrics.verifiedUsers() + " verificados · "
+                            + metrics.activeUsers() + " contas ativas");
+                    lblGroups.setText(metrics.groups() + " grupos · " + metrics.publicGroups() + " públicos");
+                    lblPaid.setText(metrics.paidContributions() + " pagamentos confirmados");
+                    lblReports.setText(metrics.openReports() + " denúncias abertas");
+                    lblContributed.setText(UiFormatting.money(metrics.contributed()));
+                    lblAtRisk.setText(UiFormatting.money(metrics.pendingAmount().add(metrics.overdueAmount())));
+                    lblRiskDetail.setText(UiFormatting.money(metrics.pendingAmount()) + " pendentes · "
+                            + UiFormatting.money(metrics.overdueAmount()) + " atrasados");
+                    renderCharts(metrics);
+                }
+                case ADMIN_REPORTS -> renderLateMembers(adminService.getLateMembers(administratorId));
+                case ADMIN_RULES -> loadGlobalSettings(adminService.getGlobalSettings(administratorId));
+                case ADMIN_COMPLAINTS -> renderReports(adminService.getOpenReports(administratorId));
+                case ADMIN_KYC -> renderKyc(adminService.getPendingKyc(administratorId));
+                case ADMIN_USERS -> {
+                    allUsers = adminService.getUsers(administratorId);
+                    filterUsers(userSearchField.getText());
+                }
+                case ADMIN_GROUPS -> {
+                    allGroups = adminService.getGroups(administratorId);
+                    renderGroups(allGroups);
+                }
+                default -> throw new IllegalStateException("Página administrativa inválida: " + page);
+            }
         } catch (RuntimeException exception) {
             StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
         }
     }
 
     public void search(String query) {
+        if (userSearchField == null) {
+            return;
+        }
         userSearchField.setText(query == null ? "" : query);
-        renderGroups(allGroups);
+        if (page == Page.ADMIN_GROUPS) {
+            renderGroups(allGroups);
+        } else {
+            filterUsers(userSearchField.getText());
+        }
     }
 
     private void loadGlobalSettings(AdminService.GlobalSettings settings) {
@@ -200,7 +233,6 @@ public class AdminDashboardController {
         series.getData().add(new XYChart.Data<>("Utilizadores", metrics.users()));
         series.getData().add(new XYChart.Data<>("Grupos", metrics.groups()));
         series.getData().add(new XYChart.Data<>("Pagamentos", metrics.paidContributions()));
-        series.getData().add(new XYChart.Data<>("Denúncias", metrics.openReports()));
         activityChart.getData().add(series);
     }
 

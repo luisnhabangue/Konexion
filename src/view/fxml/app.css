@@ -102,6 +102,7 @@
     -fx-font-weight: 600;
     -icon: -muted;
 }
+.nav-item-compact { -fx-pref-height: 40; -fx-min-height: 40; }
 .nav-item:hover { -fx-background-color: -canvas; -fx-text-fill: -primary; -icon: -primary; }
 .nav-item.active { -fx-background-color: -primary-soft; -fx-text-fill: -primary; -icon: -primary; }
 
