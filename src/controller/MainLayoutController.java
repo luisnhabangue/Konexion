@@ -69,6 +69,13 @@ public class MainLayoutController {
 
     /** Botão de navegação para a vista do Perfil do utilizador[cite: 110]. */
     @FXML private Button navProfile;
+    @FXML private Button navAdminReports;
+    @FXML private Button navAdminRules;
+    @FXML private Button navAdminComplaints;
+    @FXML private Button navAdminKyc;
+    @FXML private Button navAdminUsers;
+    @FXML private Button navAdminGroups;
+    @FXML private HBox sideHelp;
 
     /** Botão para fechar a sessão ativa do utilizador[cite: 110]. */
     @FXML private Button btnLogout;
@@ -117,6 +124,12 @@ public class MainLayoutController {
         refreshCurrentUser();
         navigation.put(Page.DASHBOARD, navDashboard);
         navigation.put(Page.ADMIN, navDashboard);
+        navigation.put(Page.ADMIN_REPORTS, navAdminReports);
+        navigation.put(Page.ADMIN_RULES, navAdminRules);
+        navigation.put(Page.ADMIN_COMPLAINTS, navAdminComplaints);
+        navigation.put(Page.ADMIN_KYC, navAdminKyc);
+        navigation.put(Page.ADMIN_USERS, navAdminUsers);
+        navigation.put(Page.ADMIN_GROUPS, navAdminGroups);
         navigation.put(Page.GROUPS, navGroups);
         navigation.put(Page.HISTORY, navHistory);
         navigation.put(Page.PROFILE, navProfile);
@@ -136,17 +149,62 @@ public class MainLayoutController {
             lblNotificationCount.setVisible(false);
             lblNotificationCount.setManaged(false);
             searchField.setPromptText("Pesquisar utilizadores e grupos...");
+            navAdminReports.setVisible(true);
+            navAdminReports.setManaged(true);
+            navAdminRules.setVisible(true);
+            navAdminRules.setManaged(true);
+            navAdminComplaints.setVisible(true);
+            navAdminComplaints.setManaged(true);
+            navAdminKyc.setVisible(true);
+            navAdminKyc.setManaged(true);
+            navAdminUsers.setVisible(true);
+            navAdminUsers.setManaged(true);
+            navAdminGroups.setVisible(true);
+            navAdminGroups.setManaged(true);
+            navProfile.setVisible(false);
+            navProfile.setManaged(false);
+            sideHelp.setVisible(false);
+            sideHelp.setManaged(false);
+            navDashboard.getStyleClass().add("nav-item-compact");
+            navAdminReports.getStyleClass().add("nav-item-compact");
+            navAdminRules.getStyleClass().add("nav-item-compact");
+            navAdminComplaints.getStyleClass().add("nav-item-compact");
+            navAdminKyc.getStyleClass().add("nav-item-compact");
+            navAdminUsers.getStyleClass().add("nav-item-compact");
+            navAdminGroups.getStyleClass().add("nav-item-compact");
+        } else {
+            sideHelp.setVisible(true);
+            sideHelp.setManaged(true);
+            navAdminReports.setVisible(false);
+            navAdminReports.setManaged(false);
+            navAdminRules.setVisible(false);
+            navAdminRules.setManaged(false);
+            navAdminComplaints.setVisible(false);
+            navAdminComplaints.setManaged(false);
+            navAdminKyc.setVisible(false);
+            navAdminKyc.setManaged(false);
+            navAdminUsers.setVisible(false);
+            navAdminUsers.setManaged(false);
+            navAdminGroups.setVisible(false);
+            navAdminGroups.setManaged(false);
         }
         navDashboard.setOnAction(event -> navigate(administrator ? Page.ADMIN : Page.DASHBOARD));
         navGroups.setOnAction(event -> navigate(Page.GROUPS));
         navHistory.setOnAction(event -> navigate(Page.HISTORY));
         navProfile.setOnAction(event -> navigate(Page.PROFILE));
+        navAdminReports.setOnAction(event -> navigate(Page.ADMIN_REPORTS));
+        navAdminRules.setOnAction(event -> navigate(Page.ADMIN_RULES));
+        navAdminComplaints.setOnAction(event -> navigate(Page.ADMIN_COMPLAINTS));
+        navAdminKyc.setOnAction(event -> navigate(Page.ADMIN_KYC));
+        navAdminUsers.setOnAction(event -> navigate(Page.ADMIN_USERS));
+        navAdminGroups.setOnAction(event -> navigate(Page.ADMIN_GROUPS));
         btnCreateGroup.setOnAction(event -> openCreateGroup());
         btnNotifications.setOnAction(event -> showNotifications());
         btnLogout.setOnAction(event -> logout());
         searchField.setOnAction(event -> {
             if (administrator) {
-                AdminDashboardController admin = navigate(Page.ADMIN);
+                Page searchPage = currentPage == Page.ADMIN_GROUPS ? Page.ADMIN_GROUPS : Page.ADMIN_USERS;
+                AdminDashboardController admin = navigate(searchPage);
                 admin.search(searchField.getText());
             } else {
                 GroupsController groups = navigate(Page.GROUPS);
