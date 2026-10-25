@@ -5,12 +5,8 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -68,30 +64,6 @@
                 <PieChart fx:id="verificationChart" legendVisible="true" prefHeight="250" />
             </VBox>
         </HBox>
-        <HBox alignment="CENTER_LEFT" spacing="8" styleClass="card, admin-section">
-            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                <Label styleClass="section-title" text="Relatório financeiro consolidado" />
-                <Label styleClass="section-sub" text="Exportar contribuições de todos os grupos num período." />
-            </VBox>
-            <DatePicker fx:id="reportFrom" promptText="Desde" />
-            <DatePicker fx:id="reportTo" promptText="Até" />
-            <Button fx:id="btnExportCsv" styleClass="btn, btn-primary" text="Exportar CSV" />
-            <Button fx:id="btnExportPdf" styleClass="btn, btn-secondary" text="Exportar PDF" />
-        </HBox>
-        <VBox spacing="10" styleClass="card, admin-section">
-            <Label styleClass="section-title" text="Regras globais e notificações" />
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Penalização por atraso (pontos)" />
-                <TextField fx:id="penaltyPointsField" prefWidth="72" promptText="10" />
-                <Label text="Lembrete (dias antes)" />
-                <TextField fx:id="reminderDaysField" prefWidth="72" promptText="1" />
-                <CheckBox fx:id="remindersEnabledCheck" text="Lembretes de prazo" />
-                <CheckBox fx:id="overdueNotificationsCheck" text="Aviso de atraso ao gestor" />
-                <CheckBox fx:id="latePaymentNotificationsCheck" text="Aviso de pagamento tardio" />
-                <Button fx:id="btnSaveSettings" styleClass="btn, btn-primary" text="Guardar regras" />
-            </HBox>
-            <Label styleClass="section-sub" text="A penalização aceita 0–100 pontos; o lembrete aceita 0–30 dias." />
-        </VBox>
         <HBox spacing="14">
             <VBox spacing="8" styleClass="card, admin-chart" HBox.hgrow="ALWAYS">
                 <Label styleClass="section-title" text="Visão de actividade" />
@@ -100,42 +72,6 @@
                     <yAxis><NumberAxis forceZeroInRange="true" label="Total" /></yAxis>
                 </BarChart>
             </VBox>
-            <VBox spacing="8" styleClass="card, admin-chart" HBox.hgrow="ALWAYS">
-                <Label styleClass="section-title" text="Membros com mais atrasos (todos os grupos)" />
-                <VBox fx:id="lateMemberRows" spacing="8" />
-            </VBox>
         </HBox>
-        <VBox spacing="10" styleClass="card, admin-section">
-            <Label styleClass="section-title" text="Verificações KYC pendentes" />
-            <VBox fx:id="kycRows" spacing="8" />
-        </VBox>
-        <VBox spacing="10" styleClass="card, admin-section">
-            <Label styleClass="section-title" text="Denúncias de utilizadores" />
-            <VBox fx:id="reportRows" spacing="8" />
-        </VBox>
-        <VBox spacing="10" styleClass="card, admin-section">
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label styleClass="section-title" text="Utilizadores da plataforma" />
-                <TextField fx:id="userSearchField" promptText="Pesquisar nome ou utilizador..." HBox.hgrow="ALWAYS" />
-            </HBox>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" pannable="true" styleClass="table-scroll" vbarPolicy="NEVER">
-                <VBox minWidth="1420.0">
-                    <HBox alignment="CENTER_LEFT" styleClass="t-head">
-                        <Label maxWidth="Infinity" styleClass="t-th" text="UTILIZADOR" HBox.hgrow="ALWAYS" />
-                        <Label styleClass="t-th, admin-user-role" text="PERFIL" />
-                        <Label styleClass="t-th, admin-user-state" text="ESTADO" />
-                        <Label styleClass="t-th, admin-user-stat" text="STRIKES" />
-                        <Label styleClass="t-th, admin-user-stat" text="PONTOS" />
-                        <Label styleClass="t-th, admin-user-actions" text="ACÇÕES" />
-                    </HBox>
-                    <VBox fx:id="userRows" />
-                </VBox>
-            </ScrollPane>
-        </VBox>
-        <VBox spacing="10" styleClass="card, admin-section">
-            <Label styleClass="section-title" text="Grupos da plataforma" />
-            <Label styleClass="section-sub" text="Consulta administrativa" />
-            <VBox fx:id="groupRows" spacing="8" />
-        </VBox>
     </VBox>
 </ScrollPane>
