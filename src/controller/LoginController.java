@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -23,6 +24,7 @@ import util.SessionContext;
 import util.StyledDialogs;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -76,21 +78,37 @@ public class LoginController {
         StyledDialogs.showAndWait(emailDialog).ifPresent(email -> {
             try {
                 passwordRecoveryService.sendCode(email);
-                TextInputDialog codeDialog = new TextInputDialog();
-                codeDialog.setTitle("Verificar código");
-                codeDialog.setHeaderText("Enviámos um código de 6 dígitos para o seu email");
-                codeDialog.setContentText("Código:");
-                StyledDialogs.showAndWait(codeDialog).ifPresent(code -> promptNewPassword(email, code));
+                promptRecoveryCode(email);
             } catch (RuntimeException exception) {
                 showAlert(Alert.AlertType.ERROR, exception.getMessage());
             }
         });
     }
 
+    private void promptRecoveryCode(String email) {
+        while (true) {
+            TextInputDialog codeDialog = new TextInputDialog();
+            codeDialog.setTitle("Verificar código");
+            codeDialog.setHeaderText("Enviámos um código de 6 dígitos para o seu email");
+            codeDialog.setContentText("Código:");
+            Optional<String> result = StyledDialogs.showAndWait(codeDialog);
+            if (result.isEmpty()) {
+                return;
+            }
+            try {
+                passwordRecoveryService.verifyCode(email, result.get());
+                promptNewPassword(email, result.get());
+                return;
+            } catch (IllegalArgumentException exception) {
+                showAlert(Alert.AlertType.ERROR, exception.getMessage());
+            }
+        }
+    }
+
     private void promptNewPassword(String email, String code) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Criar nova senha");
-        dialog.setHeaderText("Código recebido. Defina a sua nova senha.");
+        dialog.setHeaderText("Código verificado. Defina a sua nova senha.");
         ButtonType save = new ButtonType("Alterar senha", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(save, ButtonType.CANCEL);
         PasswordField password = new PasswordField();
@@ -103,18 +121,26 @@ public class LoginController {
         form.addRow(0, new Label("Nova senha:"), password);
         form.addRow(1, new Label("Confirmar:"), confirmation);
         dialog.getDialogPane().setContent(form);
-        StyledDialogs.showAndWait(dialog).filter(save::equals).ifPresent(result -> {
+        Button saveButton = (Button) dialog.getDialogPane().lookupButton(save);
+        boolean[] passwordChanged = {false};
+        saveButton.addEventFilter(ActionEvent.ACTION, event -> {
             if (!password.getText().equals(confirmation.getText())) {
                 showAlert(Alert.AlertType.ERROR, "As senhas não coincidem.");
+                event.consume();
                 return;
             }
             try {
                 passwordRecoveryService.resetPassword(email, code, password.getText());
-                showAlert(Alert.AlertType.INFORMATION, "Senha alterada com sucesso. Já pode iniciar sessão.");
+                passwordChanged[0] = true;
             } catch (RuntimeException exception) {
                 showAlert(Alert.AlertType.ERROR, exception.getMessage());
+                event.consume();
             }
         });
+        StyledDialogs.showAndWait(dialog);
+        if (passwordChanged[0]) {
+            showAlert(Alert.AlertType.INFORMATION, "Senha alterada com sucesso. Já pode iniciar sessão.");
+        }
     }
 
     private Stage windowFrom(Object source) {
