@@ -53,6 +53,9 @@ public class Cycle {
     @Enumerated(EnumType.STRING)
     private CycleStatus status;
 
+    @Column(name = "automatic_payout_enabled", nullable = false)
+    private boolean automaticPayoutEnabled;
+
     /** Membro do grupo contemplado para receber o valor acumulado neste ciclo. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "beneficiary_id", nullable = false)
@@ -99,6 +102,11 @@ public class Cycle {
 
     public CycleStatus getStatus() { return status; }
     public void setStatus(CycleStatus status) { this.status = status; }
+
+    public boolean isAutomaticPayoutEnabled() { return automaticPayoutEnabled; }
+    public void setAutomaticPayoutEnabled(boolean automaticPayoutEnabled) {
+        this.automaticPayoutEnabled = automaticPayoutEnabled;
+    }
 
     public UserGroup getBeneficiary() { return beneficiary; }
     public void setBeneficiary(UserGroup beneficiary) { this.beneficiary = beneficiary; }
