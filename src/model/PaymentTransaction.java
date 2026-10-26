@@ -23,6 +23,9 @@ public class PaymentTransaction {
     private Long userId;
     private Integer cycleId;
 
+    @Column(name = "is_payout", nullable = false)
+    private boolean payout;
+
     @Enumerated(EnumType.STRING)
     private PaymentMethod method;
 
@@ -72,6 +75,9 @@ public class PaymentTransaction {
     public void setCycleId(Integer cycleId) {
         this.cycleId = cycleId;
     }
+
+    public boolean isPayout() { return payout; }
+    public void setPayout(boolean payout) { this.payout = payout; }
 
     public PaymentMethod getMethod() {
         return method;
