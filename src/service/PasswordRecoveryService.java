@@ -13,6 +13,7 @@ import util.PasswordUtil;
 
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,7 @@ public class PasswordRecoveryService {
 
     public void sendCode(String email) {
         if (email == null || email.isBlank()) throw new IllegalArgumentException("Informe o email da conta.");
-        String normalized = email.trim().toLowerCase();
+        String normalized = email.trim().toLowerCase(Locale.ROOT);
         User user = userDao.findByEmail(normalized);
         if (user == null) throw new IllegalArgumentException("Não existe uma conta com esse email.");
         String code = String.format("%06d", RANDOM.nextInt(1_000_000));
@@ -35,13 +36,18 @@ public class PasswordRecoveryService {
         CODES.put(normalized, new RecoveryCode(BCrypt.hashpw(code, BCrypt.gensalt()), Instant.now().plusSeconds(600)));
     }
 
-    public void resetPassword(String email, String code, String newPassword) {
-        String normalized = email == null ? "" : email.trim().toLowerCase();
+    public void verifyCode(String email, String code) {
+        String normalized = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
         RecoveryCode saved = CODES.get(normalized);
-        if (saved == null || Instant.now().isAfter(saved.expiresAt()) || code == null
-                || !BCrypt.checkpw(code.trim(), saved.code())) {
+        if (saved == null || !Instant.now().isBefore(saved.expiresAt()) || code == null
+                || !code.trim().matches("\\d{6}") || !BCrypt.checkpw(code.trim(), saved.code())) {
             throw new IllegalArgumentException("Código inválido ou expirado. Peça um novo código.");
         }
+    }
+
+    public void resetPassword(String email, String code, String newPassword) {
+        String normalized = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
+        verifyCode(normalized, code);
         if (newPassword == null || newPassword.length() < 8) {
             throw new IllegalArgumentException("A nova senha deve ter pelo menos 8 caracteres.");
         }
