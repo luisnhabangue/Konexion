@@ -66,11 +66,16 @@
         </HBox>
         <HBox spacing="14">
             <VBox spacing="8" styleClass="card, admin-chart" HBox.hgrow="ALWAYS">
-                <Label styleClass="section-title" text="Visão de actividade" />
-                <BarChart fx:id="activityChart" animated="false" prefHeight="230">
-                    <xAxis><CategoryAxis label="Categoria" /></xAxis>
-                    <yAxis><NumberAxis forceZeroInRange="true" label="Total" /></yAxis>
+                <Label styleClass="section-title" text="Actividade global da plataforma" />
+                <Label styleClass="section-sub"
+                       text="Compara o número de utilizadores, grupos activos, pagamentos confirmados e denúncias abertas."
+                       wrapText="true"/>
+                <BarChart fx:id="activityChart" animated="false" legendVisible="false" prefHeight="230" styleClass="activity-chart">
+                    <xAxis><CategoryAxis label="Indicador da plataforma" tickLabelsVisible="true"/></xAxis>
+                    <yAxis><NumberAxis forceZeroInRange="true" label="Quantidade (registos)"
+                                       tickLabelsVisible="true" tickMarkVisible="true"/></yAxis>
                 </BarChart>
+                <HBox fx:id="activitySummary" spacing="10"/>
             </VBox>
         </HBox>
     </VBox>

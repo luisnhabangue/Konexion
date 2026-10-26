@@ -1,6 +1,8 @@
 package controller;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
@@ -17,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -74,6 +77,7 @@ public class AdminDashboardController {
     @FXML private Label lblRiskDetail;
     @FXML private PieChart verificationChart;
     @FXML private BarChart<String, Number> activityChart;
+    @FXML private HBox activitySummary;
     @FXML private LineChart<String, Number> financeChart;
     @FXML private NumberAxis financeAmountAxis;
     @FXML private VBox kycRows;
@@ -229,11 +233,50 @@ public class AdminDashboardController {
         financeChart.getData().add(finance);
         activityChart.getData().clear();
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Sistema");
-        series.getData().add(new XYChart.Data<>("Utilizadores", metrics.users()));
-        series.getData().add(new XYChart.Data<>("Grupos", metrics.groups()));
-        series.getData().add(new XYChart.Data<>("Pagamentos", metrics.paidContributions()));
+        XYChart.Data<String, Number> users = new XYChart.Data<>("Utilizadores", metrics.users());
+        XYChart.Data<String, Number> groups = new XYChart.Data<>("Grupos activos", metrics.groups());
+        XYChart.Data<String, Number> payments = new XYChart.Data<>("Pagamentos", metrics.paidContributions());
+        XYChart.Data<String, Number> reports = new XYChart.Data<>("Denúncias abertas", metrics.openReports());
+        series.getData().addAll(users, groups, payments, reports);
         activityChart.getData().add(series);
+        styleActivityBar(users, "activity-users");
+        styleActivityBar(groups, "activity-groups");
+        styleActivityBar(payments, "activity-payments");
+        styleActivityBar(reports, "activity-reports");
+
+        activitySummary.getChildren().clear();
+        addActivityTotal("Utilizadores", metrics.users(), "activity-users");
+        addActivityTotal("Grupos activos", metrics.groups(), "activity-groups");
+        addActivityTotal("Pagamentos confirmados", metrics.paidContributions(), "activity-payments");
+        addActivityTotal("Denúncias abertas", metrics.openReports(), "activity-reports");
+    }
+
+    private void styleActivityBar(XYChart.Data<String, Number> data, String colorClass) {
+        data.nodeProperty().addListener((observable, oldNode, newNode) -> applyActivityBarColor(newNode, colorClass));
+        applyActivityBarColor(data.getNode(), colorClass);
+    }
+
+    private void applyActivityBarColor(Node node, String colorClass) {
+        if (node != null && !node.getStyleClass().contains(colorClass)) {
+            node.getStyleClass().add(colorClass);
+        }
+    }
+
+    private void addActivityTotal(String label, long total, String colorClass) {
+        VBox item = new VBox(4);
+        item.getStyleClass().add("admin-activity-total");
+        Label value = new Label(Long.toString(total));
+        value.getStyleClass().add("metric-value");
+        Label description = new Label(label);
+        description.getStyleClass().add("section-sub");
+        description.setWrapText(true);
+        Circle marker = new Circle(5);
+        marker.getStyleClass().addAll("activity-legend-dot", colorClass);
+        HBox legend = new HBox(6, marker, description);
+        legend.setAlignment(Pos.CENTER_LEFT);
+        item.getChildren().addAll(value, legend);
+        HBox.setHgrow(item, javafx.scene.layout.Priority.ALWAYS);
+        activitySummary.getChildren().add(item);
     }
 
     private void filterUsers(String query) {
