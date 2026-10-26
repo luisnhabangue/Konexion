@@ -175,14 +175,17 @@ public class GroupsController {
             }
             HBox row = new HBox(10);
             row.getStyleClass().add("admin-row");
-            Label details = new Label(group.getGroupName() + " · " + group.getMembers().size()
+            Label details = new Label(group.getGroupName() + " · " + group.getMembers().size() + " / "
+                    + groupService.getGroupMemberCapacity(group.getGroupId())
                     + " membros · Criado por " + group.getCreatedBy().getFirstName()
                     + (group.getCreatedBy().isVerified() ? " · Verificado" : " · Não verificado"));
             details.getStyleClass().add("t-name");
             HBox.setHgrow(details, javafx.scene.layout.Priority.ALWAYS);
             Button join = new Button("Participar");
             join.getStyleClass().addAll("btn", "btn-primary");
-            join.setDisable(!groupService.findCycles(group.getGroupId()).isEmpty());
+            join.setDisable(!groupService.findCycles(group.getGroupId()).isEmpty()
+                    || group.isCapacityConfigured()
+                    && group.getMembers().size() >= group.getMaxMembers());
             join.setOnAction(event -> joinPublicGroup(group));
             row.getChildren().addAll(details, join);
             publicGroupRows.getChildren().add(row);

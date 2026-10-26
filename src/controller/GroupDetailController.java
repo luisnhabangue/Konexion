@@ -107,14 +107,6 @@ public class GroupDetailController {
             owner = group.getCreatedBy().getId().equals(SessionContext.getCurrentUser().getId());
             manager = owner || SessionContext.getCurrentUser().getUserRole() != null
                     && SessionContext.getCurrentUser().getUserRole().isAdministrator();
-            btnAddMember.setVisible(manager);
-            btnAddMember.setManaged(manager);
-            btnNewCycle.setVisible(manager);
-            btnNewCycle.setManaged(manager);
-            btnReorderTop.setVisible(manager);
-            btnReorderTop.setManaged(manager);
-            btnReorder.setVisible(manager);
-            btnReorder.setManaged(manager);
             boolean canManageGroup = manager;
             btnDeleteGroup.setVisible(canManageGroup);
             btnDeleteGroup.setManaged(canManageGroup);
@@ -145,10 +137,28 @@ public class GroupDetailController {
         List<UserGroup> members = groupService.findMembers(group.getGroupId());
         List<Cycle> cycles = groupService.findCycles(group.getGroupId());
         currentCycle = groupService.findActiveCycle(group.getGroupId());
+        int memberCapacity = groupService.getGroupMemberCapacity(group.getGroupId());
+        boolean beforeFirstCycle = cycles.isEmpty();
+        boolean canInvite = manager && beforeFirstCycle && members.size() < memberCapacity;
+        boolean canConfigureOrder = manager && beforeFirstCycle && members.size() > 1
+                && group.getReceivingOrderMode() == model.enums.ReceivingOrderMode.MANUAL;
+        boolean hasEligibleMember = members.stream().anyMatch(member -> !member.isReceived());
+        boolean canStartCycle = manager && currentCycle == null && members.size() == memberCapacity
+                && (!group.isCapacityConfigured()
+                || hasEligibleMember && group.getGroupBalance().signum() == 0);
+        btnAddMember.setVisible(canInvite);
+        btnAddMember.setManaged(canInvite);
+        btnNewCycle.setVisible(canStartCycle);
+        btnNewCycle.setManaged(canStartCycle);
+        btnReorderTop.setVisible(canConfigureOrder);
+        btnReorderTop.setManaged(canConfigureOrder);
+        btnReorder.setVisible(canConfigureOrder);
+        btnReorder.setManaged(canConfigureOrder);
         lblGroupName.setText(group.getGroupName());
         lblGroupInitials.setText(UiFormatting.initialsFromName(group.getGroupName()));
         lblGroupDescription.setText(group.getGroupDescription());
-        lblGroupMembers.setText(members.size() + (members.size() == 1 ? " membro" : " membros"));
+        lblGroupMembers.setText(members.size() + " / "
+                + groupService.getGroupMemberCapacity(group.getGroupId()) + " membros");
         lblQuota.setText(UiFormatting.money(group.getAmountPerUser()));
         lblPayDay.setText("Dia " + group.getPayday());
         lblFrequency.setText(frequencyName(group.getFrequency()));
@@ -163,6 +173,11 @@ public class GroupDetailController {
      */
     private void renderQueue(List<UserGroup> members) {
         memberQueue.getChildren().clear();
+        List<model.MembershipInvitation> pendingInvitations = manager
+                ? groupService.findPendingInvitationsByGroup(group.getGroupId())
+                : List.of();
+        List<Contribution> activeContributions = currentCycle == null ? List.of()
+                : groupService.findContributionsByCycle(currentCycle.getId());
         for (UserGroup member : members) {
             HBox row = new HBox(9);
             row.getStyleClass().add("member-row");
@@ -184,6 +199,17 @@ public class GroupDetailController {
                 remove.setOnAction(event -> removeMember(member));
                 row.getChildren().add(remove);
             }
+            boolean paidInActiveCycle = activeContributions.stream()
+                    .anyMatch(contribution -> contribution.getUserGroup().getId().equals(member.getId())
+                            && contribution.getStatus() == ContributionStatus.PAID);
+            if (manager && currentCycle != null && !paidInActiveCycle) {
+                boolean reminderSent = groupService.hasContributionReminder(currentCycle.getId(), member.getId());
+                Button remind = new Button(reminderSent ? "Lembrete enviado" : "Lembrar");
+                remind.getStyleClass().addAll("btn", "btn-ghost", "member-action");
+                remind.setDisable(reminderSent);
+                remind.setOnAction(event -> sendContributionReminder(member));
+                row.getChildren().add(remind);
+            }
             if (!member.getUser().getId().equals(SessionContext.getCurrentUser().getId())) {
                 Button report = new Button("Denunciar");
                 report.getStyleClass().addAll("btn", "btn-ghost", "member-action");
@@ -192,9 +218,41 @@ public class GroupDetailController {
             }
             memberQueue.getChildren().add(row);
         }
-        if (members.isEmpty()) {
+        for (model.MembershipInvitation invitation : pendingInvitations) {
+            HBox row = new HBox(9);
+            row.getStyleClass().add("member-row");
+            Label order = styled("—", "member-order");
+            StackPane avatar = new StackPane(styled(UiFormatting.initials(invitation.getInvitee()), "avatar-initials"));
+            avatar.getStyleClass().addAll("avatar", "avatar-sm");
+            VBox identity = new VBox(4,
+                    styled(UiFormatting.fullName(invitation.getInvitee()) + " (convite pendente)", "member-name"),
+                    styled(invitation.getInvitee().getPhoneNumber() == null ? "—" : invitation.getInvitee().getPhoneNumber(), "member-phone"),
+                    styled("Ainda não respondeu ao convite", "member-verification", "unverified"));
+            HBox.setHgrow(identity, javafx.scene.layout.Priority.ALWAYS);
+            row.getChildren().addAll(order, avatar, identity, styled("Pendente", "badge", "badge-neutral"));
+            Button revoke = new Button("Revogar");
+            revoke.getStyleClass().addAll("btn", "btn-ghost", "member-action");
+            revoke.setOnAction(event -> revokeInvitation(invitation));
+            row.getChildren().add(revoke);
+            memberQueue.getChildren().add(row);
+        }
+        if (members.isEmpty() && pendingInvitations.isEmpty()) {
             memberQueue.getChildren().add(styled("Ainda não há membros neste grupo.", "section-sub"));
         }
+    }
+
+    private void revokeInvitation(model.MembershipInvitation invitation) {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
+                "Revogar o convite para " + UiFormatting.fullName(invitation.getInvitee()) + "?");
+        confirmation.setHeaderText("Confirmar revogação do convite");
+        StyledDialogs.showAndWait(confirmation).filter(response -> response == javafx.scene.control.ButtonType.OK).ifPresent(response -> {
+            try {
+                groupService.revokeInvitation(group.getGroupId(), SessionContext.getCurrentUser().getId(), invitation.getId());
+                render();
+            } catch (RuntimeException e) {
+                showError(e.getMessage());
+            }
+        });
     }
 
     /**
@@ -211,7 +269,8 @@ public class GroupDetailController {
         long paid = contributions.stream().filter(c -> c.getStatus() == ContributionStatus.PAID).count();
         BigDecimal total = contributions.stream().filter(c -> c.getStatus() == ContributionStatus.PAID)
                 .map(Contribution::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal target = group.getAmountPerUser().multiply(BigDecimal.valueOf(members.size()));
+        int memberCapacity = groupService.getGroupMemberCapacity(group.getGroupId());
+        BigDecimal target = group.getAmountPerUser().multiply(BigDecimal.valueOf(memberCapacity));
         lblCycleTitle.setText(currentCycle == null
                 ? cycles.isEmpty() ? "Sem ciclos iniciados" : "Último ciclo nº " + cycles.get(cycles.size() - 1).getNumero()
                 : "Ciclo nº " + currentCycle.getNumero());
@@ -227,15 +286,20 @@ public class GroupDetailController {
         lblPotTarget.setText(" de " + UiFormatting.money(target));
         BigDecimal groupBalance = groupService.getGroupBalance(group.getGroupId());
         lblGroupBalance.setText(UiFormatting.money(groupBalance));
-        boolean canTransfer = manager && displayedCycle != null && groupBalance.signum() > 0;
+        boolean allContributionsPaid = displayedCycle != null
+                && displayedCycle.getStatus() == model.enums.CycleStatus.CONCLUDED
+                && paid == memberCapacity;
+        boolean canTransfer = manager && allContributionsPaid && groupBalance.signum() > 0;
         btnTransferBalance.setVisible(canTransfer);
         btnTransferBalance.setManaged(canTransfer);
-        lblPayoutDate.setText(displayedCycle == null ? "—" : UiFormatting.date(displayedCycle.getEndDate()));
+        LocalDate payoutDate = displayedCycle == null ? null
+                : service.ContributionDeadlineService.paymentDueDate(group, displayedCycle);
+        lblPayoutDate.setText(payoutDate == null ? "—" : UiFormatting.date(payoutDate));
         lblCountdown.setText(displayedCycle == null ? "—" : currentCycle == null
-                ? "Ciclo encerrado" : countdown(displayedCycle.getEndDate()));
+                ? "Ciclo encerrado" : countdown(payoutDate));
         potProgress.setProgress(target.signum() == 0 ? 0 : Math.min(1, total.doubleValue() / target.doubleValue()));
-        lblPaidCount.setText(paid + " de " + members.size() + " membros contribuíram");
-        lblPendingCount.setText((members.size() - paid) + " pendentes");
+        lblPaidCount.setText(paid + " de " + memberCapacity + " membros contribuíram");
+        lblPendingCount.setText((memberCapacity - paid) + " pendentes");
         renderContributions(members, contributions);
     }
 
@@ -326,31 +390,40 @@ public class GroupDetailController {
      */
     private void startCycle() {
         List<UserGroup> members = groupService.findMembers(group.getGroupId());
-        if (members.size() < 2) {
-            showError("Adicione pelo menos dois membros antes de abrir um ciclo.");
+        int memberCapacity = groupService.getGroupMemberCapacity(group.getGroupId());
+        if (members.size() != memberCapacity) {
+            showError("O ciclo será iniciado automaticamente quando o grupo atingir "
+                    + memberCapacity + " membros.");
             return;
         }
         List<UserGroup> eligible = members.stream().filter(member -> !member.isReceived()).toList();
         if (eligible.isEmpty()) {
+            if (group.isCapacityConfigured()) {
+                showError("Todos os membros já receberam o bolo deste grupo.");
+                return;
+            }
             eligible = members;
         }
-        List<UserGroup> choices = eligible;
-        List<String> names = choices.stream().map(member -> member.getUserReceivingOrder() + "º — "
-                + UiFormatting.fullName(member.getUser())).toList();
-        ChoiceDialog<String> dialog = new ChoiceDialog<>(names.get(0), names);
-        dialog.setTitle("Abrir ciclo");
-        dialog.setHeaderText("Selecione o membro que receberá nesta rodada.");
-        dialog.setContentText("Beneficiário:");
-        StyledDialogs.showAndWait(dialog).ifPresent(name -> {
-            UserGroup beneficiary = choices.get(names.indexOf(name));
-            try {
-                groupService.addNewCycleToGroup(group.getGroupId(), SessionContext.getCurrentUser().getId(),
-                        beneficiary.getUser().getId());
-                render();
-            } catch (RuntimeException e) {
-                showError(e.getMessage());
-            }
-        });
+        UserGroup beneficiary = eligible.getFirst();
+        try {
+            groupService.addNewCycleToGroup(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                    beneficiary.getUser().getId());
+            render();
+        } catch (RuntimeException e) {
+            showError(e.getMessage());
+        }
+    }
+
+    private void sendContributionReminder(UserGroup member) {
+        try {
+            groupService.sendContributionReminder(group.getGroupId(), SessionContext.getCurrentUser().getId(),
+                    member.getUser().getId());
+            StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
+                    "Lembrete enviado a " + UiFormatting.fullName(member.getUser()) + "."));
+            render();
+        } catch (RuntimeException exception) {
+            showError(exception.getMessage());
+        }
     }
 
     /**
