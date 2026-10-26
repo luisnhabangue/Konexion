@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import model.enums.ReceivingOrderMode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -57,6 +58,16 @@ public class Group {
 
     /** Frequência da contribuição em dias. */
     private int frequency;
+
+    @Column(name = "max_members", nullable = false)
+    private int maxMembers = 2;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "receiving_order_mode", length = 16)
+    private ReceivingOrderMode receivingOrderMode = ReceivingOrderMode.MANUAL;
+
+    @Column(name = "capacity_configured", nullable = false)
+    private boolean capacityConfigured;
 
     @Column(name = "is_private", nullable = false)
     private boolean privateGroup = true;
@@ -168,6 +179,21 @@ public class Group {
 
     public int getFrequency() { return frequency; }
     public void setFrequency(int frequency) { this.frequency = frequency; }
+
+    public int getMaxMembers() { return maxMembers; }
+    public void setMaxMembers(int maxMembers) { this.maxMembers = maxMembers; }
+
+    public ReceivingOrderMode getReceivingOrderMode() {
+        return receivingOrderMode == null ? ReceivingOrderMode.MANUAL : receivingOrderMode;
+    }
+    public void setReceivingOrderMode(ReceivingOrderMode receivingOrderMode) {
+        this.receivingOrderMode = receivingOrderMode;
+    }
+
+    public boolean isCapacityConfigured() { return capacityConfigured; }
+    public void setCapacityConfigured(boolean capacityConfigured) {
+        this.capacityConfigured = capacityConfigured;
+    }
 
     public boolean isPrivateGroup() { return privateGroup; }
     public void setPrivateGroup(boolean privateGroup) { this.privateGroup = privateGroup; }
