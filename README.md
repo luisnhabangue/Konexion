@@ -95,6 +95,9 @@ A simulação faz parte do contexto académico do projeto e pode servir de base 
 - O dia de pagamento deve estar entre 1 e 31.
 - A frequência deve corresponder a um valor válido.
 - O criador é automaticamente o primeiro membro do grupo.
+- A capacidade do grupo, incluindo o criador, é definida na criação e deve ser de pelo menos dois membros.
+- O valor esperado do bolo por ciclo é a quota multiplicada pela capacidade; a rotação prevê um ciclo por membro.
+- A ordem de recebimento pode seguir a fila manual ou ser sorteada quando o grupo atinge a capacidade.
 
 ### Gestão de grupos e participantes
 
@@ -104,13 +107,18 @@ A simulação faz parte do contexto académico do projeto e pode servir de base 
 
 ### Ciclos e contribuições
 
-- Um ciclo exige pelo menos dois participantes.
+- Os ciclos de grupos novos só começam depois de o grupo atingir a capacidade definida.
+- Na ordem manual, o responsável organiza a fila e inicia o primeiro ciclo; depois disso, o sistema seleciona os beneficiários seguintes pela ordem configurada.
+- Na ordem aleatória, o sistema sorteia a fila ao completar o grupo e inicia a rotação.
 - Um grupo só pode ter um ciclo ativo de cada vez.
 - Os participantes ativos de um ciclo são definidos quando o ciclo é iniciado.
 - Cada participante pode pagar uma única quota por ciclo.
 - O valor pago deve respeitar o montante mínimo definido para a contribuição.
 - A data do pagamento deve estar entre o início do ciclo e a data atual.
 - O ciclo é concluído quando todos os participantes cumprem as condições de pagamento definidas.
+- O bolo só pode ser transferido depois de todos os membros pagarem; o responsável pode transferi-lo antes da data limite.
+- Na data limite, a aplicação tenta transferir automaticamente por M-Pesa para o telefone cadastrado do beneficiário, desde que a aplicação esteja em execução. Os gateways disponíveis são simulados e não efetuam transferências financeiras reais.
+- O responsável pode enviar um lembrete de contribuição ao membro pendente; o lembrete aparece nas notificações do utilizador.
 
 ## 🛠️ Tecnologias Utilizadas
 

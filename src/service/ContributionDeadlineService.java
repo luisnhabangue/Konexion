@@ -10,8 +10,12 @@ import model.PlatformSettings;
 import model.User;
 import model.UserGroup;
 import model.UserNotification;
+import model.PaymentTransaction;
 import model.enums.ContributionStatus;
 import model.enums.CycleStatus;
+import model.enums.PaymentMethod;
+import payment.PaymentResponse;
+import dao.PaymentTransactionDao;
 import util.EntityManagerFactoryUtil;
 
 import java.time.LocalDate;
@@ -30,6 +34,7 @@ public class ContributionDeadlineService {
     private static final String LATE_PAYMENT_LEADER = "LATE_PAYMENT_LEADER";
 
     private final EntityManagerFactory factory = EntityManagerFactoryUtil.getEntityManagerFactory();
+    private final PaymentTransactionDao transactionDao = new PaymentTransactionDao(factory);
 
     public void processDeadlines() {
         EntityManager em = factory.createEntityManager();
@@ -46,7 +51,73 @@ public class ContributionDeadlineService {
             }
             for (Cycle cycle : cycles) {
                 processCycle(cycle.getId(), today, settings);
+                processAutomaticPayout(cycle.getId(), today);
             }
+        } finally {
+            em.close();
+        }
+    }
+
+    private void processAutomaticPayout(Integer cycleId, LocalDate today) {
+        Cycle cycle = new dao.CycleDao(factory).findById(cycleId);
+        if (cycle == null || !cycle.isAutomaticPayoutEnabled()
+                || cycle.getStatus() != CycleStatus.CONCLUDED) {
+            return;
+        }
+        Long groupId = cycle.getGroup().getGroupId();
+        Group group = new dao.GroupDao(factory).findById(groupId);
+        if (group == null || today.isBefore(paymentDueDate(group, cycle))
+                || transactionDao.hasPayoutAttempt(cycleId)) {
+            return;
+        }
+
+        User beneficiary = cycle.getBeneficiary().getUser();
+        String phone = beneficiary.getPhoneNumber();
+        if (phone == null || phone.isBlank()) {
+            notifyAutomaticPayoutFailure(cycle, group,
+                    "Não foi possível enviar automaticamente o bolo do ciclo " + cycle.getNumero()
+                            + ": o beneficiário não tem telefone cadastrado. O responsável deve transferir manualmente.");
+            return;
+        }
+
+        PaymentResponse response = new service.PaymentService().payCyclePayout(
+                groupId, cycleId, PaymentMethod.MPESA, phone);
+        if (!response.success()) {
+            notifyAutomaticPayoutFailure(cycle, group,
+                    "A transferência automática do ciclo " + cycle.getNumero() + " falhou: "
+                            + response.message() + " O responsável pode tentar novamente manualmente.");
+        }
+    }
+
+    private void notifyAutomaticPayoutFailure(Cycle cycle, Group group, String message) {
+        EntityManager em = factory.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            Long existing = em.createQuery(
+                            "SELECT COUNT(n) FROM UserNotification n WHERE n.recipient.id = :recipientId " +
+                                    "AND n.cycle.id = :cycleId AND n.userGroup.id = :memberId " +
+                                    "AND n.type = 'AUTO_PAYOUT_FAILED'", Long.class)
+                    .setParameter("recipientId", group.getCreatedBy().getId())
+                    .setParameter("cycleId", cycle.getId())
+                    .setParameter("memberId", cycle.getBeneficiary().getId())
+                    .getSingleResult();
+            if (existing > 0) {
+                return;
+            }
+            transaction.begin();
+            UserNotification notification = new UserNotification();
+            notification.setRecipient(em.getReference(User.class, group.getCreatedBy().getId()));
+            notification.setCycle(em.getReference(Cycle.class, cycle.getId()));
+            notification.setUserGroup(em.getReference(UserGroup.class, cycle.getBeneficiary().getId()));
+            notification.setType("AUTO_PAYOUT_FAILED");
+            notification.setMessage(message);
+            em.persist(notification);
+            transaction.commit();
+        } catch (RuntimeException exception) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw exception;
         } finally {
             em.close();
         }

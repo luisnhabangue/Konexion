@@ -220,7 +220,7 @@ public class MainLayoutController {
         refreshInvitationCount();
         Navigator.init(contentArea, this::updateNavigation);
         navigate(administrator ? Page.ADMIN : Page.DASHBOARD);
-        deadlineMonitor = new Timeline(new KeyFrame(Duration.minutes(15),
+        deadlineMonitor = new Timeline(new KeyFrame(Duration.minutes(1),
                 event -> refreshNotificationCount()));
         deadlineMonitor.setCycleCount(Animation.INDEFINITE);
         deadlineMonitor.play();
@@ -455,12 +455,15 @@ public class MainLayoutController {
             case "OVERDUE_MEMBER" -> "Contribuição em atraso";
             case "OVERDUE_LEADER" -> "Contribuição de membro em atraso";
             case "CYCLE_PAYOUT" -> "Transferência recebida";
+            case "MANUAL_PAYMENT_REMINDER" -> "Lembrete de pagamento";
+            case "AUTO_PAYOUT_FAILED" -> "Falha na transferência automática";
             default -> "Notificação";
         };
     }
 
     private String notificationAction(String type) {
-        return "OVERDUE_MEMBER".equals(type) ? "Pagar contribuição" : "Ver grupo";
+        return "OVERDUE_MEMBER".equals(type) || "MANUAL_PAYMENT_REMINDER".equals(type)
+                ? "Pagar contribuição" : "Ver grupo";
     }
 
     private void handleNotificationAction(UserNotification notification, Long userId,
