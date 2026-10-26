@@ -8,7 +8,6 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -17,24 +16,51 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<AnchorPane minHeight="540.0" minWidth="720.0" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: white;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegisterController">
+<StackPane minHeight="620.0" minWidth="920.0" prefHeight="760.0" prefWidth="1180.0"
+           styleClass="auth-scene" stylesheets="@../css/style.css"
+           xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controller.RegisterController">
 
     <children>
-        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Circle fill="rgba(255,255,255,0.13)" radius="175.0" mouseTransparent="true"
+                translateX="-455.0" translateY="-260.0" StackPane.alignment="CENTER"/>
+        <Circle fill="rgba(255,183,3,0.16)" radius="125.0" mouseTransparent="true"
+                translateX="485.0" translateY="300.0" StackPane.alignment="CENTER"/>
+        <Circle fill="transparent" radius="215.0" stroke="rgba(255,255,255,0.18)"
+                strokeWidth="2.0" mouseTransparent="true" translateX="500.0"
+                translateY="-300.0" StackPane.alignment="CENTER"/>
+        <StackPane mouseTransparent="true" styleClass="auth-background-coin"
+                   translateY="205.0" StackPane.alignment="CENTER_LEFT">
+            <Label styleClass="auth-coin-label" text="MT"/>
+        </StackPane>
+        <VBox alignment="CENTER" mouseTransparent="true" spacing="8.0"
+              styleClass="auth-growth-decoration" translateY="190.0"
+              StackPane.alignment="CENTER_RIGHT">
+            <HBox alignment="BOTTOM_CENTER" spacing="5.0">
+                <Region styleClass="auth-growth-bar, auth-growth-bar-short"/>
+                <Region styleClass="auth-growth-bar, auth-growth-bar-medium"/>
+                <Region styleClass="auth-growth-bar, auth-growth-bar-tall"/>
+                <Region styleClass="auth-growth-bar, auth-growth-bar-medium"/>
+            </HBox>
+            <Label styleClass="auth-decoration-label" text="POUPANÇA"/>
+        </VBox>
+        <BorderPane maxHeight="700.0" maxWidth="1020.0" minHeight="580.0" minWidth="900.0"
+                    prefHeight="680.0" prefWidth="1020.0" styleClass="auth-window">
 
             <!-- PAINEL LATERAL -->
             <left>
-                <StackPane minWidth="280.0" prefWidth="480.0" styleClass="auth-visual" BorderPane.alignment="CENTER">
+                <StackPane minWidth="360.0" prefWidth="420.0"
+                           styleClass="auth-visual, auth-visual-left" BorderPane.alignment="CENTER">
 
                     <children>
                         <Circle fill="transparent" radius="250.0" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" translateX="150.0" translateY="-120.0" StackPane.alignment="TOP_RIGHT" />
 
                         <Circle fill="transparent" radius="200.0" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" translateX="-130.0" translateY="100.0" StackPane.alignment="BOTTOM_LEFT" />
 
-                        <VBox alignment="TOP_LEFT" maxWidth="480.0" spacing="30.0">
+                        <VBox alignment="TOP_LEFT" maxWidth="420.0" spacing="22.0">
 
                             <padding>
-                                <Insets bottom="30.0" left="40.0" right="36.0" top="38.0" />
+                                <Insets bottom="26.0" left="32.0" right="28.0" top="28.0" />
                             </padding>
 
                             <children>
@@ -113,13 +139,13 @@
 
             <!-- FORMULÁRIO DE REGISTO -->
             <center>
-                <StackPane style="-fx-background-color: #FFFFFF;" BorderPane.alignment="CENTER">
+                <StackPane styleClass="auth-form-pane" BorderPane.alignment="CENTER">
 
                     <children>
-                        <VBox alignment="CENTER_LEFT" maxWidth="470.0" spacing="12.0">
+                        <VBox alignment="CENTER_LEFT" maxWidth="500.0" spacing="10.0">
 
                             <padding>
-                                <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+                                <Insets bottom="20.0" left="30.0" right="30.0" top="20.0" />
                             </padding>
 
                             <children>
@@ -232,7 +258,4 @@
             </center>
         </BorderPane>
     </children>
-   <padding>
-      <Insets bottom="50.0" left="200.0" right="200.0" top="50.0" />
-   </padding>
-</AnchorPane>
+</StackPane>
