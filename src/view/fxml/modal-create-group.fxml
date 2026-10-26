@@ -64,6 +64,27 @@
                 </items>
             </ComboBox>
         </VBox>
+
+        <HBox spacing="12">
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Total de membros (incluindo o criador)" styleClass="field-label"/>
+                <TextField fx:id="txtMemberCount" styleClass="field-input" promptText="Ex.: 7"/>
+            </VBox>
+            <VBox spacing="7" HBox.hgrow="ALWAYS">
+                <Label text="Ordem de recebimento" styleClass="field-label"/>
+                <ComboBox fx:id="cmbOrderMode" styleClass="field-select" maxWidth="Infinity">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Manual"/>
+                            <String fx:value="Aleatória"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </VBox>
+        </HBox>
+        <Label fx:id="lblPayoutEstimate" styleClass="modal-sub"
+               text="Cada ciclo arrecada a quota multiplicada pelo número de membros. Manual: o responsável inicia o primeiro ciclo; os seguintes são geridos pelo sistema."
+               wrapText="true"/>
     </VBox>
 
     <HBox styleClass="modal-footer" alignment="CENTER_RIGHT" spacing="9">
