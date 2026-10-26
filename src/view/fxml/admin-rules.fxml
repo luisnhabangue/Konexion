@@ -26,9 +26,24 @@
                 <Label text="Lembrete antes do prazo (dias)"/>
                 <TextField fx:id="reminderDaysField" prefWidth="90" promptText="1"/>
             </HBox>
-            <CheckBox fx:id="remindersEnabledCheck" text="Enviar lembretes de prazo"/>
-            <CheckBox fx:id="overdueNotificationsCheck" text="Notificar responsável sobre atrasos"/>
-            <CheckBox fx:id="latePaymentNotificationsCheck" text="Notificar pagamentos tardios"/>
+            <VBox spacing="5" styleClass="admin-rule-option">
+                <CheckBox fx:id="remindersEnabledCheck" styleClass="global-rule-checkbox"
+                          text="Enviar lembretes de prazo"/>
+                <Label styleClass="section-sub"
+                       text="Envia um aviso antes da data limite de contribuição." wrapText="true"/>
+            </VBox>
+            <VBox spacing="5" styleClass="admin-rule-option">
+                <CheckBox fx:id="overdueNotificationsCheck" styleClass="global-rule-checkbox"
+                          text="Notificar responsável sobre atrasos"/>
+                <Label styleClass="section-sub"
+                       text="Avisa o responsável quando uma contribuição ultrapassa o prazo." wrapText="true"/>
+            </VBox>
+            <VBox spacing="5" styleClass="admin-rule-option">
+                <CheckBox fx:id="latePaymentNotificationsCheck" styleClass="global-rule-checkbox"
+                          text="Notificar pagamentos tardios"/>
+                <Label styleClass="section-sub"
+                       text="Regista e comunica pagamentos efectuados depois da data limite." wrapText="true"/>
+            </VBox>
             <Label styleClass="section-sub" text="A penalização aceita 0–100 pontos; o lembrete aceita 0–30 dias."/>
             <HBox alignment="CENTER_RIGHT">
                 <Button fx:id="btnSaveSettings" styleClass="btn, btn-primary" text="Guardar regras"/>
