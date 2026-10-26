@@ -47,6 +47,9 @@ public class Main extends Application {
             scene.getStylesheets().add(getClass().getResource("/view/css/style.css").toExternalForm());
         }
         stage.setScene(scene);
+        stage.setWidth(1366);
+        stage.setHeight(760);
+        stage.centerOnScreen();
         stage.show();
     }
 
