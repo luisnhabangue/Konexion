@@ -31,7 +31,6 @@
 .white-muted { -fx-text-fill: rgba(255,255,255,0.70); }
 .muted { -fx-text-fill: -muted; }
 .bold { -fx-font-weight: 700; }
-
 .app-shell { -fx-background-color: -canvas; }
 .content-area { -fx-background-color: -canvas; }
 
