@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<!--
+    Centro de Ajuda (página principal) — carregada na área de conteúdo via Navigator.go(Page.HELP_CENTER).
+    Ficheiro sugerido: src/view/fxml/help-center.fxml
+    Controller sugerido: controller.HelpCenterPageController (novo; o HelpCenterController atual
+    continua a servir a janela modal antiga e não é alterado).
+-->
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.HelpCenterPageController">
+    <VBox styleClass="page" spacing="22">
+
+        <!-- Título -->
+        <VBox spacing="6">
+            <Label text="Centro de Ajuda" styleClass="page-title"/>
+            <Label text="Encontre respostas e saiba como utilizar o Konexion." styleClass="page-sub"/>
+        </VBox>
+
+        <!-- Pesquisa de dúvidas -->
+        <HBox styleClass="search, help-search" alignment="CENTER_LEFT" spacing="9">
+            <StackPane styleClass="ico-box">
+                <SVGPath styleClass="ico" content="M3,11 A8,8 0 1 0 19,11 A8,8 0 1 0 3,11 M21,21 L16.65,16.65"/>
+            </StackPane>
+            <TextField fx:id="txtHelpSearch" promptText="Pesquisar uma dúvida..."
+                       styleClass="search-input" HBox.hgrow="ALWAYS" onAction="#onSearchHelp"/>
+        </HBox>
+
+        <!-- Cartões de navegação (2 x 2) -->
+        <GridPane hgap="15" vgap="15">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <!-- Guia de utilização -->
+            <VBox fx:id="cardGuide" styleClass="group-card, help-card" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                  maxWidth="Infinity" focusTraversable="true" onMouseClicked="#onOpenGuide">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="summary-icon, summary-teal">
+                        <StackPane styleClass="ico-box">
+                            <SVGPath styleClass="ico" content="M2,4 L8,4 A4,4 0 0 1 12,8 L12,21 A3,3 0 0 0 9,18 L2,18 Z M22,4 L16,4 A4,4 0 0 0 12,8 L12,21 A3,3 0 0 1 15,18 L22,18 Z"/>
+                        </StackPane>
+                    </StackPane>
+                </HBox>
+                <Label text="Guia de utilização" styleClass="group-name"/>
+                <Label text="Aprenda a utilizar as funcionalidades." styleClass="section-sub" wrapText="true">
+                    <VBox.margin><Insets top="5"/></VBox.margin>
+                </Label>
+                <Region VBox.vgrow="ALWAYS" minHeight="16"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Consultar guia" styleClass="summary-link"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane>
+                    </StackPane>
+                </HBox>
+            </VBox>
+
+            <!-- Perguntas frequentes -->
+            <VBox fx:id="cardFaq" styleClass="group-card, help-card" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                  maxWidth="Infinity" focusTraversable="true" onMouseClicked="#onOpenFaq">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="summary-icon, summary-blue">
+                        <StackPane styleClass="ico-box">
+                            <SVGPath styleClass="ico" content="M21,15 A2,2 0 0 1 19,17 L7,17 L3,21 L3,5 A2,2 0 0 1 5,3 L19,3 A2,2 0 0 1 21,5 Z M8,9 L16,9 M8,12 L13,12"/>
+                        </StackPane>
+                    </StackPane>
+                </HBox>
+                <Label text="Perguntas frequentes" styleClass="group-name"/>
+                <Label text="Encontre respostas às dúvidas comuns." styleClass="section-sub" wrapText="true">
+                    <VBox.margin><Insets top="5"/></VBox.margin>
+                </Label>
+                <Region VBox.vgrow="ALWAYS" minHeight="16"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Ver perguntas" styleClass="summary-link"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane>
+                    </StackPane>
+                </HBox>
+            </VBox>
+
+            <!-- Contactar suporte -->
+            <VBox fx:id="cardSupport" styleClass="group-card, help-card" GridPane.columnIndex="0" GridPane.rowIndex="1"
+                  maxWidth="Infinity" focusTraversable="true" onMouseClicked="#onContactSupport">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="summary-icon, summary-amber">
+                        <StackPane styleClass="ico-box">
+                            <SVGPath styleClass="ico" content="M4,15 L4,12 A8,8 0 0 1 20,12 L20,15 M4,13 L7,13 L7,18 L5,18 A1,1 0 0 1 4,17 Z M20,13 L17,13 L17,18 L19,18 A1,1 0 0 0 20,17 Z M17,18 A5,3 0 0 1 12,21"/>
+                        </StackPane>
+                    </StackPane>
+                </HBox>
+                <Label text="Contactar suporte" styleClass="group-name"/>
+                <Label text="Envie uma dúvida ou relate um problema." styleClass="section-sub" wrapText="true">
+                    <VBox.margin><Insets top="5"/></VBox.margin>
+                </Label>
+                <Region VBox.vgrow="ALWAYS" minHeight="16"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Pedir ajuda" styleClass="summary-link"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane>
+                    </StackPane>
+                </HBox>
+            </VBox>
+
+            <!-- Os meus pedidos -->
+            <VBox fx:id="cardMyRequests" styleClass="group-card, help-card" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                  maxWidth="Infinity" focusTraversable="true" onMouseClicked="#onOpenMyRequests">
+                <HBox alignment="CENTER_LEFT">
+                    <StackPane styleClass="summary-icon, summary-teal">
+                        <StackPane styleClass="ico-box">
+                            <SVGPath styleClass="ico" content="M9,3 L15,3 L15,6 L9,6 Z M15,4.5 L18,4.5 A2,2 0 0 1 20,6.5 L20,19 A2,2 0 0 1 18,21 L6,21 A2,2 0 0 1 4,19 L4,6.5 A2,2 0 0 1 6,4.5 L9,4.5 M8,11 L16,11 M8,15 L14,15"/>
+                        </StackPane>
+                    </StackPane>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <!-- Só aparece se o controller encontrar pedidos em aberto na base de dados -->
+                    <Label fx:id="lblOpenRequestsBadge" styleClass="badge, badge-warning" visible="false" managed="false"/>
+                </HBox>
+                <Label text="Os meus pedidos" styleClass="group-name"/>
+                <Label text="Consulte os pedidos e os seus estados." styleClass="section-sub" wrapText="true">
+                    <VBox.margin><Insets top="5"/></VBox.margin>
+                </Label>
+                <Region VBox.vgrow="ALWAYS" minHeight="16"/>
+                <HBox styleClass="group-footer" alignment="CENTER_LEFT">
+                    <Label text="Ver pedidos" styleClass="summary-link"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="round-arrow">
+                        <StackPane styleClass="ico-box-sm"><SVGPath styleClass="ico, ico-sm" content="M5,12 L19,12 M13,6 L19,12 L13,18"/></StackPane>
+                    </StackPane>
+                </HBox>
+            </VBox>
+        </GridPane>
+    </VBox>
+</ScrollPane>

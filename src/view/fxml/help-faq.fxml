@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.HelpFaqController">
+    <VBox styleClass="page" spacing="22">
+
+        <HBox>
+            <Button fx:id="btnBack" styleClass="back-link" text="Voltar ao Centro de Ajuda">
+                <graphic><StackPane styleClass="ico-box-sm"><SVGPath content="M15,18 L9,12 L15,6" styleClass="ico, ico-sm"/></StackPane></graphic>
+            </Button>
+        </HBox>
+
+        <VBox spacing="6">
+            <Label text="Perguntas frequentes" styleClass="page-title"/>
+            <Label text="Respostas às dúvidas mais comuns sobre o Konexion." styleClass="page-sub"/>
+        </VBox>
+
+        <HBox styleClass="search, help-search" alignment="CENTER_LEFT" spacing="9">
+            <StackPane styleClass="ico-box">
+                <SVGPath styleClass="ico" content="M3,11 A8,8 0 1 0 19,11 A8,8 0 1 0 3,11 M21,21 L16.65,16.65"/>
+            </StackPane>
+            <TextField fx:id="txtSearch" promptText="Pesquisar uma dúvida..." styleClass="search-input" HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <VBox fx:id="faqList" spacing="10"/>
+
+        <Label fx:id="lblNoResults" styleClass="section-sub" wrapText="true" visible="false" managed="false"
+               text="Nenhuma pergunta encontrada. Pode enviar a sua dúvida em “Contactar suporte”, no Centro de Ajuda."/>
+    </VBox>
+</ScrollPane>
