@@ -19,7 +19,7 @@
 
 <br/>
 
-[Repositório](https://github.com/luisnhabangue/iXitique) · [Equipa](#-equipa)
+[Repositório](https://github.com/luisnhabangue/iXitique) · [Equipa](#equipa)
 
 </div>
 
@@ -238,7 +238,7 @@ As permissões devem respeitar o contexto do grupo e as regras de acesso impleme
 
 O Konexion é um projeto desenvolvido em equipa.
 
-<div align="center">
+<div align="center" id="equipa">
 
 <table>
 <tr>
