@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
@@ -17,6 +18,7 @@ import model.User;
 import model.enums.Gender;
 import service.AuthService;
 import util.StyledDialogs;
+import validation.UserValidator;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,6 +54,7 @@ public class RegisterController {
     @FXML private Label lblFirstNameError;
     @FXML private Label lblLastNameError;
     @FXML private Label lblDocumentError;
+    @FXML private Label lblBirthDateError;
     @FXML private Label lblPhoneError;
     @FXML private Label lblUsernameError;
     @FXML private Label lblEmailError;
@@ -90,6 +93,19 @@ public class RegisterController {
                     Gender.F
             );
         }
+        if (dpDataNascimento != null) {
+            dpDataNascimento.setDayCellFactory(picker -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    LocalDate today = LocalDate.now();
+                    setDisable(empty || date.isBefore(today.minusYears(90))
+                            || date.isAfter(today.minusYears(15)));
+                }
+            });
+            dpDataNascimento.valueProperty().addListener((observable, oldValue, newValue) ->
+                    validateBirthDate(false));
+        }
 
         if (btnContinuar != null) {
             btnContinuar.setOnAction(event -> continueRegistration(event.getSource()));
@@ -124,6 +140,9 @@ public class RegisterController {
                 || dpDataNascimento.getValue() == null) {
             showAlert(Alert.AlertType.WARNING,
                     "Preencha os dados pessoais obrigatórios antes de continuar. O BI/NUIT pode ser enviado depois, na verificação KYC.");
+            return;
+        }
+        if (!validateBirthDate(true)) {
             return;
         }
 
@@ -250,6 +269,30 @@ public class RegisterController {
         if (!valid) {
             field.getStyleClass().add("field-invalid");
         }
+        return valid;
+    }
+
+    private boolean validateBirthDate(boolean force) {
+        if (lblBirthDateError == null || dpDataNascimento == null) {
+            return true;
+        }
+        LocalDate birthDate = dpDataNascimento.getValue();
+        if (!force && birthDate == null) {
+            lblBirthDateError.setText("");
+            lblBirthDateError.setVisible(false);
+            lblBirthDateError.setManaged(false);
+            return true;
+        }
+        String error = null;
+        try {
+            UserValidator.validateBirthDate(birthDate);
+        } catch (IllegalArgumentException exception) {
+            error = exception.getMessage();
+        }
+        boolean valid = error == null;
+        lblBirthDateError.setText(valid ? "" : error);
+        lblBirthDateError.setVisible(!valid);
+        lblBirthDateError.setManaged(!valid);
         return valid;
     }
 

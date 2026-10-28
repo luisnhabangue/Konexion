@@ -6,11 +6,9 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import model.AdminGroupSummary;
 import model.AdminLateMemberSummary;
-import model.AdminMemberSummary;
 import model.AdminUserSummary;
 import model.Cycle;
 import model.Group;
-import model.LeadershipRequest;
 import model.PlatformSettings;
 import model.User;
 import model.UserReport;
@@ -215,28 +213,6 @@ public class AdminService {
         } finally {
             em.close();
         }
-    }
-
-    public List<AdminMemberSummary> getGroupMembers(Long administratorId, Long groupId) {
-            requireAdministrator(administratorId);
-            EntityManager em = factory.createEntityManager();
-            try {
-                return em.createQuery(
-                                "SELECT new model.AdminMemberSummary(u.id, " +
-                                        "CONCAT(CONCAT(u.firstName, ' '), u.lastName), u.username, ug.balance, " +
-                                        "(g.createdBy.id = u.id)) FROM UserGroup ug JOIN ug.user u " +
-                                        "JOIN ug.group g WHERE g.groupId = :groupId ORDER BY u.firstName, u.lastName",
-                                AdminMemberSummary.class)
-                        .setParameter("groupId", groupId)
-                        .getResultList();
-            } finally {
-                em.close();
-            }
-        }
-
-    public void interveneMemberWithdrawal(Long administratorId, Long groupId, Long memberId) {
-        requireAdministrator(administratorId);
-        new GroupService().removeMemberFromGroup(groupId, administratorId, memberId);
     }
 
     public List<MonthlyTotal> getFinancialTrend(Long administratorId) {

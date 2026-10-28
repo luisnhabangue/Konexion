@@ -4,6 +4,8 @@ import exceptions.InvalidEmailException;
 import exceptions.InvalidPasswordException;
 import exceptions.InvalidPhoneNumberException;
 import exceptions.InvalidUsernameException;
+import java.time.LocalDate;
+import java.time.Period;
 
 /**
  * Classe utilitária e final para validações de formato dos dados do utilizador.
@@ -26,6 +28,16 @@ public final class UserValidator {
             if (field == null || field.isBlank()) {
                 throw new IllegalArgumentException("Preencha todos os campos obrigatórios.");
             }
+        }
+    }
+
+    public static void validateBirthDate(LocalDate birthDate) {
+        if (birthDate == null) {
+            throw new IllegalArgumentException("Informe a data de nascimento.");
+        }
+        int age = Period.between(birthDate, LocalDate.now()).getYears();
+        if (age < 15 || age > 90) {
+            throw new IllegalArgumentException("A idade deve estar entre 15 e 90 anos.");
         }
     }
 

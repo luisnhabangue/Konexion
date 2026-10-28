@@ -12,7 +12,6 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -27,7 +26,6 @@ import javafx.stage.StageStyle;
 import javafx.util.converter.NumberStringConverter;
 import model.AdminGroupSummary;
 import model.AdminLateMemberSummary;
-import model.AdminMemberSummary;
 import model.AdminUserSummary;
 import model.User;
 import model.UserReport;
@@ -44,7 +42,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.List;
@@ -225,7 +222,7 @@ public class AdminDashboardController {
         financeChart.getData().clear();
         XYChart.Series<String, Number> finance = new XYChart.Series<>();
         finance.setName("Arrecadado");
-        DateTimeFormatter monthLabel = DateTimeFormatter.ofPattern("MMM/yy", new Locale("pt", "MZ"));
+        DateTimeFormatter monthLabel = DateTimeFormatter.ofPattern("MMM/yy", Locale.forLanguageTag("pt-MZ"));
         for (AdminService.MonthlyTotal total : adminService.getFinancialTrend(administratorId)) {
             finance.getData().add(new XYChart.Data<>(
                     total.month().atDay(1).format(monthLabel), total.amount()));
@@ -237,7 +234,7 @@ public class AdminDashboardController {
         XYChart.Data<String, Number> groups = new XYChart.Data<>("Grupos activos", metrics.groups());
         XYChart.Data<String, Number> payments = new XYChart.Data<>("Pagamentos", metrics.paidContributions());
         XYChart.Data<String, Number> reports = new XYChart.Data<>("Denúncias abertas", metrics.openReports());
-        series.getData().addAll(users, groups, payments, reports);
+        series.getData().addAll(List.of(users, groups, payments, reports));
         activityChart.getData().add(series);
         styleActivityBar(users, "activity-users");
         styleActivityBar(groups, "activity-groups");
@@ -313,13 +310,6 @@ public class AdminDashboardController {
             details.setOnAction(event -> showGroupDetails(group.id()));
             row.getChildren().addAll(info, details);
             if (!group.archived()) {
-                Button withdrawal = new Button("Intervir em desistência");
-                withdrawal.getStyleClass().addAll("btn", "btn-secondary");
-                withdrawal.setDisable(group.latestCycle() != null && group.latestCycle() > 0);
-                withdrawal.setOnAction(event -> interveneWithdrawal(group));
-                row.getChildren().add(withdrawal);
-            }
-            if (!group.archived()) {
                 Button archive = new Button("Arquivar");
                 archive.getStyleClass().addAll("btn", "btn-danger");
                 archive.setDisable(group.activeCycles() > 0);
@@ -373,42 +363,6 @@ public class AdminDashboardController {
         }
     }
 
-    private void interveneWithdrawal(AdminGroupSummary group) {
-        try {
-            List<AdminMemberSummary> eligibleMembers = adminService
-                    .getGroupMembers(administratorId, group.id()).stream()
-                    .filter(member -> !member.groupCreator()
-                            && member.balance() != null
-                            && member.balance().compareTo(java.math.BigDecimal.ZERO) <= 0)
-                    .toList();
-            if (eligibleMembers.isEmpty()) {
-                StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
-                        "Não há membros elegíveis para saída. O responsável do grupo não pode ser removido, " +
-                                "e membros com saldo por liquidar devem ser resolvidos primeiro."));
-                return;
-            }
-            ChoiceDialog<AdminMemberSummary> choice = new ChoiceDialog<>(
-                    eligibleMembers.getFirst(), eligibleMembers);
-            choice.setTitle("Intervenção administrativa");
-            choice.setHeaderText("Registar desistência de membro");
-            choice.setContentText("Membro (disponível apenas antes do primeiro ciclo):");
-            AdminMemberSummary member = StyledDialogs.showAndWait(choice).orElse(null);
-            if (member == null) {
-                return;
-            }
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Remover " + member + " do grupo \"" + group.name()
-                            + "\"? Esta operação só é permitida antes de iniciar ciclos.");
-            if (StyledDialogs.showAndWait(confirmation).orElse(null) != ButtonType.OK) {
-                return;
-            }
-            adminService.interveneMemberWithdrawal(administratorId, group.id(), member.id());
-            refresh();
-        } catch (RuntimeException exception) {
-            StyledDialogs.showAndWait(new Alert(Alert.AlertType.ERROR, exception.getMessage()));
-        }
-    }
-
     private void exportFinancialCsv() {
         try {
             String csv = adminService.getFinancialCsv(administratorId, reportFrom.getValue(), reportTo.getValue());
@@ -417,7 +371,7 @@ public class AdminDashboardController {
             chooser.setInitialFileName("relatorio-financeiro-" + reportFrom.getValue()
                     + "-a-" + reportTo.getValue() + ".csv");
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV", "*.csv"));
-            java.io.File file = chooser.showSaveDialog(userRows.getScene().getWindow());
+            java.io.File file = chooser.showSaveDialog(btnExportCsv.getScene().getWindow());
             if (file != null) {
                 Files.writeString(file.toPath(), csv, StandardCharsets.UTF_8);
                 StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,
@@ -437,7 +391,7 @@ public class AdminDashboardController {
             chooser.setInitialFileName("relatorio-financeiro-" + reportFrom.getValue()
                     + "-a-" + reportTo.getValue() + ".pdf");
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF", "*.pdf"));
-            java.io.File file = chooser.showSaveDialog(userRows.getScene().getWindow());
+            java.io.File file = chooser.showSaveDialog(btnExportPdf.getScene().getWindow());
             if (file != null) {
                 Files.write(file.toPath(), pdf);
                 StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION,

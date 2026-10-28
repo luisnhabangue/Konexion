@@ -18,10 +18,6 @@
                        styleClass="page-sub" wrapText="true"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="btnSeedDemoData" text="Dados de demonstração"
-                    styleClass="btn, btn-secondary">
-                <HBox.margin><Insets right="4"/></HBox.margin>
-            </Button>
             <Button fx:id="btnCreateNewGroup" text="Criar grupo"
                     styleClass="btn, btn-primary"/>
         </HBox>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.HelpGuideController">
+    <VBox styleClass="page" spacing="22">
+
+        <HBox>
+            <Button fx:id="btnBack" styleClass="back-link" text="Voltar ao Centro de Ajuda">
+                <graphic><StackPane styleClass="ico-box-sm"><SVGPath content="M15,18 L9,12 L15,6" styleClass="ico, ico-sm"/></StackPane></graphic>
+            </Button>
+        </HBox>
+
+        <VBox spacing="6">
+            <Label text="Guia de utilização" styleClass="page-title"/>
+            <Label text="Do registo ao pagamento: os passos para usar o Konexion." styleClass="page-sub"/>
+        </VBox>
+
+        <HBox styleClass="card, settings-card" spacing="16" alignment="TOP_LEFT" fillHeight="false">
+            <StackPane styleClass="avatar, avatar-lg"><Label text="1"/></StackPane>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Crie a sua conta e verifique a identidade" styleClass="section-title"/>
+                <Label text="Registe-se e inicie sessão. Para criar grupos, a conta precisa de verificação aprovada por um administrador: em “Meu perfil”, envie o BI ou NUIT e as fotografias pedidas. Enquanto aguarda, pode participar em grupos existentes." styleClass="t-td" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <HBox styleClass="card, settings-card" spacing="16" alignment="TOP_LEFT" fillHeight="false">
+            <StackPane styleClass="avatar, avatar-lg"><Label text="2"/></StackPane>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Crie um grupo" styleClass="section-title"/>
+                <Label text="Clique em “Criar grupo” e defina o nome (3 a 80 caracteres), a descrição (até 150 caracteres), o valor por membro, o dia de pagamento (1 a 31) e a frequência (diária, semanal, quinzenal ou mensal). Quem cria o grupo é o primeiro membro e o responsável por ele." styleClass="t-td" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <HBox styleClass="card, settings-card" spacing="16" alignment="TOP_LEFT" fillHeight="false">
+            <StackPane styleClass="avatar, avatar-lg"><Label text="3"/></StackPane>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Adicione os membros" styleClass="section-title"/>
+                <Label text="Dentro do grupo, clique em “Adicionar membro” e procure o utilizador pelo NUIT ou username. Cada novo membro entra no fim da fila de recebimento. Só é possível adicionar ou remover membros antes de abrir o primeiro ciclo." styleClass="t-td" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <HBox styleClass="card, settings-card" spacing="16" alignment="TOP_LEFT" fillHeight="false">
+            <StackPane styleClass="avatar, avatar-lg"><Label text="4"/></StackPane>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Abra um ciclo" styleClass="section-title"/>
+                <Label text="Com pelo menos dois membros, clique em “Abrir novo ciclo” e escolha o beneficiário da rodada. Só pode existir um ciclo ativo de cada vez, e os participantes ficam definidos quando o ciclo começa." styleClass="t-td" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <HBox styleClass="card, settings-card" spacing="16" alignment="TOP_LEFT" fillHeight="false">
+            <StackPane styleClass="avatar, avatar-lg"><Label text="5"/></StackPane>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Pague a sua contribuição" styleClass="section-title"/>
+                <Label text="No grupo, clique em “Registrar pagamento”, escolha M-Pesa ou e-Mola e indique o número de telefone. Cada membro paga uma quota por ciclo, com valor não inferior ao definido no grupo. O pagamento é simulado: não movimenta dinheiro real." styleClass="t-td" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <HBox styleClass="card, settings-card" spacing="16" alignment="TOP_LEFT" fillHeight="false">
+            <StackPane styleClass="avatar, avatar-lg"><Label text="6"/></StackPane>
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Acompanhe tudo" styleClass="section-title"/>
+                <Label text="Na “Visão geral” vê o total contribuído e os seus grupos. O “Histórico” lista as contribuições e pode ser exportado em CSV. O ícone de notificações avisa de convites e prazos. Pagar depois do prazo desconta 10 pontos de pontualidade." styleClass="t-td" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <HBox>
+            <Button fx:id="btnFaq" text="Ver perguntas frequentes" styleClass="btn, btn-ghost"/>
+        </HBox>
+    </VBox>
+</ScrollPane>

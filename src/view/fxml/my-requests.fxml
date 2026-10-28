@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="page-scroll" stylesheets="@app.css" fitToWidth="true" hbarPolicy="NEVER"
+            fx:controller="controller.MyRequestsController">
+    <VBox styleClass="page" spacing="22">
+
+        <!-- Voltar -->
+        <HBox>
+            <Button fx:id="btnBack" styleClass="back-link" text="Voltar ao Centro de Ajuda">
+                <graphic><StackPane styleClass="ico-box-sm"><SVGPath content="M15,18 L9,12 L15,6" styleClass="ico, ico-sm"/></StackPane></graphic>
+            </Button>
+        </HBox>
+
+        <!-- Título -->
+        <VBox spacing="6">
+            <Label text="Os meus pedidos" styleClass="page-title"/>
+            <Label text="Consulte os pedidos de suporte que enviou e o respetivo estado." styleClass="page-sub"/>
+        </VBox>
+
+        <!-- Lista de pedidos -->
+        <VBox fx:id="tableCard" styleClass="card, table-card">
+            <HBox styleClass="t-head">
+                <Label text="DATA" styleClass="t-th, c-w150"/>
+                <Label text="ASSUNTO" styleClass="t-th" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Label text="ESTADO" styleClass="t-th, c-w110"/>
+            </HBox>
+            <VBox fx:id="ticketRows"/>
+        </VBox>
+
+        <!-- Sem pedidos -->
+        <VBox fx:id="emptyState" styleClass="card, empty-card" alignment="CENTER" spacing="10" visible="false" managed="false">
+            <StackPane styleClass="empty-icon">
+                <StackPane styleClass="ico-box">
+                    <SVGPath styleClass="ico" content="M9,3 L15,3 L15,6 L9,6 Z M15,4.5 L18,4.5 A2,2 0 0 1 20,6.5 L20,19 A2,2 0 0 1 18,21 L6,21 A2,2 0 0 1 4,19 L4,6.5 A2,2 0 0 1 6,4.5 L9,4.5 M8,11 L16,11 M8,15 L14,15"/>
+                </StackPane>
+            </StackPane>
+            <Label text="Ainda não enviou nenhum pedido" styleClass="section-title"/>
+            <Label text="Quando contactar o suporte, o pedido aparecerá aqui." styleClass="section-sub"/>
+        </VBox>
+    </VBox>
+</ScrollPane>
