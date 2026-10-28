@@ -60,6 +60,7 @@ O projeto aplica conceitos de Programação Orientada a Objetos, persistência d
 | 📋 **Histórico** | Consulta das operações relevantes. |
 | ✅ **Validações** | Aplicação de regras de negócio para prevenir operações inválidas. |
 | 👤 **Perfil** | Consulta e edição dos dados do utilizador. |
+| 🆘 **Suporte** | Envio e acompanhamento de pedidos de ajuda, com respostas da equipa administrativa. |
 
 ### 🖥️ Interface e interação com os dados
 
@@ -213,16 +214,43 @@ Localiza a classe `view.Application` e executa a aplicação através do IDE.
 
 ### Dados de demonstração
 
-Se a opção **Carregar dados de demonstração** estiver disponível na versão atual, poderá ser utilizada para inserir registos de teste na base de dados.
+Para preparar uma base de dados local para apresentação, execute na raiz do projeto:
 
-Na versão descrita no projeto, os dados de demonstração incluem:
+```bash
+mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.mainClass=service.DemoDataSeeder
+```
 
-- Um grupo.
-- Dois membros fictícios.
-- Um ciclo.
-- Duas contribuições.
+Para confirmar que a carga foi persistida, execute:
 
-A operação foi concebida para evitar a duplicação dos mesmos dados de demonstração por conta.
+```bash
+mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java -Dexec.mainClass=service.DemoDataSeeder -Dexec.args=--verify
+```
+
+A carga é aditiva e pode ser executada apenas uma vez: se já existir a conta `demo.admin`,
+o processo termina sem alterar os dados. As contas de demonstração usam a palavra-passe
+`Lulerk@12`; os e-mails terminam em `example.test` e não são endereços de entrega reais.
+Os nomes são fictícios e as imagens KYC são marcadas como dados de demonstração.
+
+Contas para apresentação:
+
+| Utilizador | Cenário |
+|---|---|
+| `demo.admin` | Acesso ao painel administrativo. |
+| `demo.amelia` | Responsável do grupo ativo e notificações de atrasos. |
+| `demo.ernesto` | Contribuição pendente, grupo público e notificações. |
+| `demo.lidia` | Contribuição em atraso, membro e responsável de grupo com convites. |
+| `demo.joaquim` | Membro de ciclo concluído, com strike registado. |
+| `demo.sara` | Verificação KYC pendente com imagens fictícias e convites recebidos. |
+| `demo.paulo` | Conta desativada. |
+| `demo.rosa` | Verificação KYC recusada e convite recusado. |
+| `demo.david` | Conta sem KYC submetido e convite recebido. |
+| `demo.mateus` | Conta com strikes e pontualidade negativa. |
+| `demo.helena` | Responsável de grupo público e ciclo concluído. |
+
+Todos usam a palavra-passe de demonstração indicada acima. A base recebe quatro grupos
+(ativo com pagamentos em estados diferentes, público aberto, convites pendentes e ciclo
+concluído), denúncias abertas e resolvida, notificações e um ciclo com histórico financeiro.
+Não use estas credenciais fora da apresentação nem numa base de dados de produção.
 
 ## 🔐 Organização de Acessos
 
