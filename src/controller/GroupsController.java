@@ -27,7 +27,7 @@ import java.util.Locale;
  * Controlador JavaFX para a vista de listagem e exploração de grupos de Xitique.
  * <p>
  * Permite filtrar os grupos do utilizador (todos, ativos, concluídos), pesquisar por nome,
- * consultar/aderir a grupos públicos e semear dados de demonstração.
+ * consultar/aderir a grupos públicos.
  * </p>
 
  * @since 1.0
@@ -40,7 +40,6 @@ public class GroupsController {
 
     @FXML private GridPane groupsGrid;
     @FXML private Button btnCreateNewGroup;
-    @FXML private Button btnSeedDemoData;
     @FXML private TextField groupSearchField;
     @FXML private ToggleButton filterAll;
     @FXML private ToggleButton filterActive;
@@ -64,7 +63,6 @@ public class GroupsController {
         filterActive.setOnAction(event -> renderGroups());
         filterFinished.setOnAction(event -> renderGroups());
         btnCreateNewGroup.setOnAction(event -> openCreateGroup());
-       // btnSeedDemoData.setOnAction(event -> seedDemoData());
         groupsGrid.widthProperty().addListener((observable, oldWidth, newWidth) -> updateGridColumns(newWidth.doubleValue()));
         refresh();
     }
@@ -224,17 +222,6 @@ public class GroupsController {
         Window owner = groupsGrid.getScene().getWindow();
         ModalDialogs.showCreateGroup(owner, this::refresh);
     }
-
-//    /** Popula a base de dados com dados de demonstração de teste. */
-//    private void seedDemoData() {
-//        try {
-//            String message = new DemoDataService().seedForCurrentUser();
-//            StyledDialogs.showAndWait(new Alert(Alert.AlertType.INFORMATION, message));
-//            refresh();
-//        } catch (RuntimeException e) {
-//            showError(e.getMessage());
-//        }
-//    }
 
     /** Apresenta uma mensagem de erro ao utilizador. */
     private void showError(String message) {
