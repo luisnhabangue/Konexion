@@ -12,7 +12,7 @@
     <VBox spacing="18" styleClass="page">
         <VBox spacing="5">
             <Label styleClass="page-title" text="Grupos da plataforma"/>
-            <Label styleClass="page-sub" text="Consulte detalhes, acompanhe ciclos e intervenha em grupos inactivos."/>
+            <Label styleClass="page-sub" text="Consulte detalhes e arquive grupos sem ciclos em andamento."/>
         </VBox>
         <VBox spacing="10" styleClass="card, admin-section">
             <HBox alignment="CENTER_LEFT" spacing="10">
