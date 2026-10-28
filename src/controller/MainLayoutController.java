@@ -75,6 +75,7 @@ public class MainLayoutController {
     @FXML private Button navAdminKyc;
     @FXML private Button navAdminUsers;
     @FXML private Button navAdminGroups;
+    @FXML private Button navAdminSupport;
     @FXML private HBox sideHelp;
 
     /** Botão para fechar a sessão ativa do utilizador[cite: 110]. */
@@ -130,6 +131,7 @@ public class MainLayoutController {
         navigation.put(Page.ADMIN_KYC, navAdminKyc);
         navigation.put(Page.ADMIN_USERS, navAdminUsers);
         navigation.put(Page.ADMIN_GROUPS, navAdminGroups);
+        navigation.put(Page.ADMIN_SUPPORT, navAdminSupport);
         navigation.put(Page.GROUPS, navGroups);
         navigation.put(Page.HISTORY, navHistory);
         navigation.put(Page.PROFILE, navProfile);
@@ -161,6 +163,8 @@ public class MainLayoutController {
             navAdminUsers.setManaged(true);
             navAdminGroups.setVisible(true);
             navAdminGroups.setManaged(true);
+            navAdminSupport.setVisible(true);
+            navAdminSupport.setManaged(true);
             navProfile.setVisible(false);
             navProfile.setManaged(false);
             sideHelp.setVisible(false);
@@ -172,6 +176,7 @@ public class MainLayoutController {
             navAdminKyc.getStyleClass().add("nav-item-compact");
             navAdminUsers.getStyleClass().add("nav-item-compact");
             navAdminGroups.getStyleClass().add("nav-item-compact");
+            navAdminSupport.getStyleClass().add("nav-item-compact");
         } else {
             sideHelp.setVisible(true);
             sideHelp.setManaged(true);
@@ -187,6 +192,8 @@ public class MainLayoutController {
             navAdminUsers.setManaged(false);
             navAdminGroups.setVisible(false);
             navAdminGroups.setManaged(false);
+            navAdminSupport.setVisible(false);
+            navAdminSupport.setManaged(false);
         }
         navDashboard.setOnAction(event -> navigate(administrator ? Page.ADMIN : Page.DASHBOARD));
         navGroups.setOnAction(event -> navigate(Page.GROUPS));
@@ -198,6 +205,15 @@ public class MainLayoutController {
         navAdminKyc.setOnAction(event -> navigate(Page.ADMIN_KYC));
         navAdminUsers.setOnAction(event -> navigate(Page.ADMIN_USERS));
         navAdminGroups.setOnAction(event -> navigate(Page.ADMIN_GROUPS));
+        navAdminSupport.setOnAction(event -> navigate(Page.ADMIN_SUPPORT));
+        sideHelp.setFocusTraversable(true);
+        sideHelp.setOnMouseClicked(event -> navigate(Page.HELP_CENTER));
+        sideHelp.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
+                navigate(Page.HELP_CENTER);
+                event.consume();
+            }
+        });
         btnCreateGroup.setOnAction(event -> openCreateGroup());
         btnNotifications.setOnAction(event -> showNotifications());
         btnLogout.setOnAction(event -> logout());

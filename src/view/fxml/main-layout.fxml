@@ -82,12 +82,16 @@
                         text="Grupos" visible="false">
                     <graphic><StackPane styleClass="ico-box"><SVGPath content="M3,7 L12,3 L21,7 L12,11 Z M3,12 L12,16 L21,12 M3,17 L12,21 L21,17" styleClass="ico" /></StackPane></graphic>
                 </Button>
+                <Button fx:id="navAdminSupport" managed="false" maxWidth="Infinity" styleClass="nav-item"
+                        text="Suporte" visible="false">
+                    <graphic><StackPane styleClass="ico-box"><SVGPath content="M4,5 L20,5 L20,17 L8,17 L4,21 Z M8,9 L16,9 M8,13 L14,13" styleClass="ico" /></StackPane></graphic>
+                </Button>
 
             </VBox>
 
             <Region VBox.vgrow="ALWAYS" />
 
-            <HBox fx:id="sideHelp" alignment="CENTER_LEFT" spacing="10" styleClass="side-help">
+            <HBox fx:id="sideHelp" alignment="CENTER_LEFT" focusTraversable="true" spacing="10" styleClass="side-help">
                 <StackPane styleClass="help-circle">
                     <Label styleClass="white-text, bold" text="?" />
                 </StackPane>
