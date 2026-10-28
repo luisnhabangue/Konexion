@@ -230,6 +230,7 @@
                                                 <Label style="-fx-font-size: 12px;                                                               -fx-font-weight: bold;                                                               -fx-text-fill: #182426;" text="Data de nascimento" />
 
                                                 <DatePicker fx:id="dpDataNascimento" maxWidth="Infinity" prefHeight="43.0" promptText="Dia / mês / ano" HBox.hgrow="ALWAYS" />
+                                                <Label fx:id="lblBirthDateError" managed="false" styleClass="field-error" visible="false" wrapText="true" />
                                             </children>
                                         </VBox>
                                     </children>
