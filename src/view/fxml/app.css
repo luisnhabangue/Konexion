@@ -102,6 +102,7 @@
     -fx-font-weight: 600;
     -icon: -muted;
 }
+.nav-item-compact { -fx-pref-height: 40; -fx-min-height: 40; }
 .nav-item:hover { -fx-background-color: -canvas; -fx-text-fill: -primary; -icon: -primary; }
 .nav-item.active { -fx-background-color: -primary-soft; -fx-text-fill: -primary; -icon: -primary; }
 
@@ -692,6 +693,33 @@
 .kyc-card { -fx-padding: 20; }
 .admin-metric { -fx-padding: 18; }
 .admin-chart { -fx-padding: 16; -fx-min-width: 220; }
+.admin-activity-total {
+    -fx-background-color: -canvas;
+    -fx-background-radius: 9;
+    -fx-padding: 10;
+    -fx-min-width: 110;
+    -fx-pref-width: 150;
+}
+.activity-legend-dot.activity-users { -fx-fill: -primary; }
+.activity-chart .chart-bar.activity-users { -fx-bar-fill: -primary; }
+.activity-legend-dot.activity-groups { -fx-fill: -mint; }
+.activity-chart .chart-bar.activity-groups { -fx-bar-fill: -mint; }
+.activity-legend-dot.activity-payments { -fx-fill: -amber; }
+.activity-chart .chart-bar.activity-payments { -fx-bar-fill: -amber; }
+.activity-legend-dot.activity-reports { -fx-fill: -blue; }
+.activity-chart .chart-bar.activity-reports { -fx-bar-fill: -blue; }
+.activity-chart .axis {
+    -fx-tick-label-fill: -muted;
+    -fx-tick-label-font-size: 10px;
+}
+.activity-chart .axis-label {
+    -fx-text-fill: -ink;
+    -fx-font-size: 10px;
+}
+.activity-chart .chart-horizontal-grid-lines,
+.activity-chart .chart-vertical-grid-lines {
+    -fx-stroke: -line;
+}
 .savings-chart .axis {
     -fx-tick-label-fill: -muted;
     -fx-tick-label-font-size: 10px;
@@ -767,6 +795,30 @@
 
 .check-box:selected > .box { -fx-background-color: -primary; -fx-border-color: -primary; }
 .check-box:selected > .box > .mark { -fx-background-color: white; }
+.admin-rule-option {
+    -fx-background-color: #fbfcfc;
+    -fx-background-radius: 9;
+    -fx-border-color: -line-soft;
+    -fx-border-radius: 9;
+    -fx-padding: 12;
+}
+.global-rule-checkbox {
+    -fx-text-fill: -ink;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+.global-rule-checkbox > .text { -fx-fill: -ink; }
+.global-rule-checkbox > .box {
+    -fx-background-color: white;
+    -fx-border-color: -muted-2;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-min-width: 18;
+    -fx-min-height: 18;
+}
+.global-rule-checkbox:selected > .box { -fx-background-color: -primary; -fx-border-color: -primary; }
+.global-rule-checkbox:selected > .box > .mark { -fx-background-color: white; }
 
 
 .field-label { -fx-font-size: 10px; -fx-font-weight: 600; -fx-text-fill: #38494b; }

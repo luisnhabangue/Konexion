@@ -1,6 +1,7 @@
 package validation;
 
 import java.math.BigDecimal;
+import model.enums.ReceivingOrderMode;
 
 /**
  * Classe utilitária para validação de dados de entrada na gestão de grupos de Xitique.
@@ -74,6 +75,18 @@ public final class GroupValidator {
     public static void validateFrequency(Integer frequency) {
         if (frequency == null || frequency <= 0) {
             throw new IllegalArgumentException("A frequência de contribuição deve ser superior a 0 dias.");
+        }
+    }
+
+    public static void validateMemberCapacity(Integer maxMembers) {
+        if (maxMembers == null || maxMembers < 2) {
+            throw new IllegalArgumentException("O grupo deve ter capacidade para pelo menos dois membros, incluindo o criador.");
+        }
+    }
+
+    public static void validateReceivingOrderMode(ReceivingOrderMode mode) {
+        if (mode == null) {
+            throw new IllegalArgumentException("Selecione a forma de definir a ordem de recebimento.");
         }
     }
 }

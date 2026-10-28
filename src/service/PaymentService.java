@@ -129,6 +129,19 @@ public class PaymentService {
     }
 
     public PaymentResponse payCyclePayout(Long groupId, Integer cycleId, PaymentMethod method, String account) {
+        String key = "payout:" + groupId + ":" + cycleId;
+        if (!IN_FLIGHT.add(key)) {
+            throw new IllegalStateException("Já existe uma transferência em curso para este ciclo.");
+        }
+        try {
+            return doPayCyclePayout(groupId, cycleId, method, account);
+        } finally {
+            IN_FLIGHT.remove(key);
+        }
+    }
+
+    private PaymentResponse doPayCyclePayout(Long groupId, Integer cycleId,
+                                             PaymentMethod method, String account) {
         if (groupId == null || cycleId == null || method == null) {
             throw new IllegalArgumentException("Grupo, ciclo e método de pagamento são obrigatórios.");
         }
@@ -144,6 +157,20 @@ public class PaymentService {
                 .orElse(null);
         if (cycle == null) {
             throw new IllegalArgumentException("Ciclo não encontrado para o grupo informado.");
+        }
+        if (cycle.getStatus() != model.enums.CycleStatus.CONCLUDED) {
+            throw new IllegalStateException("O bolo só pode ser transferido depois de todas as contribuições serem pagas.");
+        }
+        long paidContributions = groupService.findContributionsByCycle(cycleId).stream()
+                .filter(contribution -> contribution.getStatus() == model.enums.ContributionStatus.PAID)
+                .count();
+        int expectedMembers = groupService.getGroupMemberCapacity(groupId);
+        if (paidContributions != expectedMembers) {
+            throw new IllegalStateException("O bolo só pode ser transferido depois do pagamento de todos os "
+                    + expectedMembers + " membros.");
+        }
+        if (transactionDao.hasSuccessfulPayout(cycleId)) {
+            throw new IllegalStateException("O bolo deste ciclo já foi transferido.");
         }
 
         UserGroup beneficiaryGroup = cycle.getBeneficiary();
@@ -178,6 +205,7 @@ public class PaymentService {
         t.setGroupId(groupId);
         t.setUserId(beneficiary.getId());
         t.setCycleId(cycleId);
+        t.setPayout(true);
         t.setMethod(method);
         t.setAccount(cleanAccount);
         t.setAmount(availableBalance);
@@ -191,6 +219,7 @@ public class PaymentService {
             group.setGroupBalance(BigDecimal.ZERO);
             groupService.updateGroupBalance(groupId, BigDecimal.ZERO);
             persistPayoutNotification(beneficiary, cycle, beneficiaryGroup, availableBalance, method);
+            groupService.startNextCycleAfterPayout(groupId);
         }
 
         return resp;

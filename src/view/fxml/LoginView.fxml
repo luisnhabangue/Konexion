@@ -9,7 +9,6 @@
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -19,17 +18,32 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.shape.Circle?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1366.0" style="-fx-background-color: white;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
+<StackPane minHeight="620.0" minWidth="920.0" prefHeight="760.0" prefWidth="1180.0" styleClass="auth-scene" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
-      <BorderPane prefHeight="768.0" prefWidth="1171.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Circle fill="rgba(255,255,255,0.13)" mouseTransparent="true" radius="175.0" translateX="-455.0" translateY="-260.0" StackPane.alignment="CENTER" />
+      <Circle fill="rgba(255,183,3,0.16)" mouseTransparent="true" radius="125.0" translateX="485.0" translateY="300.0" StackPane.alignment="CENTER" />
+      <Circle fill="transparent" mouseTransparent="true" radius="215.0" stroke="rgba(255,255,255,0.18)" strokeWidth="2.0" translateX="500.0" translateY="-300.0" StackPane.alignment="CENTER" />
+      <StackPane mouseTransparent="true" styleClass="auth-background-coin" translateY="205.0" StackPane.alignment="CENTER_LEFT">
+         <Label styleClass="auth-coin-label" text="MT" />
+      </StackPane>
+      <VBox alignment="CENTER" mouseTransparent="true" spacing="8.0" styleClass="auth-growth-decoration" translateY="190.0" StackPane.alignment="CENTER_RIGHT">
+         <HBox alignment="BOTTOM_CENTER" spacing="5.0">
+            <Region styleClass="auth-growth-bar, auth-growth-bar-short" />
+            <Region styleClass="auth-growth-bar, auth-growth-bar-medium" />
+            <Region styleClass="auth-growth-bar, auth-growth-bar-tall" />
+            <Region styleClass="auth-growth-bar, auth-growth-bar-medium" />
+         </HBox>
+         <Label styleClass="auth-decoration-label" text="POUPANÇA" />
+      </VBox>
+      <BorderPane maxHeight="700.0" maxWidth="1020.0" minHeight="580.0" minWidth="900.0" prefHeight="680.0" prefWidth="1020.0" styleClass="auth-window">
          <left>
-            <StackPane prefHeight="700.0" prefWidth="500.0" styleClass="auth-visual" BorderPane.alignment="CENTER">
+            <StackPane minWidth="380.0" prefHeight="640.0" prefWidth="420.0" styleClass="auth-visual, auth-visual-left" BorderPane.alignment="CENTER">
                <children>
                   <Circle fill="transparent" radius="260" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" translateX="180" translateY="-120" StackPane.alignment="TOP_RIGHT" />
                   <Circle fill="transparent" radius="210" stroke="rgba(255,255,255,0.07)" strokeWidth="1.5" translateX="-150" translateY="120" StackPane.alignment="BOTTOM_LEFT" />
-                  <VBox alignment="TOP_LEFT" spacing="30.0">
+                  <VBox alignment="TOP_LEFT" spacing="22.0">
                      <padding>
-                        <Insets bottom="40.0" left="50.0" right="50.0" top="40.0" />
+                        <Insets bottom="30.0" left="34.0" right="30.0" top="30.0" />
                      </padding>
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10">
@@ -45,12 +59,12 @@
                         <VBox alignment="CENTER_LEFT" spacing="15.0" VBox.vgrow="ALWAYS">
                            <children>
                               <Label style="-fx-background-color: rgba(111,221,165,0.15); -fx-text-fill: #B9EED2; -fx-padding: 4 10; -fx-background-radius: 12; -fx-font-size: 10; -fx-font-weight: bold;" text="POUPAR JUNTOS, CRESCER JUNTOS" />
-                              <Label style="-fx-text-fill: white; -fx-font-size: 36; -fx-font-weight: bold; -fx-line-spacing: 2; -fx-font-family: &quot;Inter&quot;;" text="A sua comunidade.&#10;Os seus objetivos.&#10;Um futuro melhor." />
+                              <Label style="-fx-text-fill: white; -fx-font-size: 30; -fx-font-weight: bold; -fx-line-spacing: 2; -fx-font-family: &quot;Inter&quot;;" text="A sua comunidade.&#10;Os seus objetivos.&#10;Um futuro melhor." />
                               <Label maxWidth="423.0" prefHeight="49.0" prefWidth="397.0" style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13;" text="Organize os seus grupos de poupança, acompanhe contribuições e alcance objetivos em conjunto." wrapText="true">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin></Label>
-                              <Pane prefHeight="180" prefWidth="350">
+                              <Pane prefHeight="155" prefWidth="330">
                                  <children>
                                     <VBox layoutX="190" layoutY="50" prefHeight="80" prefWidth="140" styleClass="visual-card-back">
                                        <padding>
@@ -90,13 +104,20 @@
          </left>
          <center>
 
-            <StackPane prefHeight="768.0" prefWidth="800.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+            <StackPane prefHeight="680.0" prefWidth="660.0" styleClass="auth-form-pane" BorderPane.alignment="CENTER">
                <children>
-                  <VBox alignment="CENTER_LEFT" maxWidth="400.0" spacing="10.0">
+                  <VBox alignment="CENTER_LEFT" maxWidth="400.0" spacing="9.0">
                      <padding>
-                        <Insets left="20.0" right="20.0" />
+                        <Insets left="30.0" right="30.0" />
                      </padding>
                      <children>
+                        <HBox alignment="CENTER_RIGHT" spacing="8.0" VBox.vgrow="NEVER">
+                           <Button fx:id="btnMinimize" accessibleText="Minimizar janela" style="-fx-background-color: rgba(255,255,255,0.88); -fx-background-radius: 18; -fx-text-fill: #0F5257; -fx-font-size: 18px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;" text="—" HBox.hgrow="ALWAYS" />
+                           <Button fx:id="btnExit" accessibleText="Sair da aplicação" prefHeight="43.0" prefWidth="44.0" style="-fx-background-color: #D9534F; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;" text="×" HBox.hgrow="ALWAYS" />
+                           <VBox.margin>
+                              <Insets bottom="150.0" right="-80.0" top="-50.0" />
+                           </VBox.margin>
+                        </HBox>
                         <!-- Cabeçalho -->
                         <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #182426;" text="Bem-vindo de volta" />
                         <Label style="-fx-font-size: 12px; -fx-text-fill: #69787B;" text="Entre na sua conta para continuar." />
@@ -168,14 +189,5 @@
             </StackPane>
          </center>
       </BorderPane>
-      <HBox alignment="CENTER" spacing="8.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="14.0">
-         <children>
-            <Button fx:id="btnMinimize" accessibleText="Minimizar janela" style="-fx-background-color: rgba(255,255,255,0.88); -fx-background-radius: 18; -fx-text-fill: #0F5257; -fx-font-size: 18px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;" text="—" />
-            <Button fx:id="btnExit" accessibleText="Sair da aplicação" prefHeight="43.0" prefWidth="45.0" style="-fx-background-color: #D9534F; -fx-background-radius: 10; -fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold; -fx-cursor: hand; -fx-min-width: 34px; -fx-min-height: 34px;" text="×" />
-         </children>
-      </HBox>
    </children>
-   <padding>
-      <Insets bottom="50.0" left="200.0" right="200.0" top="50.0" />
-   </padding>
-</AnchorPane>
+</StackPane>

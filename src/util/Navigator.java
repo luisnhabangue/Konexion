@@ -26,6 +26,7 @@ public final class Navigator {
 
     /** Identificador do grupo atualmente selecionado no contexto de navegação. */
     private static Long selectedGroupId;
+    private static Page currentPage;
 
     /**
      * Inicializa o navegador com o painel de conteúdo e o ouvinte de navegação.
@@ -48,16 +49,22 @@ public final class Navigator {
      */
     public static <T> T go(Page page) {
         try {
+            currentPage = page;
             URL resource = Navigator.class.getResource("/view/fxml/" + page.file);
             if (resource == null) {
                 throw new IllegalStateException("A tela não foi encontrada: " + page.file);
             }
+
             FXMLLoader loader = new FXMLLoader(resource);
             Node view = loader.load();
             content.getChildren().setAll(view);
             onChange.accept(page);
             return loader.getController();
         } catch (IOException e) { throw new UncheckedIOException(e); }
+    }
+
+    public static Page getCurrentPage() {
+        return currentPage;
     }
 
     /**

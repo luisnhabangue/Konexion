@@ -9,6 +9,7 @@ import model.*;
 import model.enums.ContributionStatus;
 import model.enums.CycleStatus;
 import model.enums.PaymentMethod;
+import model.enums.ReceivingOrderMode;
 import payment.PaymentResponse;
 import util.EntityManagerFactoryUtil;
 import validation.GroupValidator;
@@ -18,6 +19,7 @@ import jakarta.persistence.EntityTransaction;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Serviço responsável pelas regras de negócio ligadas à gestão de Grupos, Membros,
@@ -52,6 +54,11 @@ public class GroupService {
         GroupValidator.validateGroupName(group.getGroupName());
         GroupValidator.validateGroupDescription(group.getGroupDescription());
         GroupValidator.validateFrequency(group.getFrequency());
+        if (!group.isCapacityConfigured()) {
+            throw new IllegalArgumentException("Defina o número total de membros do grupo.");
+        }
+        GroupValidator.validateMemberCapacity(group.getMaxMembers());
+        GroupValidator.validateReceivingOrderMode(group.getReceivingOrderMode());
 
         if (group.getCreatedBy() == null || !group.getCreatedBy().isActive()) {
             throw new IllegalStateException("Utilizadores inativos não podem criar grupos.");
@@ -125,13 +132,9 @@ public class GroupService {
             throw new IllegalStateException("O usuário '" + user.getFirstName() + "' já é membro deste grupo.");
         }
 
-        int nextOrder = userGroupDao.findByGroupId(groupId).stream()
-                .map(UserGroup::getUserReceivingOrder)
-                .filter(order -> order != null)
-                .max(Integer::compareTo)
-                .orElse(0) + 1;
-
-        persistMembership(groupId, userId, nextOrder);
+        ensureCapacityAvailable(group, groupId);
+        persistMembership(groupId, userId);
+        initializeRotationIfReady(groupId);
     }
 
     /**
@@ -184,8 +187,13 @@ public class GroupService {
         ensureGroupIsNotArchived(group);
         requireOwnerOrAdministrator(group, actorId);
 
-        if (userGroupDao.countMembersInGroup(groupId) < 2) {
-            throw new IllegalStateException("Adicione pelo menos dois membros antes de abrir um ciclo.");
+        if (group.isCapacityConfigured() && group.getGroupBalance().compareTo(BigDecimal.ZERO) > 0) {
+            throw new IllegalStateException("Transfira o bolo do ciclo anterior antes de iniciar outro ciclo.");
+        }
+
+        if (userGroupDao.countMembersInGroup(groupId) != getGroupMemberCapacity(groupId)) {
+            throw new IllegalStateException("O ciclo será iniciado quando o grupo atingir os "
+                    + getGroupMemberCapacity(groupId) + " membros definidos.");
         }
 
         Cycle activeCycle = cycleDao.findActiveCycleByGroup(groupId);
@@ -198,6 +206,9 @@ public class GroupService {
             throw new IllegalArgumentException("O usuário selecionado para receber o prêmio não faz parte deste grupo.");
         }
         if (!members.isEmpty() && members.stream().allMatch(UserGroup::isReceived)) {
+            if (group.isCapacityConfigured()) {
+                throw new IllegalStateException("Todos os membros já receberam o bolo deste grupo.");
+            }
             members.forEach(member -> {
                 member.setReceived(false);
                 userGroupDao.update(member);
@@ -212,6 +223,12 @@ public class GroupService {
         if (beneficiary.isReceived()) {
             throw new IllegalStateException("Este membro já recebeu o valor do Xitique na rodada atual.");
         }
+        UserGroup nextBeneficiary = nextBeneficiary(members);
+        if (nextBeneficiary != null && !nextBeneficiary.getId().equals(beneficiary.getId())) {
+            throw new IllegalStateException("O próximo beneficiário da ordem definida é "
+                    + nextBeneficiary.getUser().getFirstName() + " "
+                    + nextBeneficiary.getUser().getLastName() + ".");
+        }
 
         Cycle cycle = new Cycle(null, group, null, LocalDate.now(), beneficiary);
         cycle.setGroup(group);
@@ -224,9 +241,66 @@ public class GroupService {
 
         LocalDate calculatedCycleEndDate = cycle.getStartDate().plusDays(group.getFrequency());
         cycle.setStatus(CycleStatus.IN_PROGRESS);
+        cycle.setAutomaticPayoutEnabled(group.isCapacityConfigured());
         cycle.setEndDate(calculatedCycleEndDate);
 
         cycleDao.save(cycle);
+    }
+
+    private UserGroup nextBeneficiary(List<UserGroup> members) {
+        return members.stream().filter(member -> !member.isReceived())
+                .min(java.util.Comparator.comparing(UserGroup::getUserReceivingOrder))
+                .orElse(null);
+    }
+
+    private void initializeRotationIfReady(Long groupId) {
+        Group group = findById(groupId);
+        List<UserGroup> members = userGroupDao.findByGroupId(groupId);
+        if (group == null || !group.isCapacityConfigured() || members.size() != group.getMaxMembers()
+                || !cycleDao.findByGroupId(groupId).isEmpty()) {
+            return;
+        }
+        if (group.getReceivingOrderMode() == ReceivingOrderMode.RANDOM) {
+            Collections.shuffle(members);
+            for (int index = 0; index < members.size(); index++) {
+                UserGroup member = members.get(index);
+                member.setUserReceivingOrder(index + 1);
+                userGroupDao.update(member);
+            }
+            members = userGroupDao.findByGroupId(groupId);
+            createCycle(group, nextBeneficiary(members));
+        }
+    }
+
+    private void createCycle(Group group, UserGroup beneficiary) {
+        if (beneficiary == null) {
+            throw new IllegalStateException("Não há beneficiário elegível para o próximo ciclo.");
+        }
+        Cycle cycle = new Cycle(null, group, cycleDao.findLastCycleNumberByGroup(group.getGroupId()) + 1,
+                LocalDate.now(), beneficiary);
+        cycle.setStatus(CycleStatus.IN_PROGRESS);
+        cycle.setAutomaticPayoutEnabled(group.isCapacityConfigured());
+        cycle.setEndDate(cycle.getStartDate().plusDays(group.getFrequency()));
+        cycleDao.save(cycle);
+    }
+
+    public void startNextCycleAfterPayout(Long groupId) {
+        Group group = findById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Grupo não encontrado.");
+        }
+        if (group.getGroupBalance().compareTo(BigDecimal.ZERO) > 0) {
+            throw new IllegalStateException("O saldo do ciclo anterior ainda não foi transferido.");
+        }
+        List<UserGroup> members = userGroupDao.findByGroupId(groupId);
+        if (!group.isCapacityConfigured() || members.size() != group.getMaxMembers()
+                || cycleDao.findActiveCycleByGroup(groupId) != null) {
+            return;
+        }
+        UserGroup next = nextBeneficiary(members);
+        if (next != null) {
+            createCycle(group, next);
+        }
     }
 
     /**
@@ -357,6 +431,12 @@ public class GroupService {
 
         }
         requireOwnerOrAdministrator(group, actorId);
+        if (group.getReceivingOrderMode() == ReceivingOrderMode.RANDOM) {
+            throw new IllegalStateException("A ordem aleatória é definida automaticamente pelo sistema.");
+        }
+        if (!cycleDao.findByGroupId(groupId).isEmpty()) {
+            throw new IllegalStateException("A ordem só pode ser alterada antes do início do primeiro ciclo.");
+        }
 
         UserGroup newFirstMember = userGroupDao.findByUserAndGroup(userGroupIdTarget, groupId);
         if (newFirstMember == null || !newFirstMember.getGroup().getGroupId().equals(groupId)) {
@@ -484,9 +564,9 @@ public class GroupService {
         if (!cycleDao.findByGroupId(groupId).isEmpty()) {
             throw new IllegalStateException("Este grupo já iniciou ciclos e não aceita novos membros.");
         }
-        persistMembership(groupId, userId, userGroupDao.findByGroupId(groupId).stream()
-                .map(UserGroup::getUserReceivingOrder).filter(order -> order != null)
-                .max(Integer::compareTo).orElse(0) + 1);
+        ensureCapacityAvailable(group, groupId);
+        persistMembership(groupId, userId);
+        initializeRotationIfReady(groupId);
     }
 
     public User findActiveUserByIdentifier(String identifier) {
@@ -503,6 +583,14 @@ public class GroupService {
 
     public List<UserGroup> findMembers(Long groupId) {
         return userGroupDao.findByGroupId(groupId);
+    }
+
+    public int getGroupMemberCapacity(Long groupId) {
+        Group group = findById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Grupo não encontrado.");
+        }
+        return group.isCapacityConfigured() ? group.getMaxMembers() : userGroupDao.countMembersInGroup(groupId);
     }
 
     public Cycle findActiveCycle(Long groupId) {
@@ -540,6 +628,7 @@ public class GroupService {
         if (!cycleDao.findByGroupId(groupId).isEmpty()) {
             throw new IllegalStateException("Não é possível convidar membros depois de iniciar ciclos.");
         }
+        ensureCapacityAvailable(group, groupId);
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
             Long pending = em.createQuery(
@@ -551,8 +640,24 @@ public class GroupService {
             }
             EntityTransaction transaction = em.getTransaction();
             transaction.begin();
+            Group lockedGroup = em.find(Group.class, groupId, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+            if (lockedGroup.isCapacityConfigured()) {
+                Long occupiedSlots = em.createQuery(
+                                "SELECT COUNT(ug) FROM UserGroup ug WHERE ug.group.groupId = :groupId",
+                                Long.class)
+                        .setParameter("groupId", groupId)
+                        .getSingleResult();
+                Long reservedSlots = em.createQuery(
+                                "SELECT COUNT(i) FROM MembershipInvitation i WHERE i.group.groupId = :groupId " +
+                                        "AND i.status = 'PENDING'", Long.class)
+                        .setParameter("groupId", groupId)
+                        .getSingleResult();
+                if (occupiedSlots + reservedSlots >= lockedGroup.getMaxMembers()) {
+                    throw new IllegalStateException("O grupo já atingiu a capacidade definida de membros.");
+                }
+            }
             MembershipInvitation invitation = new MembershipInvitation();
-            invitation.setGroup(em.getReference(Group.class, groupId));
+            invitation.setGroup(lockedGroup);
             invitation.setInviter(em.getReference(User.class, inviterId));
             invitation.setInvitee(em.getReference(User.class, inviteeId));
             em.persist(invitation);
@@ -575,6 +680,52 @@ public class GroupService {
                                     "WHERE i.invitee.id = :userId AND i.status = 'PENDING' ORDER BY i.createdAt DESC",
                             MembershipInvitation.class)
                     .setParameter("userId", userId).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<MembershipInvitation> findPendingInvitationsByGroup(Long groupId) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT i FROM MembershipInvitation i JOIN FETCH i.group JOIN FETCH i.invitee " +
+                                    "JOIN FETCH i.inviter WHERE i.group.groupId = :groupId AND i.status = 'PENDING' " +
+                                    "ORDER BY i.createdAt ASC",
+                            MembershipInvitation.class)
+                    .setParameter("groupId", groupId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void revokeInvitation(Long groupId, Long actorId, Long invitationId) {
+        Group group = findById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Grupo não encontrado.");
+        }
+        requireOwnerOrAdministrator(group, actorId);
+        EntityManager em = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            MembershipInvitation invitation = em.createQuery(
+                            "SELECT i FROM MembershipInvitation i JOIN FETCH i.group " +
+                                    "WHERE i.id = :id AND i.group.groupId = :groupId", MembershipInvitation.class)
+                    .setParameter("id", invitationId)
+                    .setParameter("groupId", groupId)
+                    .getResultStream().findFirst().orElse(null);
+            if (invitation == null || !"PENDING".equals(invitation.getStatus())) {
+                throw new IllegalStateException("O convite já não está pendente.");
+            }
+            invitation.setStatus("REVOKED");
+            transaction.commit();
+        } catch (RuntimeException exception) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw exception;
         } finally {
             em.close();
         }
@@ -605,8 +756,13 @@ public class GroupService {
                 if (!cycleDao.findByGroupId(invitation.getGroup().getGroupId()).isEmpty()) {
                     throw new IllegalStateException("O grupo já iniciou ciclos e não aceita novos membros.");
                 }
+                Group group = em.find(Group.class, invitation.getGroup().getGroupId(),
+                        jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+                if (group.isCapacityConfigured()
+                        && userGroupDao.countMembersInGroup(group.getGroupId()) >= group.getMaxMembers()) {
+                    throw new IllegalStateException("O grupo já atingiu o limite de membros.");
+                }
                 User user = em.getReference(User.class, userId);
-                Group group = invitation.getGroup();
                 int nextOrder = em.createQuery(
                                 "SELECT COALESCE(MAX(ug.userReceivingOrder), 0) FROM UserGroup ug WHERE ug.group.groupId = :groupId",
                                 Integer.class)
@@ -626,6 +782,108 @@ public class GroupService {
                 transaction.rollback();
             }
             throw exception;
+        } finally {
+            em.close();
+        }
+        if (accepted) {
+            initializeRotationIfReady(getInvitationGroupId(invitationId, userId));
+        }
+    }
+
+    private Long getInvitationGroupId(Long invitationId, Long userId) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT i.group.groupId FROM MembershipInvitation i " +
+                                    "WHERE i.id = :id AND i.invitee.id = :userId", Long.class)
+                    .setParameter("id", invitationId)
+                    .setParameter("userId", userId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    private void ensureCapacityAvailable(Group group, Long groupId) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            Long pendingInvitations = em.createQuery(
+                            "SELECT COUNT(i) FROM MembershipInvitation i WHERE i.group.groupId = :groupId " +
+                                    "AND i.status = 'PENDING'", Long.class)
+                    .setParameter("groupId", groupId)
+                    .getSingleResult();
+            int memberCount = userGroupDao.countMembersInGroup(groupId);
+            if (group.isCapacityConfigured() && memberCount + pendingInvitations >= group.getMaxMembers()) {
+                throw new IllegalStateException("O grupo já atingiu a capacidade definida de "
+                        + group.getMaxMembers() + " membros.");
+            }
+        } finally {
+            em.close();
+        }
+    }
+
+    public void sendContributionReminder(Long groupId, Long actorId, Long memberUserId) {
+        Group group = findById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Grupo não encontrado.");
+        }
+        requireOwnerOrAdministrator(group, actorId);
+        Cycle cycle = cycleDao.findActiveCycleByGroup(groupId);
+        if (cycle == null) {
+            throw new IllegalStateException("Não existe um ciclo em andamento para enviar lembretes.");
+        }
+        UserGroup member = userGroupDao.findByUserAndGroup(memberUserId, groupId);
+        if (member == null) {
+            throw new IllegalArgumentException("O utilizador não pertence a este grupo.");
+        }
+        if (contributionDao.findByUserGroupAndCycle(member.getId(), cycle.getId()) != null) {
+            throw new IllegalStateException("Este membro já pagou a contribuição do ciclo atual.");
+        }
+
+        EntityManager em = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            Long existing = em.createQuery(
+                            "SELECT COUNT(n) FROM UserNotification n WHERE n.recipient.id = :recipientId " +
+                                    "AND n.cycle.id = :cycleId AND n.userGroup.id = :memberId " +
+                                    "AND n.type = 'MANUAL_PAYMENT_REMINDER'", Long.class)
+                    .setParameter("recipientId", memberUserId)
+                    .setParameter("cycleId", cycle.getId())
+                    .setParameter("memberId", member.getId())
+                    .getSingleResult();
+            if (existing > 0) {
+                throw new IllegalStateException("Este membro já recebeu um lembrete neste ciclo.");
+            }
+            transaction.begin();
+            UserNotification notification = new UserNotification();
+            notification.setRecipient(em.getReference(User.class, memberUserId));
+            notification.setCycle(em.getReference(Cycle.class, cycle.getId()));
+            notification.setUserGroup(em.getReference(UserGroup.class, member.getId()));
+            notification.setType("MANUAL_PAYMENT_REMINDER");
+            notification.setMessage("O responsável do grupo " + group.getGroupName()
+                    + " lembrou-o de pagar a contribuição do ciclo " + cycle.getNumero() + ".");
+            em.persist(notification);
+            transaction.commit();
+        } catch (RuntimeException exception) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw exception;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean hasContributionReminder(Integer cycleId, Long userGroupId) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT COUNT(n) FROM UserNotification n WHERE n.cycle.id = :cycleId " +
+                                    "AND n.userGroup.id = :userGroupId AND n.type = 'MANUAL_PAYMENT_REMINDER'",
+                            Long.class)
+                    .setParameter("cycleId", cycleId)
+                    .setParameter("userGroupId", userGroupId)
+                    .getSingleResult() > 0;
         } finally {
             em.close();
         }
@@ -712,17 +970,36 @@ public class GroupService {
         }
     }
 
-    private void persistMembership(Long groupId, Long userId, int order) {
+    private void persistMembership(Long groupId, Long userId) {
         EntityManager em = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
         try {
             transaction.begin();
+            Group group = em.find(Group.class, groupId, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+            Long memberCount = em.createQuery(
+                            "SELECT COUNT(ug) FROM UserGroup ug WHERE ug.group.groupId = :groupId", Long.class)
+                    .setParameter("groupId", groupId)
+                    .getSingleResult();
+            Long pendingInvitations = em.createQuery(
+                            "SELECT COUNT(i) FROM MembershipInvitation i WHERE i.group.groupId = :groupId " +
+                                    "AND i.status = 'PENDING'", Long.class)
+                    .setParameter("groupId", groupId)
+                    .getSingleResult();
+            if (group == null || group.isCapacityConfigured()
+                    && memberCount + pendingInvitations >= group.getMaxMembers()) {
+                throw new IllegalStateException("O grupo já atingiu a capacidade definida de membros.");
+            }
+            Integer lastOrder = em.createQuery(
+                            "SELECT MAX(ug.userReceivingOrder) FROM UserGroup ug WHERE ug.group.groupId = :groupId",
+                            Integer.class)
+                    .setParameter("groupId", groupId)
+                    .getSingleResult();
             UserGroup membership = new UserGroup();
             membership.setGroup(em.getReference(Group.class, groupId));
             membership.setUser(em.getReference(User.class, userId));
             membership.setBalance(BigDecimal.ZERO);
             membership.setReceived(false);
-            membership.setUserReceivingOrder(order);
+            membership.setUserReceivingOrder(lastOrder == null ? 1 : lastOrder + 1);
             em.persist(membership);
             transaction.commit();
         } catch (RuntimeException exception) {

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="page-scroll" stylesheets="@app.css"
+            xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AdminDashboardController">
+    <VBox spacing="18" styleClass="page">
+        <VBox spacing="5">
+            <Label styleClass="page-title" text="Utilizadores"/>
+            <Label styleClass="page-sub" text="Pesquise contas, consulte perfis, redefina passwords e gira o acesso."/>
+        </VBox>
+        <VBox spacing="10" styleClass="card, admin-section">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label styleClass="section-title" text="Contas da plataforma"/>
+                <TextField fx:id="userSearchField" promptText="Pesquisar por nome ou utilizador..." HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="AS_NEEDED" pannable="true"
+                        styleClass="table-scroll" vbarPolicy="NEVER">
+                <VBox minWidth="1100">
+                    <HBox alignment="CENTER_LEFT" styleClass="t-head">
+                        <Label maxWidth="Infinity" styleClass="t-th" text="UTILIZADOR" HBox.hgrow="ALWAYS"/>
+                        <Label styleClass="t-th, admin-user-role" text="PERFIL"/>
+                        <Label styleClass="t-th, admin-user-state" text="ESTADO"/>
+                        <Label styleClass="t-th, admin-user-stat" text="STRIKES"/>
+                        <Label styleClass="t-th, admin-user-stat" text="PONTOS"/>
+                        <Label styleClass="t-th, admin-user-actions" text="ACÇÕES"/>
+                    </HBox>
+                    <VBox fx:id="userRows"/>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </VBox>
+</ScrollPane>

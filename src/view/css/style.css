@@ -111,6 +111,66 @@
 .auth-visual {
     -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #083f44 0%, #0f5b5f 65%, #0c4b50 100%);
 }
+.auth-scene {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
+        #082f36 0%, #0e6668 48%, #177a72 100%);
+}
+.auth-window {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255,255,255,0.7);
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(3,28,32,0.34), 42, 0.22, 0, 18);
+}
+.auth-visual-left {
+    -fx-background-radius: 24 0 0 24;
+}
+.auth-form-pane {
+    -fx-background-color: white;
+    -fx-background-radius: 0 24 24 0;
+}
+.auth-background-coin {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ffd166, #ffb703);
+    -fx-background-radius: 50%;
+    -fx-border-color: rgba(255,255,255,0.78);
+    -fx-border-radius: 50%;
+    -fx-border-width: 3;
+    -fx-effect: dropshadow(gaussian, rgba(4,35,37,0.25), 16, 0.18, 0, 5);
+    -fx-min-width: 56;
+    -fx-pref-width: 56;
+    -fx-max-width: 56;
+    -fx-min-height: 56;
+    -fx-pref-height: 56;
+    -fx-max-height: 56;
+}
+.auth-coin-label {
+    -fx-text-fill: #6f4e00;
+    -fx-font-size: 14;
+    -fx-font-weight: 800;
+}
+.auth-growth-decoration {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 14 0 0 14;
+    -fx-border-color: rgba(255,255,255,0.18);
+    -fx-border-radius: 14 0 0 14;
+    -fx-padding: 12 8 12 12;
+}
+.auth-growth-bar {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #fbd46d, #ffb703);
+    -fx-background-radius: 5 5 0 0;
+    -fx-min-width: 9;
+    -fx-pref-width: 9;
+    -fx-max-width: 9;
+}
+.auth-growth-bar-short { -fx-min-height: 22; -fx-pref-height: 22; }
+.auth-growth-bar-medium { -fx-min-height: 38; -fx-pref-height: 38; }
+.auth-growth-bar-tall { -fx-min-height: 52; -fx-pref-height: 52; }
+.auth-decoration-label {
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-font-size: 8;
+    -fx-font-weight: 700;
+}
 .border-pane{
 -fx-background-radius : 10px;
 -fx-border-radius: 16;

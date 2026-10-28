@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" styleClass="page-scroll" stylesheets="@app.css"
+            xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.AdminDashboardController">
+    <VBox spacing="18" styleClass="page">
+        <VBox spacing="5">
+            <Label styleClass="page-title" text="Grupos da plataforma"/>
+            <Label styleClass="page-sub" text="Consulte detalhes, acompanhe ciclos e intervenha em grupos inactivos."/>
+        </VBox>
+        <VBox spacing="10" styleClass="card, admin-section">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label styleClass="section-title" text="Todos os grupos"/>
+                <TextField fx:id="userSearchField" promptText="Pesquisar grupo ou responsável..." HBox.hgrow="ALWAYS"/>
+            </HBox>
+            <VBox fx:id="groupRows" spacing="8"/>
+        </VBox>
+    </VBox>
+</ScrollPane>
