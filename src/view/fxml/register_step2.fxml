@@ -5,6 +5,7 @@
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
@@ -227,6 +228,13 @@
                                         </VBox>
                                     </children>
                                 </HBox>
+
+                                <VBox spacing="5.0">
+                                    <children>
+                                        <CheckBox fx:id="chkAcceptTerms" maxWidth="Infinity" text="Li e aceito os Termos e Condições. Compreendo que a iXitique não garante pagamentos de outros membros nem cobre perdas causadas por incumprimento." wrapText="true" />
+                                        <Hyperlink fx:id="linkTerms" text="Ler os Termos e Condições" />
+                                    </children>
+                                </VBox>
 
                                 <!-- BOTÃO CRIAR CONTA -->
                                 <MFXButton fx:id="btnCriarConta" maxWidth="Infinity" prefHeight="46.0" styleClass="button-primary" text="Criar conta  ">

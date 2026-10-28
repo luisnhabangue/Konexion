@@ -11,6 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.DateCell;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
@@ -50,6 +51,8 @@ public class RegisterController {
     @FXML private MFXButton btnContinuar;
     @FXML private MFXButton btnCriarConta;
     @FXML private MFXButton btnVoltarPasso;
+    @FXML private CheckBox chkAcceptTerms;
+    @FXML private Hyperlink linkTerms;
     @FXML private Hyperlink linkVoltarLogin;
     @FXML private Label lblFirstNameError;
     @FXML private Label lblLastNameError;
@@ -119,6 +122,10 @@ public class RegisterController {
             btnVoltarPasso.setOnAction(event -> showPreviousStep(event.getSource()));
         }
 
+        if (linkTerms != null) {
+            linkTerms.setOnAction(event -> showTerms());
+        }
+
         if (linkVoltarLogin != null) {
             linkVoltarLogin.setOnAction(event -> showLogin(event.getSource()));
         }
@@ -167,6 +174,11 @@ public class RegisterController {
         if (!fieldsValid) {
             return;
         }
+        if (chkAcceptTerms == null || !chkAcceptTerms.isSelected()) {
+            showAlert(Alert.AlertType.WARNING,
+                    "Leia e aceite os Termos e Condições antes de criar a conta.");
+            return;
+        }
 
         try {
             User user = new User(
@@ -181,13 +193,36 @@ public class RegisterController {
                     phone
             );
 
-            authService.register(user, txtConfirmPassword.getText());
+            authService.register(user, txtConfirmPassword.getText(), chkAcceptTerms.isSelected());
             showAlert(Alert.AlertType.INFORMATION,
                     "A conta foi criada com sucesso e está por verificar. Pode participar em grupos; para criar grupos, submeta o BI/NUIT e as fotografias para aprovação do administrador.");
             showLogin(source);
         } catch (RuntimeException exception) {
             showAlert(Alert.AlertType.ERROR, exception.getMessage());
         }
+    }
+
+    private void showTerms() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Termos e Condições");
+        alert.setHeaderText("Participação em grupos e incumprimento de pagamentos");
+        alert.setContentText(
+                "1. Cada membro é responsável pelos compromissos que assume perante os outros membros, " +
+                "incluindo contribuições e pagamentos acordados no grupo.\n\n" +
+                "2. O Konexion disponibiliza ferramentas para organizar grupos, mas não garante que os " +
+                "membros cumpram os seus compromissos, não cobre valores em falta e não reembolsa perdas " +
+                "causadas pelo incumprimento de outro membro. Isto não exclui responsabilidades da " +
+                "plataforma que não possam ser afastadas por lei.\n\n" +
+                "3. O utilizador deve avaliar os riscos, confirmar os acordos do grupo e guardar os " +
+                "comprovativos das suas operações. A existência de um registo na aplicação não substitui " +
+                "um acordo entre os membros nem garante a recuperação de valores.\n\n" +
+                "4. A violação das regras da plataforma ou do grupo pode resultar, conforme a gravidade, " +
+                "em advertência, restrição de funcionalidades, suspensão ou encerramento da conta, " +
+                "respeitando a lei aplicável. Essas medidas não anulam pagamentos ou outras obrigações " +
+                "assumidas pelo utilizador.\n\n" +
+                "Ao marcar a caixa, confirma que leu e aceita estas condições."
+        );
+        StyledDialogs.showAndWait(alert);
     }
 
     private void showPreviousStep(Object source) {

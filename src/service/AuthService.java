@@ -72,12 +72,18 @@ public class AuthService {
      *
      * @param user Dados do novo utilizador
      * @param confirmPassword Confirmação da palavra-passe
+     * @param acceptedTerms Confirmação de aceitação dos Termos e Condições
      */
-    public void register(User user, String confirmPassword) {
+    public void register(User user, String confirmPassword, boolean acceptedTerms) {
 
         if (user == null) {
             throw new IllegalArgumentException(
                     "Os dados do utilizador são obrigatórios."
+            );
+        }
+        if (!acceptedTerms) {
+            throw new IllegalArgumentException(
+                    "É necessário aceitar os Termos e Condições para criar uma conta."
             );
         }
 
