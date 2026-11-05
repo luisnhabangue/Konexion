@@ -25,6 +25,8 @@
 
 ---
 
+> 📖 **Guia de utilizador:** instruções passo a passo para instalar, executar e utilizar a aplicação em [GUIA_UTILIZADOR.md](GUIA_UTILIZADOR.md).
+
 ## 🌿 Sobre o Projeto
 
 O **Konexion** é uma aplicação desktop desenvolvida para facilitar a gestão de grupos de poupança rotativa, inspirada na prática tradicional do xitique.
@@ -50,6 +52,7 @@ O projeto aplica conceitos de Programação Orientada a Objetos, persistência d
 | Funcionalidade | Descrição |
 |---|---|
 | 👤 **Gestão de utilizadores** | Registo, autenticação e gestão de contas. |
+| 🔑 **Recuperação de palavra-passe** | Envio de um código de 6 dígitos por e-mail para redefinir a palavra-passe. |
 | 👥 **Gestão de grupos** | Criação e consulta de grupos de xitique. |
 | 🤝 **Participações** | Associação de utilizadores aos grupos e gestão das respetivas participações. |
 | 🛡️ **Controlo de acessos** | Organização dos acessos de acordo com os papéis e as permissões definidos no sistema. |
@@ -176,6 +179,7 @@ As regras de negócio são tratadas principalmente na camada `Service`, enquanto
 - JDK compatível com a versão utilizada no projeto.
 - MySQL Server.
 - IntelliJ IDEA ou outro IDE compatível com JavaFX.
+- Conta de e-mail com acesso a um servidor SMTP (necessária apenas para a recuperação de palavra-passe).
 
 ### 1. Obter o projeto
 
@@ -202,7 +206,9 @@ Confirma que a base de dados configurada existe no servidor MySQL.
 
 No IntelliJ IDEA, confirma que as bibliotecas necessárias, incluindo JavaFX, Hibernate/JPA e o driver JDBC do MySQL, estão disponíveis.
 
-Localiza a classe `view.Application` e executa a aplicação através do IDE.
+Localiza a classe `view.Main` e executa a aplicação através do IDE.
+
+Para ativar a recuperação de palavra-passe, configura também as variáveis de ambiente SMTP descritas em [Recuperação de Palavra-passe por E-mail](#-recuperação-de-palavra-passe-por-e-mail).
 
 ### 4. Começar a utilizar
 
@@ -251,6 +257,91 @@ Todos usam a palavra-passe de demonstração indicada acima. A base recebe quatr
 (ativo com pagamentos em estados diferentes, público aberto, convites pendentes e ciclo
 concluído), denúncias abertas e resolvida, notificações e um ciclo com histórico financeiro.
 Não use estas credenciais fora da apresentação nem numa base de dados de produção.
+
+## 📧 Recuperação de Palavra-passe por E-mail
+
+A recuperação de palavra-passe é feita por e-mail: a aplicação envia um código de 6 dígitos através de um servidor SMTP, configurado por variáveis de ambiente. O envio utiliza **Jakarta Mail**, com autenticação e **STARTTLS**.
+
+### Como utilizar
+
+1. No ecrã de início de sessão, seleciona **Esqueceu a senha?**.
+2. Introduz o e-mail associado à conta. O endereço tem de corresponder ao e-mail registado.
+3. Recebe uma mensagem com um código de 6 dígitos, válido durante **10 minutos**.
+4. Introduz o código e define a nova palavra-passe, com pelo menos **8 caracteres**.
+5. Inicia sessão com a nova palavra-passe.
+
+O código é guardado apenas em memória, associado ao e-mail, e é removido depois de ser utilizado. Se a aplicação for encerrada ou for pedido um novo código, o código anterior deixa de ser válido.
+
+### Variáveis de ambiente
+
+O serviço SMTP é configurado por variáveis de ambiente, para evitar guardar credenciais no código-fonte.
+
+| Variável | Obrigatória | Predefinição | Descrição |
+|---|---|---|---|
+| `IXITIQUE_SMTP_HOST` | Sim | — | Endereço do servidor SMTP, por exemplo `smtp.gmail.com`. |
+| `IXITIQUE_SMTP_PORT` | Não | `587` | Porta SMTP. A aplicação ativa STARTTLS e exige autenticação. |
+| `IXITIQUE_SMTP_USER` | Sim | — | Utilizador usado para autenticar no servidor SMTP. |
+| `IXITIQUE_SMTP_PASSWORD` | Sim | — | Palavra-passe SMTP ou palavra-passe de aplicação, conforme o fornecedor. |
+| `IXITIQUE_SMTP_FROM` | Não | Valor de `IXITIQUE_SMTP_USER` | Endereço apresentado como remetente da mensagem. |
+
+Se faltar uma variável obrigatória, a aplicação apresenta uma mensagem a indicar qual deve ser configurada. A porta escolhida tem de suportar **STARTTLS** (normalmente a `587`); ligações SSL diretas na porta `465` não são suportadas por esta configuração.
+
+### Configurar no IntelliJ IDEA
+
+1. Abre **Run > Edit Configurations...**.
+2. Seleciona a configuração de execução da classe `view.Main`.
+3. No campo **Environment variables**, adiciona as variáveis SMTP.
+4. Aplica a configuração e executa a aplicação.
+
+As variáveis definidas no IDE ficam disponíveis para a aplicação sem ser necessário alterar o código.
+
+### Configurar no terminal
+
+Em Linux ou macOS, define as variáveis antes de iniciar a aplicação:
+
+```bash
+export IXITIQUE_SMTP_HOST="smtp.gmail.com"
+export IXITIQUE_SMTP_PORT="587"
+export IXITIQUE_SMTP_USER="exemplo@gmail.com"
+export IXITIQUE_SMTP_PASSWORD="palavra-passe-de-aplicacao"
+export IXITIQUE_SMTP_FROM="exemplo@gmail.com"
+```
+
+Em Windows (PowerShell):
+
+```powershell
+$env:IXITIQUE_SMTP_HOST = "smtp.gmail.com"
+$env:IXITIQUE_SMTP_PORT = "587"
+$env:IXITIQUE_SMTP_USER = "exemplo@gmail.com"
+$env:IXITIQUE_SMTP_PASSWORD = "palavra-passe-de-aplicacao"
+$env:IXITIQUE_SMTP_FROM = "exemplo@gmail.com"
+```
+
+Estas variáveis aplicam-se apenas à sessão atual do terminal. Se o IDE já estiver aberto, inicia-o a partir desse mesmo terminal para que herde a configuração, ou define as variáveis diretamente na configuração de execução.
+
+### Exemplo com Gmail
+
+1. Ativa a verificação em duas etapas na conta Google.
+2. Em **Segurança**, cria uma **palavra-passe de aplicação**.
+3. Usa `smtp.gmail.com` como `IXITIQUE_SMTP_HOST`, a porta `587` e a palavra-passe de aplicação gerada em `IXITIQUE_SMTP_PASSWORD`.
+
+Não uses a palavra-passe normal da conta Google: o Gmail exige uma palavra-passe de aplicação para autenticação SMTP. Outros fornecedores podem ter requisitos próprios, como palavras-passe de aplicação ou autenticação OAuth.
+
+### Resolução de problemas
+
+| Mensagem ou sintoma | Causa provável | Resolução |
+|---|---|---|
+| `Configure a variável de ambiente IXITIQUE_SMTP_HOST.` (ou outra variável) | A variável não está definida ou o processo não a recebeu. | Define a variável na configuração de execução do IDE ou no terminal e inicia a aplicação novamente. |
+| `Não foi possível enviar o email. Verifique a configuração SMTP.` | Credenciais inválidas, servidor ou porta incorretos, STARTTLS indisponível ou bloqueio do fornecedor. | Confirma o host, a porta e as credenciais; no Gmail, usa uma palavra-passe de aplicação. |
+| `Não existe uma conta com esse email.` | O e-mail não corresponde a nenhuma conta registada. | Usa o e-mail exatamente como foi registado na conta. |
+| `Código inválido ou expirado. Peça um novo código.` | Código incorreto, passaram mais de 10 minutos, a aplicação foi reiniciada ou foi pedido um código novo. | Pede um novo código e introduz o mais recente. |
+| O e-mail não chega à caixa de entrada. | A mensagem foi marcada como spam ou o servidor rejeitou o remetente. | Verifica a pasta de spam e os filtros; confirma `IXITIQUE_SMTP_FROM` e os registos do fornecedor. |
+
+### Segurança
+
+- Não coloques credenciais reais no código-fonte nem no repositório; usa variáveis de ambiente.
+- Prefere palavras-passe de aplicação e mantém-nas fora de ficheiros versionados.
+- O código de recuperação é guardado com hash, expira após 10 minutos e é invalidado depois de utilizado.
 
 ## 🔐 Organização de Acessos
 
