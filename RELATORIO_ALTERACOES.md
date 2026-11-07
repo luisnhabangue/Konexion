@@ -1,14 +1,9 @@
 # Relatório de alterações do iXitique
 
-## Para que serve este documento
-
-Este relatório apresenta, em linguagem simples, as principais funcionalidades que passaram a fazer parte do projeto nas últimas três semanas de trabalho. A ideia é ajudar a perceber não só quais foram as alterações, mas também como elas se ligam numa utilização normal da aplicação.
-
-O período considerado começa em **15 de outubro de 2026**. A branch consultada é **`feature/termsNconditions`** e o último commit de código nela registado é de **28 de outubro de 2026** (`0a680eb`). Assim, o relatório descreve o que está incluído nessa versão da branch; não afirma que esses recursos estejam ligados a serviços financeiros reais ou prontos para produção.
 
 ## Resumo geral
 
-O projeto evoluiu de uma aplicação com os elementos essenciais de um xitique para um protótipo desktop mais completo. Agora é possível acompanhar um percurso mais próximo do uso real: criar uma conta, passar por uma verificação de identidade, organizar um grupo com regras definidas, registar contribuições, acompanhar os ciclos e pedir ajuda dentro da aplicação.
+Agora é possível acompanhar um percurso mais próximo do uso real: criar uma conta, passar por uma verificação de identidade, organizar um grupo com regras definidas, registar contribuições, acompanhar os ciclos e pedir ajuda dentro da aplicação.
 
 Também foi desenvolvido um espaço administrativo próprio. Nele, um administrador pode acompanhar indicadores, analisar pedidos de verificação, gerir utilizadores e grupos, tratar denúncias e responder a pedidos de suporte.
 
@@ -138,12 +133,11 @@ Para observar esses fluxos, é preciso ter uma base de dados preparada e contas 
 
 Estas limitações fazem parte do âmbito do protótipo académico e são importantes para distinguir as funcionalidades demonstradas das que exigiriam serviços externos e infraestrutura de produção.
 
-## Organização técnica, em poucas palavras
+## Organização técnica
 
 O projeto usa Java e JavaFX para a aplicação desktop, Hibernate/JPA para comunicar com a base de dados MySQL e uma separação entre ecrãs, controladores, serviços de regras de negócio e acesso a dados. Em termos simples, os ecrãs recolhem as ações do utilizador, os serviços aplicam as regras do xitique e os DAOs guardam ou consultam a informação persistente.
 
 As alterações acrescentaram entidades para representar, entre outras coisas, transações, notificações, convites, denúncias e pedidos de suporte. Esta estrutura permite que os dados importantes — como o estado de uma contribuição ou a resposta a um pedido — continuem associados às respetivas contas e grupos.
 
-## Nota final
 
-Em conjunto, estas alterações dão ao iXitique um percurso de utilização mais completo: a aplicação ajuda a organizar quem participa, quando contribui, quem recebe o bolo e como se acompanham problemas ou dúvidas. A parte financeira continua deliberadamente simulada, mas o registo das operações e as regras dos ciclos permitem demonstrar o funcionamento esperado de um serviço de poupança rotativa.
+Em conjunto, estas alterações dão ao iXitique(Agora Konexion) um percurso de utilização mais completo: a aplicação ajuda a organizar quem participa, quando contribui, quem recebe o bolo e como se acompanham problemas ou dúvidas. A parte financeira continua deliberadamente simulada, mas o registo das operações e as regras dos ciclos permitem demonstrar o funcionamento esperado de um serviço de poupança rotativa.
